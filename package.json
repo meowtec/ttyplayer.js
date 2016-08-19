@@ -1,0 +1,20 @@
+{
+  "name": "ttyplay.js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:js": "browserify ./src/player.js -o ./dist/ttyplay.js",
+    "min:js": "uglifyjs ./dist/ttyplay.js -m -c -o ./dist/ttyplay.min.js",
+    "build:css": "cleancss ./src/player.css -o ./dist/ttyplay.css",
+    "build": "npm run build:js && npm run min:js && npm run build:css"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "browserify": "^13.1.0",
+    "clean-css": "^3.4.19",
+    "uglify-js": "^2.7.3"
+  }
+}

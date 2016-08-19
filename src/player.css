@@ -1,0 +1,5 @@
+@import "../libs/xterm.css";
+
+.terminal {
+  font-size: 12px;
+}

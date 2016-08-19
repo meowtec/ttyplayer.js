@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>ttyplay.js demo</title>
+  <link rel="stylesheet" href="./dist/ttyplay.css"/>
+  <script src="./dist/ttyplay.js"></script>
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    .center {
+      width: 900px;
+      margin: 0 auto;
+    }
+
+    a {
+     color: #4078c0;
+     text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="center">
+    <h2><a href="https://github.com/meowtec/ttyplayer.js">ttyplayer.js</a></h2>
+    <div
+      data-termplayer-source="./example/tty.rec"
+      data-termplayer-cols="80"
+      data-termplayer-rows="30"
+    ></div>
+  </div>
+  <script>
+    TermPlayer.initAll()
+  </script>
+</body>
+
+</html>
