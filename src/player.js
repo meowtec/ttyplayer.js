@@ -91,6 +91,10 @@
 
     speed: 1,
 
+    repeat: true,
+
+    interval: 3000,
+
     play: function(frames) {
       if (frames) {
         this.frames = frames
@@ -114,17 +118,21 @@
       var currentFrame = frames[step]
       var nextFrame = frames[step + 1]
       var str = currentFrame.content
+      var player = this
       this.term.write(str)
       this.step = step + 1
 
       if (nextFrame) {
-        var self = this
         this._nextTimer = setTimeout(
           function() {
-            self.next()
+            player.next()
           },
           (nextFrame.time - currentFrame.time) / this.speed
         )
+      } else if (this.repeat) {
+        setTimeout(function() {
+          player.play()
+        }, this.interval)
       }
     },
 
