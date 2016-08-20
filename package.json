@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:js": "browserify ./src/player.js -o ./dist/ttyplay.js",
+    "build:js": "browserify ./src/player.js -s TermPlayer -o ./dist/ttyplay.js",
     "min:js": "uglifyjs ./dist/ttyplay.js -m -c -o ./dist/ttyplay.min.js",
     "build:css": "cleancss ./src/player.css -o ./dist/ttyplay.css",
     "build": "npm run build:js && npm run min:js && npm run build:css"
