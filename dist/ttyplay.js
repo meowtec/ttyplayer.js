@@ -5490,7 +5490,7 @@ _.assign(TermPlayer.prototype, {
 
   next: function(currentFrame, nextFrame) {
     var player = this
-    console.log('netx')
+
     if (nextFrame) {
       this._nextTimer = setTimeout(
         function() {

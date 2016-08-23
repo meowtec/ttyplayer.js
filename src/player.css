@@ -33,4 +33,9 @@
   outline: 0;
   padding: 3px 5px;
   color: #999;
+  cursor: pointer;
+}
+
+.ttyplayer-footer button:hover {
+  color: #fff;
 }
