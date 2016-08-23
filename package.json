@@ -1,6 +1,6 @@
 {
-  "name": "ttyplay.js",
-  "version": "1.0.0",
+  "name": "ttyplayer.js",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {

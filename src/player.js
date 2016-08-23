@@ -1,144 +1,86 @@
+'use strict'
+
+var Core = require('./core')
 var Terminal = require('../libs/xterm.js')
-var EventEmitter = Terminal.EventEmitter
+var decode = require('./decode')
 var inherits = Terminal.inherits
+var EventEmitter = Terminal.EventEmitter
 
-var hasOwnProperty = Object.prototype.hasOwnProperty
-
-var defaultCols = 80
-var defaultRows = 30
-
-function extend(a, b) {
-  for (var key in b) {
-    if (hasOwnProperty.call(b, key)) {
-      a[key] = b[key]
-    }
-  }
-}
-
-/**
- * @param {ArrayBuffer} arrayBuffer
- * @param {number} start
- * @param {number} length
- */
-function readUtf8(arrayBuffer, start, length) {
-  return decodeURIComponent(escape(String.fromCharCode.apply(
-    null, new Uint8Array(arrayBuffer, start, length)
-  )))
-}
-
-/**
- * @param {string} url
- * @param {function} callback
- */
-function fetchArrayBuffer(url, callback) {
-  var xhr = new XMLHttpRequest()
-  xhr.open('GET', url, true)
-  xhr.responseType = 'arraybuffer'
-  xhr.send()
-  var error = new Error('XMLHttpRequest error.')
-  xhr.onload = function() {
-    if (!/^2/.test(xhr.status)) {
-      return callback(error)
-    }
-    callback(null, xhr.response)
-  }
-  xhr.onerror = function() {
-    callback(error)
-  }
-}
-
-/**
- * @param {ArrayBuffer} arrayBuffer
- */
-function decode(arrayBuffer) {
-  var frames = []
-  var offset = 0
-  var size = arrayBuffer.byteLength
-  var data = new DataView(arrayBuffer)
-
-  while (offset < size) {
-    var sec = data.getUint32(offset, true)
-    offset += 4
-    var usec = data.getUint32(offset, true)
-    offset += 4
-    var length = data.getUint32(offset, true)
-    offset += 4
-
-    frames.push({
-      time: sec * 1000 + usec / 1000,
-      content: readUtf8(arrayBuffer, offset, length)
-    })
-
-    offset += length
-  }
-
-  return frames
-}
+var _ = require('./utils')
+var E = _.e
 
 function TermPlayer(options) {
   EventEmitter.call(this)
+  this.bindThis()
 
-  var term = new Terminal(options)
-  term.open()
-
-  this.term = term
+  this.options = _.assign({}, options)
+  this.mount(options.parent)
+  this.createCorePlayer()
+  this.bindEvent()
 }
 
 inherits(TermPlayer, EventEmitter)
 
-extend(TermPlayer.prototype, {
+_.assign(TermPlayer.prototype, {
 
-  speed: 1,
+  mount: function(parentNode) {
+    var target, playButton
 
-  repeat: true,
+    var container =
+    E('div', 'ttyplayer', [
+      E('header', 'ttyplayer-header', 'TTYPlayer'),
+      target = E('div', 'ttyplayer-body'),
+      E('footer', 'ttyplayer-footer', [
+        playButton = E('button', '', '')
+      ])
+    ])
+    parentNode.appendChild(container)
+    this.options.parent = target
+    this.playButton = playButton
+  },
 
-  interval: 3000,
+  bindThis: function() {
+    this.playClick = this.playClick.bind(this)
+  },
+
+  bindEvent: function() {
+    this.playButton.addEventListener('click', this.playClick)
+  },
+
+  playClick: function() {
+    var isPlaying = this.player.getStatus()
+    console.log(isPlaying ? 'pause' : 'play')
+    if (isPlaying) {
+      this.pause()
+    } else {
+      this.resume()
+    }
+  },
+
+  createCorePlayer: function() {
+    var player = new Core(this.options)
+    this.player = player
+  },
 
   play: function(frames) {
-    if (frames) {
-      this.frames = frames
-    }
-    this.term.reset()
-    this.step = 0
-    this.next()
+    this.player.play(frames)
+    this.playButton.textContent = 'pause'
   },
 
   pause: function() {
-    clearTimeout(this._nextTimer)
+    this.player.pause()
+    this.playButton.textContent = 'play'
   },
 
   resume: function() {
-    this.next()
-  },
-
-  next: function() {
-    var step = this.step
-    var frames = this.frames
-    var currentFrame = frames[step]
-    var nextFrame = frames[step + 1]
-    var str = currentFrame.content
-    var player = this
-    this.term.write(str)
-    this.step = step + 1
-
-    if (nextFrame) {
-      this._nextTimer = setTimeout(
-        function() {
-          player.next()
-        },
-        (nextFrame.time - currentFrame.time) / this.speed
-      )
-    } else if (this.repeat) {
-      setTimeout(function() {
-        player.play()
-      }, this.interval)
-    }
+    this.player.resume()
+    this.playButton.textContent = 'pause'
   },
 
   load: function(url) {
     var player = this
 
-    fetchArrayBuffer(url, function(err, data) {
+    _.fetchArrayBuffer(url, function(err, data) {
       if (err) {
         return player.emit('loadError', err)
       }
@@ -146,15 +88,15 @@ extend(TermPlayer.prototype, {
       try {
         frames = decode(data)
       } catch (err) {
+        console.error(err)
         return player.emit('loadError', err)
       }
 
       player.play(frames)
     })
   }
-})
 
-TermPlayer.decode = decode
+})
 
 /**
  * Usage:

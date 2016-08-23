@@ -3,3 +3,34 @@
 .terminal {
   font-size: 12px;
 }
+
+.ttyplayer {
+  font-size: 12px;
+}
+
+.ttyplayer-header {
+  text-align: center;
+  padding: 3px;
+  background: #222;
+  color: #fff;
+  border-radius: 5px 5px 0 0;
+}
+
+.ttyplayer-body {
+  padding: 5px;
+  background: #000;
+}
+
+.ttyplayer-footer {
+  background: #000;
+  color: #999;
+  text-align: right;
+}
+
+.ttyplayer-footer button {
+  background: none;
+  border: 0;
+  outline: 0;
+  padding: 3px 5px;
+  color: #999;
+}

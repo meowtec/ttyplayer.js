@@ -5416,59 +5416,111 @@
 
 }).call(this,"/libs")
 },{}],2:[function(require,module,exports){
+'use strict'
+
 var Terminal = require('../libs/xterm.js')
 var EventEmitter = Terminal.EventEmitter
 var inherits = Terminal.inherits
-
-var hasOwnProperty = Object.prototype.hasOwnProperty
+var _ = require('./utils')
 
 var defaultCols = 80
 var defaultRows = 30
 
-function extend(a, b) {
-  for (var key in b) {
-    if (hasOwnProperty.call(b, key)) {
-      a[key] = b[key]
+function TermPlayer(options) {
+  EventEmitter.call(this)
+
+  var term = new Terminal(options)
+  term.open()
+
+  this.term = term
+}
+
+inherits(TermPlayer, EventEmitter)
+
+_.assign(TermPlayer.prototype, {
+
+  speed: 1,
+
+  repeat: true,
+
+  interval: 3000,
+
+  getStatus: function() {
+    return this._playing
+  },
+
+  onEnd: function() {
+    return this.step === this.frames.length
+  },
+
+  play: function(frames) {
+    if (frames) {
+      this.frames = frames
+    }
+    this.term.reset()
+    this.step = 0
+    this.frame()
+  },
+
+  pause: function() {
+    clearTimeout(this._nextTimer)
+    this._playing = false
+  },
+
+  resume: function() {
+    if (this.onEnd()) {
+      this.play()
+    } else {
+      this.frame()
+    }
+  },
+
+  frame: function() {
+    var step = this.step
+    var frames = this.frames
+    var currentFrame = frames[step]
+    var nextFrame = frames[step + 1]
+    var str = currentFrame.content
+    this.term.write(str)
+    this.step = step + 1
+    this._playing = true
+
+    this.next(currentFrame, nextFrame)
+  },
+
+  next: function(currentFrame, nextFrame) {
+    var player = this
+    console.log('netx')
+    if (nextFrame) {
+      this._nextTimer = setTimeout(
+        function() {
+          player.frame()
+        },
+        (nextFrame.time - currentFrame.time) / this.speed
+      )
+    } else if (this.repeat) {
+      this._nextTimer = setTimeout(function() {
+        player.play()
+      }, this.interval)
+    } else {
+      this.emit('end')
+      this._playing = false
     }
   }
-}
+
+})
+
+module.exports = TermPlayer
+
+},{"../libs/xterm.js":1,"./utils":5}],3:[function(require,module,exports){
+'use strict'
+
+var _ = require('./utils')
 
 /**
  * @param {ArrayBuffer} arrayBuffer
- * @param {number} start
- * @param {number} length
  */
-function readUtf8(arrayBuffer, start, length) {
-  return decodeURIComponent(escape(String.fromCharCode.apply(
-    null, new Uint8Array(arrayBuffer, start, length)
-  )))
-}
-
-/**
- * @param {string} url
- * @param {function} callback
- */
-function fetchArrayBuffer(url, callback) {
-  var xhr = new XMLHttpRequest()
-  xhr.open('GET', url, true)
-  xhr.responseType = 'arraybuffer'
-  xhr.send()
-  var error = new Error('XMLHttpRequest error.')
-  xhr.onload = function() {
-    if (!/^2/.test(xhr.status)) {
-      return callback(error)
-    }
-    callback(null, xhr.response)
-  }
-  xhr.onerror = function() {
-    callback(error)
-  }
-}
-
-/**
- * @param {ArrayBuffer} arrayBuffer
- */
-function decode(arrayBuffer) {
+module.exports = function decode(arrayBuffer) {
   var frames = []
   var offset = 0
   var size = arrayBuffer.byteLength
@@ -5484,7 +5536,7 @@ function decode(arrayBuffer) {
 
     frames.push({
       time: sec * 1000 + usec / 1000,
-      content: readUtf8(arrayBuffer, offset, length)
+      content: _.readUtf8(arrayBuffer, offset, length)
     })
 
     offset += length
@@ -5493,70 +5545,90 @@ function decode(arrayBuffer) {
   return frames
 }
 
+},{"./utils":5}],4:[function(require,module,exports){
+'use strict'
+
+var Core = require('./core')
+var Terminal = require('../libs/xterm.js')
+var decode = require('./decode')
+var inherits = Terminal.inherits
+var EventEmitter = Terminal.EventEmitter
+
+var _ = require('./utils')
+var E = _.e
+
 function TermPlayer(options) {
   EventEmitter.call(this)
+  this.bindThis()
 
-  var term = new Terminal(options)
-  term.open()
-
-  this.term = term
+  this.options = _.assign({}, options)
+  this.mount(options.parent)
+  this.createCorePlayer()
+  this.bindEvent()
 }
 
 inherits(TermPlayer, EventEmitter)
 
-extend(TermPlayer.prototype, {
+_.assign(TermPlayer.prototype, {
 
-  speed: 1,
+  mount: function(parentNode) {
+    var target, playButton
 
-  repeat: true,
+    var container =
+    E('div', 'ttyplayer', [
+      E('header', 'ttyplayer-header', 'TTYPlayer'),
+      target = E('div', 'ttyplayer-body'),
+      E('footer', 'ttyplayer-footer', [
+        playButton = E('button', '', '')
+      ])
+    ])
+    parentNode.appendChild(container)
+    this.options.parent = target
+    this.playButton = playButton
+  },
 
-  interval: 3000,
+  bindThis: function() {
+    this.playClick = this.playClick.bind(this)
+  },
+
+  bindEvent: function() {
+    this.playButton.addEventListener('click', this.playClick)
+  },
+
+  playClick: function() {
+    var isPlaying = this.player.getStatus()
+    console.log(isPlaying ? 'pause' : 'play')
+    if (isPlaying) {
+      this.pause()
+    } else {
+      this.resume()
+    }
+  },
+
+  createCorePlayer: function() {
+    var player = new Core(this.options)
+    this.player = player
+  },
 
   play: function(frames) {
-    if (frames) {
-      this.frames = frames
-    }
-    this.term.reset()
-    this.step = 0
-    this.next()
+    this.player.play(frames)
+    this.playButton.textContent = 'pause'
   },
 
   pause: function() {
-    clearTimeout(this._nextTimer)
+    this.player.pause()
+    this.playButton.textContent = 'play'
   },
 
   resume: function() {
-    this.next()
-  },
-
-  next: function() {
-    var step = this.step
-    var frames = this.frames
-    var currentFrame = frames[step]
-    var nextFrame = frames[step + 1]
-    var str = currentFrame.content
-    var player = this
-    this.term.write(str)
-    this.step = step + 1
-
-    if (nextFrame) {
-      this._nextTimer = setTimeout(
-        function() {
-          player.next()
-        },
-        (nextFrame.time - currentFrame.time) / this.speed
-      )
-    } else if (this.repeat) {
-      setTimeout(function() {
-        player.play()
-      }, this.interval)
-    }
+    this.player.resume()
+    this.playButton.textContent = 'pause'
   },
 
   load: function(url) {
     var player = this
 
-    fetchArrayBuffer(url, function(err, data) {
+    _.fetchArrayBuffer(url, function(err, data) {
       if (err) {
         return player.emit('loadError', err)
       }
@@ -5564,15 +5636,15 @@ extend(TermPlayer.prototype, {
       try {
         frames = decode(data)
       } catch (err) {
+        console.error(err)
         return player.emit('loadError', err)
       }
 
       player.play(frames)
     })
   }
-})
 
-TermPlayer.decode = decode
+})
 
 /**
  * Usage:
@@ -5602,5 +5674,77 @@ TermPlayer.initAll = function() {
 
 module.exports = TermPlayer
 
-},{"../libs/xterm.js":1}]},{},[2])(2)
+},{"../libs/xterm.js":1,"./core":2,"./decode":3,"./utils":5}],5:[function(require,module,exports){
+'use strict'
+
+var hasOwnProperty = Object.prototype.hasOwnProperty
+var toString = Object.prototype.toString
+
+exports.assign =  function assign(a, b) {
+  for (var key in b) {
+    if (hasOwnProperty.call(b, key)) {
+      a[key] = b[key]
+    }
+  }
+
+  return a
+}
+
+/**
+ * @param {ArrayBuffer} arrayBuffer
+ * @param {number} start
+ * @param {number} length
+ */
+exports.readUtf8 = function readUtf8(arrayBuffer, start, length) {
+  return decodeURIComponent(escape(String.fromCharCode.apply(
+    null, new Uint8Array(arrayBuffer, start, length)
+  )))
+}
+
+/**
+ * @param {string} url
+ * @param {function} callback
+ */
+exports.fetchArrayBuffer = function fetchArrayBuffer(url, callback) {
+  var xhr = new XMLHttpRequest()
+  xhr.open('GET', url, true)
+  xhr.responseType = 'arraybuffer'
+  xhr.send()
+  var error = new Error('XMLHttpRequest error.')
+  xhr.onload = function() {
+    if (!/^2/.test(xhr.status)) {
+      return callback(error)
+    }
+    callback(null, xhr.response)
+  }
+  xhr.onerror = function() {
+    callback(error)
+  }
+}
+
+function isArray(arr) {
+  return toString.call(arr) === '[object Array]'
+}
+
+function isString(str) {
+  return typeof str === 'string'
+}
+
+exports.e =
+exports.element = function(tagName, className, children) {
+  var element = document.createElement(tagName)
+  element.className = className
+
+  if (isArray(children)) {
+    for (var i = 0; i < children.length; i++) {
+      element.appendChild(children[i])
+    }
+  } else if (isString(children)) {
+    element.textContent = element.innerText = children
+  }
+
+  return element
+}
+
+},{}]},{},[4])(4)
 });
