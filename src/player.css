@@ -25,15 +25,50 @@
   background: #000;
   color: #999;
   text-align: right;
+  padding: 0 5px;
 }
 
 .ttyplayer-footer button {
   background: none;
   border: 0;
   outline: 0;
-  padding: 3px 5px;
+  padding: 0;
   color: #999;
   cursor: pointer;
+}
+
+.ttyplayer-footer button {
+  position: relative;
+  overflow: hidden;
+  width: 8px;
+  height: 10px;
+}
+
+.ttyplayer-footer button.play:after {
+  content: '';
+  display: block;
+  border: solid transparent;
+  border-left-color: currentColor;
+  border-width: 5px 8px;
+}
+
+.ttyplayer-footer button.pause:before,
+.ttyplayer-footer button.pause:after {
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 10px;
+  top: 0;
+  background: currentColor;
+
+}
+
+.ttyplayer-footer button.pause:before {
+  left: 0;
+}
+
+.ttyplayer-footer button.pause:after {
+  right: 0;
 }
 
 .ttyplayer-footer button:hover {

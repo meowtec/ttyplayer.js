@@ -31,7 +31,7 @@ _.assign(TermPlayer.prototype, {
       E('header', 'ttyplayer-header', 'TTYPlayer'),
       target = E('div', 'ttyplayer-body'),
       E('footer', 'ttyplayer-footer', [
-        playButton = E('button', '', '')
+        playButton = E('button', 'play', '')
       ])
     ])
     parentNode.appendChild(container)
@@ -64,17 +64,17 @@ _.assign(TermPlayer.prototype, {
 
   play: function(frames) {
     this.player.play(frames)
-    this.playButton.textContent = 'pause'
+    this.playButton.className = 'pause'
   },
 
   pause: function() {
     this.player.pause()
-    this.playButton.textContent = 'play'
+    this.playButton.className = 'play'
   },
 
   resume: function() {
     this.player.resume()
-    this.playButton.textContent = 'pause'
+    this.playButton.className = 'pause'
   },
 
   load: function(url) {
