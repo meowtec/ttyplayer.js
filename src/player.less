@@ -1,0 +1,114 @@
+@import '../libs/xterm.css';
+
+.ttyplayer {
+  font-size: 12px;
+
+  .hide {
+    display: none;
+  }
+}
+
+.ttyplayer-header {
+  text-align: center;
+  padding: 3px;
+  background: #222;
+  color: #fff;
+  border-radius: 5px 5px 0 0;
+}
+
+.ttyplayer-body {
+  padding: 5px;
+  background: #000;
+}
+
+.ttyplayer-footer {
+  background: #000;
+  color: #999;
+  text-align: right;
+  padding: 0 5px;
+
+  button {
+    position: relative;
+    background: none;
+    border: 0;
+    outline: 0;
+    padding: 4px;
+    color: #999;
+    cursor: pointer;
+    line-height: 1em;
+    text-align: left;
+
+    &:hover {
+      color: #fff;
+    }
+
+    &.play,
+    &.pause {
+      width: 56px;
+    }
+
+    > i {
+      position: relative;
+      display: inline-block;
+      overflow: hidden;
+      width: 6px;
+      height: 8px;
+      margin-right: 3px;
+      vertical-align: middle;
+    }
+
+    &.play > i:after {
+      content: '';
+      display: block;
+      border: solid transparent;
+      border-left-color: currentColor;
+      border-width: 4px 6px;
+    }
+
+    &.pause {
+      > i:before,
+      > i:after {
+        content: '';
+        position: absolute;
+        width: 2px;
+        height: 8px;
+        top: 0;
+        background: currentColor;
+      }
+
+      > i:before {
+        left: 0;
+      }
+
+      > i:after {
+        right: 0;
+      }
+    }
+  }
+
+  .button-wrap {
+    position: relative;
+    display: inline-block;
+  }
+
+  .select-wrap {
+    position: relative;
+  }
+
+  .select {
+    position: absolute;
+    background: #333;
+    bottom: 0;
+    right: 0;
+
+    a {
+      display: block;
+      color: #fff;
+      padding: 1px 3px;
+
+      &.selected {
+        color: #999;
+      }
+    }
+  }
+}

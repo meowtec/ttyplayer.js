@@ -1,10 +1,16 @@
-'use strict'
+const hasOwnProperty = Object.prototype.hasOwnProperty
+const toString = Object.prototype.toString
 
-var hasOwnProperty = Object.prototype.hasOwnProperty
-var toString = Object.prototype.toString
+export function isArray(arr) {
+  return toString.call(arr) === '[object Array]'
+}
 
-exports.assign =  function assign(a, b) {
-  for (var key in b) {
+export function isString(str) {
+  return typeof str === 'string'
+}
+
+export function assign(a, b) {
+  for (let key in b) {
     if (hasOwnProperty.call(b, key)) {
       a[key] = b[key]
     }
@@ -18,7 +24,7 @@ exports.assign =  function assign(a, b) {
  * @param {number} start
  * @param {number} length
  */
-exports.readUtf8 = function readUtf8(arrayBuffer, start, length) {
+export function readUtf8(arrayBuffer, start, length) {
   return decodeURIComponent(escape(String.fromCharCode.apply(
     null, new Uint8Array(arrayBuffer, start, length)
   )))
@@ -28,43 +34,53 @@ exports.readUtf8 = function readUtf8(arrayBuffer, start, length) {
  * @param {string} url
  * @param {function} callback
  */
-exports.fetchArrayBuffer = function fetchArrayBuffer(url, callback) {
-  var xhr = new XMLHttpRequest()
+export function fetchArrayBuffer(url, callback) {
+  const xhr = new XMLHttpRequest()
   xhr.open('GET', url, true)
   xhr.responseType = 'arraybuffer'
   xhr.send()
-  var error = new Error('XMLHttpRequest error.')
-  xhr.onload = function() {
+  const error = new Error('XMLHttpRequest error.')
+  xhr.onload = _ => {
     if (!/^2/.test(xhr.status)) {
       return callback(error)
     }
     callback(null, xhr.response)
   }
-  xhr.onerror = function() {
-    callback(error)
+  xhr.onerror = _ => callback(error)
+}
+
+const div = document.createElement('div')
+export function element(template) {
+  div.innerHTML = template
+
+  const refsElement = div.querySelectorAll('[ref]')
+  const refs = {}
+
+  for (let i = 0, len = refsElement.length; i < len; i++) {
+    let node = refsElement[i]
+    let ref = node.getAttribute('ref')
+    node.removeAttribute('ref')
+    refs[ref] = node
+  }
+
+  return {
+    refs,
+    element: div.children[0]
   }
 }
 
-function isArray(arr) {
-  return toString.call(arr) === '[object Array]'
-}
+/**
+ * @param {Element} el
+ * @param {function(Element): boolean} cond
+ */
+export function closet(el, cond) {
+  let elem = el
 
-function isString(str) {
-  return typeof str === 'string'
-}
-
-exports.e =
-exports.element = function(tagName, className, children) {
-  var element = document.createElement(tagName)
-  element.className = className
-
-  if (isArray(children)) {
-    for (var i = 0; i < children.length; i++) {
-      element.appendChild(children[i])
+  while (elem && elem !== document) {
+    if (cond(elem)) {
+      return elem
     }
-  } else if (isString(children)) {
-    element.textContent = element.innerText = children
-  }
 
-  return element
+    elem = elem.parentNode
+  }
 }

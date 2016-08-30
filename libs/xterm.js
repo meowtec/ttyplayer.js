@@ -31,25 +31,7 @@
  *   other features.
  */
 
-;(function (xterm) {
-    if (typeof exports === 'object' && typeof module === 'object') {
-        /*
-         * CommonJS environment
-         */
-        module.exports = xterm.call(this)
-    } else if (typeof define == 'function') {
-        /*
-         * Require.js is available
-         */
-        define([], xterm.bind(window))
-    } else {
-        /*
-         * Plain browser environment
-         */
-        this.Xterm = xterm.call(this)
-        this.Terminal = this.Xterm /* Backwards compatibility with term.js */
-    }
-})(function() {
+export default (function() {
     /**
      * Terminal Emulation References:
      *   http://vt100.net/
@@ -1053,26 +1035,6 @@
 
       this.emit('open')
     }
-
-
-    /**
-     * Attempts to load an add-on using CommonJS or RequireJS (whichever is available).
-     * @param {string} addon The name of the addon to load
-     * @static
-     */
-    Terminal.loadAddon = function(addon, callback) {
-      if (typeof exports === 'object' && typeof module === 'object') {
-        // CommonJS
-        return require(__dirname + '/../addons/' + addon)
-      } else if (typeof define == 'function') {
-        // RequireJS
-        return require(['../addons/' + addon + '/' + addon], callback)
-      } else {
-        console.error('Cannot load a module without a CommonJS or RequireJS environment.')
-        return false
-      }
-    }
-
 
     /**
      * XTerm mouse events
@@ -5410,4 +5372,4 @@
 
 
     return Terminal
-})
+}).call(window)

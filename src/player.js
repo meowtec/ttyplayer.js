@@ -1,101 +1,100 @@
-'use strict'
+import './player.less'
 
-var Core = require('./core')
-var Terminal = require('../libs/xterm.js')
-var decode = require('./decode')
-var inherits = Terminal.inherits
-var EventEmitter = Terminal.EventEmitter
+import Core from './player-core'
+import Select from './select'
+import Component from './component'
+import Terminal from '../libs/xterm.js'
+import decode from './decode'
+import { element as $, assign, fetchArrayBuffer } from './utils'
+import template from './player.htm'
 
-var _ = require('./utils')
-var E = _.e
+const inherits = Terminal.inherits
+const EventEmitter = Terminal.EventEmitter
 
-function TermPlayer(options) {
-  EventEmitter.call(this)
-  this.bindThis()
+export default function TermPlayer(options) {
+  Component.call(this)
 
-  this.options = _.assign({}, options)
+  this.options = assign({}, options)
   this.mount(options.parent)
   this.createCorePlayer()
+  this.delegate()
+  this.createSpeedSelect()
   this.bindEvent()
+
+  this.set('isPlaying', false)
 }
 
-inherits(TermPlayer, EventEmitter)
+inherits(TermPlayer, Component)
 
-_.assign(TermPlayer.prototype, {
+assign(TermPlayer.prototype, {
 
-  mount: function(parentNode) {
-    var target, playButton
-
-    var container =
-    E('div', 'ttyplayer', [
-      E('header', 'ttyplayer-header', 'TTYPlayer'),
-      target = E('div', 'ttyplayer-body'),
-      E('footer', 'ttyplayer-footer', [
-        playButton = E('button', 'play', '')
-      ])
-    ])
-    parentNode.appendChild(container)
-    this.options.parent = target
-    this.playButton = playButton
-  },
-
-  bindThis: function() {
-    this.playClick = this.playClick.bind(this)
-  },
-
-  bindEvent: function() {
-    this.playButton.addEventListener('click', this.playClick)
-  },
-
-  playClick: function() {
-    var isPlaying = this.player.getStatus()
-    console.log(isPlaying ? 'pause' : 'play')
-    if (isPlaying) {
-      this.pause()
-    } else {
-      this.resume()
+  onChange(key, value) {
+    if (key === 'isPlaying') {
+      this.refs.playButton.classList[value ? 'add' : 'remove']('hide')
+      this.refs.pauseButton.classList[value ? 'remove' : 'add']('hide')
+      return
     }
   },
 
-  createCorePlayer: function() {
-    var player = new Core(this.options)
-    this.player = player
+  mount(parentNode) {
+    let target, playButton, pauseButton, speedButton
+
+    const { element, refs } = $(template)
+
+    parentNode.appendChild(element)
+    this.options.parent = refs.body
+    this.refs = refs
   },
 
-  play: function(frames) {
-    this.player.play(frames)
-    this.playButton.className = 'pause'
+  delegate() {
+    const player = this.player
+
+    ;[ 'play', 'resume', 'pause' ].forEach(method => {
+      this[method] = player[method].bind(player)
+    })
   },
 
-  pause: function() {
-    this.player.pause()
-    this.playButton.className = 'play'
+  bindEvent() {
+    this.refs.playButton.addEventListener('click', this.resume)
+    this.refs.pauseButton.addEventListener('click', this.pause)
+
+    this.player.on('play', () => {
+      this.set('isPlaying', true)
+    })
+
+    this.player.on('pause', () => {
+      this.set('isPlaying', false)
+    })
+
+    this.speedSelect.on('change', value => {
+      this.player.speed = value
+    })
   },
 
-  resume: function() {
-    this.player.resume()
-    this.playButton.className = 'pause'
+  createCorePlayer() {
+    this.player = new Core(this.options)
   },
 
-  load: function(url) {
-    var player = this
+  createSpeedSelect() {
+    this.speedSelect = new Select(this.refs.speedButton, this.refs.speedSelect)
+  },
 
-    _.fetchArrayBuffer(url, function(err, data) {
+  load(url) {
+    fetchArrayBuffer(url, (err, data) => {
       if (err) {
-        return player.emit('loadError', err)
+        return this.emit('loadError', err)
       }
-      var frames
+      let frames
       try {
         frames = decode(data)
       } catch (err) {
         console.error(err)
-        return player.emit('loadError', err)
+        return this.emit('loadError', err)
       }
 
-      player.play(frames)
+      this.play(frames)
     })
   }
-
 })
 
 /**
@@ -110,11 +109,11 @@ _.assign(TermPlayer.prototype, {
  * TermPlayer.initAll()
  */
 TermPlayer.initAll = function() {
-  var attrSource = 'data-termplayer-source'
-  var targets = document.querySelectorAll('[' + attrSource + ']')
-  var target
+  const attrSource = 'data-termplayer-source'
+  const targets = document.querySelectorAll('[' + attrSource + ']')
+  let target
 
-  for (var i = 0; i < targets.length; i++) {
+  for (let i = 0; i < targets.length; i++) {
     target = targets[i]
     new TermPlayer({
       parent: target,
@@ -124,4 +123,4 @@ TermPlayer.initAll = function() {
   }
 }
 
-module.exports = TermPlayer
+window.TermPlayer = TermPlayer
