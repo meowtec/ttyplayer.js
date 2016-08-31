@@ -46,157 +46,170 @@
 
 	'use strict';
 
-	exports.__esModule = true;
-	exports.default = TermPlayer;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	__webpack_require__(1);
 
-	var _playerCore = __webpack_require__(6);
+	var _playerCore = __webpack_require__(5);
 
-	var _playerCore2 = _interopRequireDefault(_playerCore);
+	var _playerCore2 = __webpack_require__(8).interopRequireDefault(_playerCore);
 
-	var _select = __webpack_require__(9);
+	var _select = __webpack_require__(13);
 
-	var _select2 = _interopRequireDefault(_select);
+	var _select2 = __webpack_require__(8).interopRequireDefault(_select);
 
-	var _component = __webpack_require__(10);
+	var _component = __webpack_require__(14);
 
-	var _component2 = _interopRequireDefault(_component);
+	var _component2 = __webpack_require__(8).interopRequireDefault(_component);
 
-	var _xterm = __webpack_require__(7);
+	var _decode = __webpack_require__(15);
 
-	var _xterm2 = _interopRequireDefault(_xterm);
+	var _decode2 = __webpack_require__(8).interopRequireDefault(_decode);
 
-	var _decode = __webpack_require__(11);
+	var _utils = __webpack_require__(7);
 
-	var _decode2 = _interopRequireDefault(_decode);
+	var _player = __webpack_require__(16);
 
-	var _utils = __webpack_require__(8);
+	var _player2 = __webpack_require__(8).interopRequireDefault(_player);
 
-	var _player = __webpack_require__(12);
+	var TermPlayer = function (_Component) {
+	  __webpack_require__(8).inherits(TermPlayer, _Component);
 
-	var _player2 = _interopRequireDefault(_player);
+	  function TermPlayer(options) {
+	    __webpack_require__(8).classCallCheck(this, TermPlayer);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	    var _this = __webpack_require__(8).possibleConstructorReturn(this, (TermPlayer.__proto__ || Object.getPrototypeOf(TermPlayer)).call(this));
 
-	var inherits = _xterm2.default.inherits;
-	var EventEmitter = _xterm2.default.EventEmitter;
+	    _this.options = (0, _utils.assign)({}, options);
+	    _this.mount(options.parent);
+	    _this.createCorePlayer();
+	    _this.delegate();
+	    _this.createSpeedSelect();
+	    _this.bindEvent();
 
-	function TermPlayer(options) {
-	  _component2.default.call(this);
+	    _this.set('isPlaying', false);
+	    return _this;
+	  }
 
-	  this.options = (0, _utils.assign)({}, options);
-	  this.mount(options.parent);
-	  this.createCorePlayer();
-	  this.delegate();
-	  this.createSpeedSelect();
-	  this.bindEvent();
-
-	  this.set('isPlaying', false);
-	}
-
-	inherits(TermPlayer, _component2.default);
-
-	(0, _utils.assign)(TermPlayer.prototype, {
-	  onChange: function onChange(key, value) {
-	    if (key === 'isPlaying') {
-	      this.refs.playButton.classList[value ? 'add' : 'remove']('hide');
-	      this.refs.pauseButton.classList[value ? 'remove' : 'add']('hide');
-	      return;
+	  __webpack_require__(8).createClass(TermPlayer, [{
+	    key: 'onChange',
+	    value: function onChange(key, value) {
+	      if (key === 'isPlaying') {
+	        this.refs.playButton.classList[value ? 'add' : 'remove']('hide');
+	        this.refs.pauseButton.classList[value ? 'remove' : 'add']('hide');
+	        return;
+	      }
 	    }
-	  },
-	  mount: function mount(parentNode) {
-	    var target = void 0,
-	        playButton = void 0,
-	        pauseButton = void 0,
-	        speedButton = void 0;
+	  }, {
+	    key: 'mount',
+	    value: function mount(parentNode) {
+	      var _$ = (0, _utils.element)(_player2.default);
 
-	    var _$ = (0, _utils.element)(_player2.default);
-
-	    var element = _$.element;
-	    var refs = _$.refs;
+	      var element = _$.element;
+	      var refs = _$.refs;
 
 
-	    parentNode.appendChild(element);
-	    this.options.parent = refs.body;
-	    this.refs = refs;
-	  },
-	  delegate: function delegate() {
-	    var _this = this;
+	      parentNode.appendChild(element);
+	      this.options.parent = refs.body;
+	      this.refs = refs;
+	    }
+	  }, {
+	    key: 'delegate',
+	    value: function delegate() {
+	      var _this2 = this;
 
-	    var player = this.player;['play', 'resume', 'pause'].forEach(function (method) {
-	      _this[method] = player[method].bind(player);
-	    });
-	  },
-	  bindEvent: function bindEvent() {
-	    var _this2 = this;
+	      var player = this.player;['play', 'resume', 'pause'].forEach(function (method) {
+	        _this2[method] = player[method].bind(player);
+	      });
+	    }
+	  }, {
+	    key: 'bindEvent',
+	    value: function bindEvent() {
+	      var _this3 = this;
 
-	    this.refs.playButton.addEventListener('click', this.resume);
-	    this.refs.pauseButton.addEventListener('click', this.pause);
+	      this.refs.playButton.addEventListener('click', this.resume);
+	      this.refs.pauseButton.addEventListener('click', this.pause);
 
-	    this.player.on('play', function () {
-	      _this2.set('isPlaying', true);
-	    });
+	      this.player.on('play', function () {
+	        _this3.set('isPlaying', true);
+	      });
 
-	    this.player.on('pause', function () {
-	      _this2.set('isPlaying', false);
-	    });
+	      this.player.on('pause', function () {
+	        _this3.set('isPlaying', false);
+	      });
 
-	    this.speedSelect.on('change', function (value) {
-	      _this2.player.speed = value;
-	    });
-	  },
-	  createCorePlayer: function createCorePlayer() {
-	    this.player = new _playerCore2.default(this.options);
-	  },
-	  createSpeedSelect: function createSpeedSelect() {
-	    this.speedSelect = new _select2.default(this.refs.speedButton, this.refs.speedSelect);
-	  },
-	  load: function load(url) {
-	    var _this3 = this;
+	      this.speedSelect.on('change', function (value) {
+	        _this3.player.speed = value;
+	      });
+	    }
+	  }, {
+	    key: 'createCorePlayer',
+	    value: function createCorePlayer() {
+	      this.player = new _playerCore2.default(this.options);
+	    }
+	  }, {
+	    key: 'createSpeedSelect',
+	    value: function createSpeedSelect() {
+	      this.speedSelect = new _select2.default(this.refs.speedButton, this.refs.speedSelect);
+	    }
+	  }, {
+	    key: 'load',
+	    value: function load(url) {
+	      var _this4 = this;
 
-	    (0, _utils.fetchArrayBuffer)(url, function (err, data) {
-	      if (err) {
-	        return _this3.emit('loadError', err);
+	      (0, _utils.fetchArrayBuffer)(url, function (err, data) {
+	        if (err) {
+	          return _this4.emit('loadError', err);
+	        }
+	        var frames = void 0;
+	        try {
+	          frames = (0, _decode2.default)(data);
+	        } catch (err) {
+	          console.error(err);
+	          return _this4.emit('loadError', err);
+	        }
+
+	        _this4.play(frames);
+	      });
+	    }
+
+	    /**
+	     * Usage:
+	     *
+	     * <div
+	     *  data-termplayer-source="./a.rec"
+	     *  data-termplayer-cols="120"
+	     *  data-termplayer-rows="40"
+	     * ></div>
+	     *
+	     * TermPlayer.initAll()
+	     */
+
+	  }], [{
+	    key: 'initAll',
+	    value: function initAll() {
+	      var attrSource = 'data-termplayer-source';
+	      var targets = document.querySelectorAll('[' + attrSource + ']');
+	      var target = void 0;
+
+	      for (var i = 0; i < targets.length; i++) {
+	        target = targets[i];
+	        new TermPlayer({
+	          parent: target,
+	          cols: parseInt(target.getAttribute('data-termplayer-cols') || defaultCols, 10),
+	          rows: parseInt(target.getAttribute('data-termplayer-rows') || defaultRows, 10)
+	        }).load(target.getAttribute(attrSource));
 	      }
-	      var frames = void 0;
-	      try {
-	        frames = (0, _decode2.default)(data);
-	      } catch (err) {
-	        console.error(err);
-	        return _this3.emit('loadError', err);
-	      }
+	    }
+	  }]);
 
-	      _this3.play(frames);
-	    });
-	  }
-	});
+	  return TermPlayer;
+	}(_component2.default);
 
-	/**
-	 * Usage:
-	 *
-	 * <div
-	 *  data-termplayer-source="./a.rec"
-	 *  data-termplayer-cols="120"
-	 *  data-termplayer-rows="40"
-	 * ></div>
-	 *
-	 * TermPlayer.initAll()
-	 */
-	TermPlayer.initAll = function () {
-	  var attrSource = 'data-termplayer-source';
-	  var targets = document.querySelectorAll('[' + attrSource + ']');
-	  var target = void 0;
+	exports.default = TermPlayer;
 
-	  for (var i = 0; i < targets.length; i++) {
-	    target = targets[i];
-	    new TermPlayer({
-	      parent: target,
-	      cols: parseInt(target.getAttribute('data-termplayer-cols') || defaultCols, 10),
-	      rows: parseInt(target.getAttribute('data-termplayer-rows') || defaultRows, 10)
-	    }).load(target.getAttribute(attrSource));
-	  }
-	};
 
 	window.TermPlayer = TermPlayer;
 
@@ -210,105 +223,349 @@
 /* 2 */,
 /* 3 */,
 /* 4 */,
-/* 5 */,
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _timer = __webpack_require__(6);
+
+	var _timer2 = __webpack_require__(8).interopRequireDefault(_timer);
+
+	var _xterm = __webpack_require__(9);
+
+	var _xterm2 = __webpack_require__(8).interopRequireDefault(_xterm);
+
+	var _utils = __webpack_require__(7);
+
+	var EventEmitter = _xterm2.default.EventEmitter;
+
+	var defaultCols = 80;
+	var defaultRows = 30;
+
+	var TermPlayer = function (_EventEmitter) {
+	  __webpack_require__(8).inherits(TermPlayer, _EventEmitter);
+
+	  function TermPlayer(options) {
+	    __webpack_require__(8).classCallCheck(this, TermPlayer);
+
+	    var _this = __webpack_require__(8).possibleConstructorReturn(this, (TermPlayer.__proto__ || Object.getPrototypeOf(TermPlayer)).call(this));
+
+	    var term = new _xterm2.default(options);
+	    term.open();
+
+	    _this.term = term;
+	    return _this;
+	  }
+
+	  __webpack_require__(8).createClass(TermPlayer, [{
+	    key: 'atEnd',
+	    value: function atEnd() {
+	      return this.step === this.frames.length;
+	    }
+	  }, {
+	    key: 'play',
+	    value: function play(frames) {
+	      if (frames) {
+	        this.frames = frames;
+	      }
+	      this.term.reset();
+	      this.step = 0;
+	      this.renderFrame();
+	      this.emit('play');
+	    }
+	  }, {
+	    key: 'pause',
+	    value: function pause() {
+	      this._nextTimer.pause();
+	      this.emit('pause');
+	    }
+	  }, {
+	    key: 'resume',
+	    value: function resume() {
+	      this._nextTimer.resume();
+	      this.emit('play');
+	    }
+	  }, {
+	    key: 'renderFrame',
+	    value: function renderFrame() {
+	      var step = this.step;
+	      var frames = this.frames;
+	      var currentFrame = frames[step];
+	      var nextFrame = frames[step + 1];
+	      var str = currentFrame.content;
+	      this.term.write(str);
+	      this.step = step + 1;
+
+	      this.next(currentFrame, nextFrame);
+	    }
+	  }, {
+	    key: 'next',
+	    value: function next(currentFrame, nextFrame) {
+	      var _this2 = this;
+
+	      if (nextFrame) {
+	        this._nextTimer = new _timer2.default(function (_) {
+	          return _this2.renderFrame();
+	        }, nextFrame.time - currentFrame.time, this.speed);
+	      } else if (this.repeat) {
+	        this._nextTimer = new _timer2.default(function (_) {
+	          return _this2.play();
+	        }, this.interval, this.speed);
+	      } else {
+	        this.emit('end');
+	      }
+	    }
+	  }]);
+
+	  return TermPlayer;
+	}(EventEmitter);
+
+	exports.default = TermPlayer;
+
+
+	(0, _utils.assign)(TermPlayer.prototype, {
+	  speed: 1,
+	  repeat: true,
+	  interval: 3000
+	});
+
+/***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	exports.__esModule = true;
-	exports.default = TermPlayer;
-
-	var _xterm = __webpack_require__(7);
-
-	var _xterm2 = _interopRequireDefault(_xterm);
-
-	var _utils = __webpack_require__(8);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var EventEmitter = _xterm2.default.EventEmitter;
-	var inherits = _xterm2.default.inherits;
-
-	var defaultCols = 80;
-	var defaultRows = 30;
-
-	function TermPlayer(options) {
-	  EventEmitter.call(this);
-
-	  var term = new _xterm2.default(options);
-	  term.open();
-
-	  this.term = term;
-	}
-
-	inherits(TermPlayer, EventEmitter);
-
-	(0, _utils.assign)(TermPlayer.prototype, {
-
-	  speed: 1,
-
-	  repeat: true,
-
-	  interval: 3000,
-
-	  atEnd: function atEnd() {
-	    return this.step === this.frames.length;
-	  },
-	  play: function play(frames) {
-	    if (frames) {
-	      this.frames = frames;
-	    }
-	    this.term.reset();
-	    this.step = 0;
-	    this.renderFrame();
-	    this.emit('play');
-	  },
-	  pause: function pause() {
-	    clearTimeout(this._nextTimer);
-	    this.emit('pause');
-	  },
-	  resume: function resume() {
-	    if (this.atEnd()) {
-	      this.play();
-	    } else {
-	      this.renderFrame();
-	    }
-	    this.emit('play');
-	  },
-	  renderFrame: function renderFrame() {
-	    var step = this.step;
-	    var frames = this.frames;
-	    var currentFrame = frames[step];
-	    var nextFrame = frames[step + 1];
-	    var str = currentFrame.content;
-	    this.term.write(str);
-	    this.step = step + 1;
-
-	    this.next(currentFrame, nextFrame);
-	  },
-	  next: function next(currentFrame, nextFrame) {
-	    var _this = this;
-
-	    if (nextFrame) {
-	      this._nextTimer = setTimeout(function (_) {
-	        return _this.renderFrame();
-	      }, (nextFrame.time - currentFrame.time) / this.speed);
-	    } else if (this.repeat) {
-	      this._nextTimer = setTimeout(function (_) {
-	        return _this.play();
-	      }, this.interval);
-	    } else {
-	      this.emit('end');
-	    }
-	  }
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
 	});
+
+	var _utils = __webpack_require__(7);
+
+	var Timer = function () {
+	  function Timer(callback, time) {
+	    var rate = arguments.length <= 2 || arguments[2] === undefined ? 1 : arguments[2];
+
+	    __webpack_require__(8).classCallCheck(this, Timer);
+
+	    this._rate = rate;
+	    this._setTimeout(callback, time);
+	  }
+
+	  __webpack_require__(8).createClass(Timer, [{
+	    key: '_setTimeout',
+	    value: function _setTimeout(callback, time) {
+	      var _this = this;
+
+	      this._timer = setTimeout(function () {
+	        callback();
+	        _this._finish = true;
+	        _this._rest = null;
+	      }, time / this._rate);
+
+	      this._finish = false;
+	      this._time = time;
+	      this._startTime = new Date();
+	      this._callback = callback;
+	      this._rest = null;
+	    }
+	  }, {
+	    key: 'pause',
+	    value: function pause() {
+	      clearTimeout(this._timer);
+	      this._rest = this.rest;
+	    }
+	  }, {
+	    key: 'resume',
+	    value: function resume() {
+	      if (this._rest != null) {
+	        this._setTimeout(this._callback, this._rest);
+	      }
+	    }
+	  }, {
+	    key: 'clear',
+	    value: function clear() {
+	      this.pause();
+	      this._rest = null;
+	    }
+	  }, {
+	    key: 'rate',
+	    set: function set(x) {
+	      this._rate = x;
+
+	      if (this._rest == null) {
+	        this.pause();
+	        this.resume();
+	      }
+	    }
+	  }, {
+	    key: 'rest',
+	    get: function get() {
+	      if (this.finish) {
+	        return 0;
+	      } else if (this._rest) {
+	        return this._rest;
+	      } else {
+	        var rest = this._time - (new Date() - this._startTime);
+	        return rest > 0 ? rest : 0;
+	      }
+	    }
+	  }, {
+	    key: 'finish',
+	    get: function get() {
+	      return this._finish;
+	    }
+	  }]);
+
+	  return Timer;
+	}();
+
+	exports.default = Timer;
 
 /***/ },
 /* 7 */
 /***/ function(module, exports) {
 
-	'use strict';exports.__esModule=true;var _typeof=typeof Symbol==="function"&&typeof Symbol.iterator==="symbol"?function(obj){return typeof obj;}:function(obj){return obj&&typeof Symbol==="function"&&obj.constructor===Symbol?"symbol":typeof obj;};/**
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.isArray = isArray;
+	exports.isString = isString;
+	exports.assign = assign;
+	exports.readUtf8 = readUtf8;
+	exports.fetchArrayBuffer = fetchArrayBuffer;
+	exports.element = element;
+	exports.closet = closet;
+	var hasOwnProperty = Object.prototype.hasOwnProperty;
+	var toString = Object.prototype.toString;
+
+	function isArray(arr) {
+	  return toString.call(arr) === '[object Array]';
+	}
+
+	function isString(str) {
+	  return typeof str === 'string';
+	}
+
+	function assign(a, b) {
+	  for (var key in b) {
+	    if (hasOwnProperty.call(b, key)) {
+	      a[key] = b[key];
+	    }
+	  }
+
+	  return a;
+	}
+
+	/**
+	 * @param {ArrayBuffer} arrayBuffer
+	 * @param {number} start
+	 * @param {number} length
+	 */
+	function readUtf8(arrayBuffer, start, length) {
+	  return decodeURIComponent(escape(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer, start, length))));
+	}
+
+	/**
+	 * @param {string} url
+	 * @param {function} callback
+	 */
+	function fetchArrayBuffer(url, callback) {
+	  var xhr = new XMLHttpRequest();
+	  xhr.open('GET', url, true);
+	  xhr.responseType = 'arraybuffer';
+	  xhr.send();
+	  var error = new Error('XMLHttpRequest error.');
+	  xhr.onload = function (_) {
+	    if (!/^2/.test(xhr.status)) {
+	      return callback(error);
+	    }
+	    callback(null, xhr.response);
+	  };
+	  xhr.onerror = function (_) {
+	    return callback(error);
+	  };
+	}
+
+	var div = document.createElement('div');
+	function element(template) {
+	  div.innerHTML = template;
+
+	  var refsElement = div.querySelectorAll('[ref]');
+	  var refs = {};
+
+	  for (var i = 0, len = refsElement.length; i < len; i++) {
+	    var node = refsElement[i];
+	    var ref = node.getAttribute('ref');
+	    node.removeAttribute('ref');
+	    refs[ref] = node;
+	  }
+
+	  return {
+	    refs: refs,
+	    element: div.children[0]
+	  };
+	}
+
+	/**
+	 * @param {Element} el
+	 * @param {function(Element): boolean} cond
+	 */
+	function closet(el, cond) {
+	  var elem = el;
+
+	  while (elem && elem !== document) {
+	    if (cond(elem)) {
+	      return elem;
+	    }
+
+	    elem = elem.parentNode;
+	  }
+	}
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	exports.inherits = function (subClass, superClass) {
+	  if (typeof superClass !== "function" && superClass !== null) {
+	    throw new TypeError("Super expression must either be null or a function, not " + (typeof superClass === "undefined" ? "undefined" : _typeof(superClass)));
+	  }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+	};exports.possibleConstructorReturn = function (self, call) {
+	  if (!self) {
+	    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+	  }return call && ((typeof call === "undefined" ? "undefined" : _typeof(call)) === "object" || typeof call === "function") ? call : self;
+	};exports.createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	  };
+	}();exports.classCallCheck = function (instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	};exports.interopRequireDefault = function (obj) {
+	  return obj && obj.__esModule ? obj : { default: obj };
+	};
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';Object.defineProperty(exports,"__esModule",{value:true});__webpack_require__(10);__webpack_require__(11);/**
 	 * xterm.js: xterm, in the browser
 	 * Copyright (c) 2014, sourceLair Limited (www.sourcelair.com (MIT License)
 	 * Copyright (c) 2012-2013, Christopher Jeffrey (MIT License)
@@ -359,65 +616,165 @@
 	     * @param {HTMLTextAreaElement} textarea The textarea that xterm uses for input.
 	     * @param {HTMLElement} compositionView The element to display the in-progress composition in.
 	     * @param {Terminal} terminal The Terminal to forward the finished composition to.
-	     */function CompositionHelper(textarea,compositionView,terminal){this.textarea=textarea;this.compositionView=compositionView;this.terminal=terminal;// Whether input composition is currently happening, eg. via a mobile keyboard, speech input
-	// or IME. This variable determines whether the compositionText should be displayed on the UI.
-	this.isComposing=false;// The input currently being composed, eg. via a mobile keyboard, speech input or IME.
-	this.compositionText=null;// The position within the input textarea's value of the current composition.
-	this.compositionPosition={start:null,end:null};// Whether a composition is in the process of being sent, setting this to false will cancel
-	// any in-progress composition.
-	this.isSendingComposition=false;}/**
+	     */// function CompositionHelper(textarea, compositionView, terminal) {
+	//   this.textarea = textarea
+	//   this.compositionView = compositionView
+	//   this.terminal = terminal
+	//   // Whether input composition is currently happening, eg. via a mobile keyboard, speech input
+	//   // or IME. This variable determines whether the compositionText should be displayed on the UI.
+	//   this.isComposing = false
+	//   // The input currently being composed, eg. via a mobile keyboard, speech input or IME.
+	//   this.compositionText = null
+	//   // The position within the input textarea's value of the current composition.
+	//   this.compositionPosition = { start: null, end: null }
+	//   // Whether a composition is in the process of being sent, setting this to false will cancel
+	//   // any in-progress composition.
+	//   this.isSendingComposition = false
+	// }
+	/**
 	     * Handles the compositionstart event, activating the composition view.
-	     */CompositionHelper.prototype.compositionstart=function(){this.isComposing=true;this.compositionPosition.start=this.textarea.value.length;this.compositionView.textContent='';this.compositionView.classList.add('active');};/**
+	     */// CompositionHelper.prototype.compositionstart = function() {
+	//   this.isComposing = true
+	//   this.compositionPosition.start = this.textarea.value.length
+	//   this.compositionView.textContent = ''
+	//   this.compositionView.classList.add('active')
+	// }
+	/**
 	     * Handles the compositionupdate event, updating the composition view.
 	     * @param {CompositionEvent} ev The event.
-	     */CompositionHelper.prototype.compositionupdate=function(ev){this.compositionView.textContent=ev.data;this.updateCompositionElements();var self=this;setTimeout(function(){self.compositionPosition.end=self.textarea.value.length;},0);};/**
+	     */// CompositionHelper.prototype.compositionupdate = function(ev) {
+	//   this.compositionView.textContent = ev.data
+	//   this.updateCompositionElements()
+	//   var self = this
+	//   setTimeout(function() {
+	//     self.compositionPosition.end = self.textarea.value.length
+	//   }, 0)
+	// }
+	/**
 	     * Handles the compositionend event, hiding the composition view and sending the composition to
 	     * the handler.
-	     */CompositionHelper.prototype.compositionend=function(){this.finalizeComposition(true);};/**
+	     */// CompositionHelper.prototype.compositionend = function() {
+	//   this.finalizeComposition(true)
+	// }
+	/**
 	     * Handles the keydown event, routing any necessary events to the CompositionHelper functions.
 	     * @return Whether the Terminal should continue processing the keydown event.
-	     */CompositionHelper.prototype.keydown=function(ev){if(this.isComposing||this.isSendingComposition){if(ev.keyCode===229){// Continue composing if the keyCode is the "composition character"
-	return false;}else if(ev.keyCode===16||ev.keyCode===17||ev.keyCode===18){// Continue composing if the keyCode is a modifier key
-	return false;}else{// Finish composition immediately. This is mainly here for the case where enter is
-	// pressed and the handler needs to be triggered before the command is executed.
-	this.finalizeComposition(false);}}if(ev.keyCode===229){// If the "composition character" is used but gets to this point it means a non-composition
-	// character (eg. numbers and punctuation) was pressed when the IME was active.
-	this.handleAnyTextareaChanges();return false;}return true;};/**
+	     */// CompositionHelper.prototype.keydown = function(ev) {
+	//   if (this.isComposing || this.isSendingComposition) {
+	//     if (ev.keyCode === 229) {
+	//       // Continue composing if the keyCode is the "composition character"
+	//       return false
+	//     } else if (ev.keyCode === 16 || ev.keyCode === 17 || ev.keyCode === 18) {
+	//       // Continue composing if the keyCode is a modifier key
+	//       return false
+	//     } else {
+	//       // Finish composition immediately. This is mainly here for the case where enter is
+	//       // pressed and the handler needs to be triggered before the command is executed.
+	//       this.finalizeComposition(false)
+	//     }
+	//   }
+	//   if (ev.keyCode === 229) {
+	//     // If the "composition character" is used but gets to this point it means a non-composition
+	//     // character (eg. numbers and punctuation) was pressed when the IME was active.
+	//     this.handleAnyTextareaChanges()
+	//     return false
+	//   }
+	//   return true
+	// }
+	/**
 	     * Finalizes the composition, resuming regular input actions. This is called when a composition
 	     * is ending.
 	     * @param {boolean} waitForPropogation Whether to wait for events to propogate before sending
 	     *   the input. This should be false if a non-composition keystroke is entered before the
 	     *   compositionend event is triggered, such as enter, so that the composition is send before
 	     *   the command is executed.
-	     */CompositionHelper.prototype.finalizeComposition=function(waitForPropogation){this.compositionView.classList.remove('active');this.isComposing=false;this.clearTextareaPosition();if(!waitForPropogation){// Cancel any delayed composition send requests and send the input immediately.
-	this.isSendingComposition=false;var input=this.textarea.value.substring(this.compositionPosition.start,this.compositionPosition.end);this.terminal.handler(input);}else{// Make a deep copy of the composition position here as a new compositionstart event may
-	// fire before the setTimeout executes.
-	var currentCompositionPosition={start:this.compositionPosition.start,end:this.compositionPosition.end};// Since composition* events happen before the changes take place in the textarea on most
-	// browsers, use a setTimeout with 0ms time to allow the native compositionend event to
-	// complete. This ensures the correct character is retrieved, this solution was used
-	// because:
-	// - The compositionend event's data property is unreliable, at least on Chromium
-	// - The last compositionupdate event's data property does not always accurately describe
-	//   the character, a counter example being Korean where an ending consonsant can move to
-	//   the following character if the following input is a vowel.
-	var self=this;this.isSendingComposition=true;setTimeout(function(){// Ensure that the input has not already been sent
-	if(self.isSendingComposition){self.isSendingComposition=false;var input;if(self.isComposing){// Use the end position to get the string if a new composition has started.
-	input=self.textarea.value.substring(currentCompositionPosition.start,currentCompositionPosition.end);}else{// Don't use the end position here in order to pick up any characters after the
-	// composition has finished, for example when typing a non-composition character
-	// (eg. 2) after a composition character.
-	input=self.textarea.value.substring(currentCompositionPosition.start);}self.terminal.handler(input);}},0);}};/**
+	     */// CompositionHelper.prototype.finalizeComposition = function(waitForPropogation) {
+	//   this.compositionView.classList.remove('active')
+	//   this.isComposing = false
+	//   this.clearTextareaPosition()
+	//   if (!waitForPropogation) {
+	//     // Cancel any delayed composition send requests and send the input immediately.
+	//     this.isSendingComposition = false
+	//     var input = this.textarea.value.substring(this.compositionPosition.start, this.compositionPosition.end)
+	//     this.terminal.handler(input)
+	//   } else {
+	//     // Make a deep copy of the composition position here as a new compositionstart event may
+	//     // fire before the setTimeout executes.
+	//     var currentCompositionPosition = {
+	//       start: this.compositionPosition.start,
+	//       end: this.compositionPosition.end,
+	//     }
+	//     // Since composition* events happen before the changes take place in the textarea on most
+	//     // browsers, use a setTimeout with 0ms time to allow the native compositionend event to
+	//     // complete. This ensures the correct character is retrieved, this solution was used
+	//     // because:
+	//     // - The compositionend event's data property is unreliable, at least on Chromium
+	//     // - The last compositionupdate event's data property does not always accurately describe
+	//     //   the character, a counter example being Korean where an ending consonsant can move to
+	//     //   the following character if the following input is a vowel.
+	//     var self = this
+	//     this.isSendingComposition = true
+	//     setTimeout(function () {
+	//       // Ensure that the input has not already been sent
+	//       if (self.isSendingComposition) {
+	//         self.isSendingComposition = false
+	//         var input
+	//         if (self.isComposing) {
+	//           // Use the end position to get the string if a new composition has started.
+	//           input = self.textarea.value.substring(currentCompositionPosition.start, currentCompositionPosition.end)
+	//         } else {
+	//           // Don't use the end position here in order to pick up any characters after the
+	//           // composition has finished, for example when typing a non-composition character
+	//           // (eg. 2) after a composition character.
+	//           input = self.textarea.value.substring(currentCompositionPosition.start)
+	//         }
+	//         self.terminal.handler(input)
+	//       }
+	//     }, 0)
+	//   }
+	// }
+	/**
 	     * Apply any changes made to the textarea after the current event chain is allowed to complete.
 	     * This should be called when not currently composing but a keydown event with the "composition
 	     * character" (229) is triggered, in order to allow non-composition text to be entered when an
 	     * IME is active.
-	     */CompositionHelper.prototype.handleAnyTextareaChanges=function(){var oldValue=this.textarea.value;var self=this;setTimeout(function(){// Ignore if a composition has started since the timeout
-	if(!self.isComposing){var newValue=self.textarea.value;var diff=newValue.replace(oldValue,'');if(diff.length>0){self.terminal.handler(diff);}}},0);};/**
+	     */// CompositionHelper.prototype.handleAnyTextareaChanges = function() {
+	//   var oldValue = this.textarea.value
+	//   var self = this
+	//   setTimeout(function() {
+	//     // Ignore if a composition has started since the timeout
+	//     if (!self.isComposing) {
+	//       var newValue = self.textarea.value
+	//       var diff = newValue.replace(oldValue, '')
+	//       if (diff.length > 0) {
+	//         self.terminal.handler(diff)
+	//       }
+	//     }
+	//   }, 0)
+	// }
+	/**
 	     * Positions the composition view on top of the cursor and the textarea just below it (so the
 	     * IME helper dialog is positioned correctly).
-	     */CompositionHelper.prototype.updateCompositionElements=function(){if(!this.isComposing){return;}var cursor=this.terminal.element.querySelector('.terminal-cursor');if(cursor){this.compositionView.style.left=cursor.offsetLeft+'px';this.compositionView.style.top=cursor.offsetTop+'px';this.textarea.style.left=cursor.offsetLeft+'px';this.textarea.style.top=cursor.offsetTop+cursor.offsetHeight+'px';}};/**
+	     */// CompositionHelper.prototype.updateCompositionElements = function() {
+	//   if (!this.isComposing) {
+	//     return
+	//   }
+	//   var cursor = this.terminal.element.querySelector('.terminal-cursor')
+	//   if (cursor) {
+	//     this.compositionView.style.left = cursor.offsetLeft + 'px'
+	//     this.compositionView.style.top = cursor.offsetTop + 'px'
+	//     this.textarea.style.left = cursor.offsetLeft + 'px'
+	//     this.textarea.style.top = (cursor.offsetTop + cursor.offsetHeight) + 'px'
+	//   }
+	// }
+	/**
 	     * Clears the textarea's position so that the cursor does not blink on IE.
 	     * @private
-	     */CompositionHelper.prototype.clearTextareaPosition=function(){this.textarea.style.left='';this.textarea.style.top='';};/**
+	     */// CompositionHelper.prototype.clearTextareaPosition = function() {
+	//   this.textarea.style.left = ''
+	//   this.textarea.style.top = ''
+	// }
+	/**
 	     * Represents the viewport of a terminal, the visible area within the larger buffer of output.
 	     * Logic for the virtual scroll bar is included in this object.
 	     * @param {Terminal} terminal The Terminal object.
@@ -512,18 +869,56 @@
 	     * Binds the desired focus behavior on a given terminal object.
 	     *
 	     * @static
-	     */Terminal.bindFocus=function(term){on(term.textarea,'focus',function(ev){if(term.sendFocus){term.send('\x1b[I');}term.element.classList.add('focus');term.showCursor();Terminal.focus=term;term.emit('focus',{terminal:term});});};/**
+	     */// Terminal.bindFocus = function (term) {
+	//   on(term.textarea, 'focus', function (ev) {
+	//     if (term.sendFocus) {
+	//       term.send('\x1b[I')
+	//     }
+	//     term.element.classList.add('focus')
+	//     term.showCursor()
+	//     Terminal.focus = term
+	//     term.emit('focus', {terminal: term})
+	//   })
+	// }
+	/**
 	     * Blur the terminal. Delegates blur handling to the terminal's DOM element.
 	     */Terminal.prototype.blur=function(){return this.textarea.blur();};/**
 	     * Binds the desired blur behavior on a given terminal object.
 	     *
 	     * @static
-	     */Terminal.bindBlur=function(term){on(term.textarea,'blur',function(ev){term.refresh(term.y,term.y);if(term.sendFocus){term.send('\x1b[O');}term.element.classList.remove('focus');Terminal.focus=null;term.emit('blur',{terminal:term});});};/**
+	     */// Terminal.bindBlur = function (term) {
+	//   on(term.textarea, 'blur', function (ev) {
+	//     term.refresh(term.y, term.y)
+	//     if (term.sendFocus) {
+	//       term.send('\x1b[O')
+	//     }
+	//     term.element.classList.remove('focus')
+	//     Terminal.focus = null
+	//     term.emit('blur', {terminal: term})
+	//   })
+	// }
+	/**
 	     * Initialize default behavior
-	     */Terminal.prototype.initGlobal=function(){Terminal.bindPaste(this);Terminal.bindKeys(this);Terminal.bindCopy(this);Terminal.bindFocus(this);Terminal.bindBlur(this);};/**
+	     */Terminal.prototype.initGlobal=function(){var _this=this;// Terminal.bindPaste(this)
+	// Terminal.bindKeys(this)
+	// Terminal.bindCopy(this)
+	// Terminal.bindFocus(this)
+	// Terminal.bindBlur(this)
+	setTimeout(function(){_this.send('\x1b[I');_this.element.classList.add('focus');_this.showCursor();});};/**
 	     * Bind to paste event and allow both keyboard and right-click pasting, without having the
 	     * contentEditable value set to true.
-	     */Terminal.bindPaste=function(term){on([term.textarea,term.element],'paste',function(ev){ev.stopPropagation();if(ev.clipboardData){var text=ev.clipboardData.getData('text/plain');term.handler(text);term.textarea.value='';return term.cancel(ev);}});};/**
+	     */// Terminal.bindPaste = function(term) {
+	//   on([term.textarea, term.element], 'paste', function(ev) {
+	//     ev.stopPropagation()
+	//     if (ev.clipboardData) {
+	//       var text = ev.clipboardData.getData('text/plain')
+	//       term.handler(text)
+	//       term.textarea.value = ''
+	//       return term.cancel(ev)
+	//     }
+	//   })
+	// }
+	/**
 	     * Prepares text copied from terminal selection, to be saved in the clipboard by:
 	     *   1. stripping all trailing white spaces
 	     *   2. converting all non-breaking spaces to regular spaces
@@ -535,16 +930,46 @@
 	             * spaces.
 	             */var processedLine=line.replace(/\s+$/g,'').replace(allNonBreakingSpaces,space);return processedLine;}).join('\n');return processedText;};/**
 	     * Apply key handling to the terminal
-	     */Terminal.bindKeys=function(term){on(term.element,'keydown',function(ev){if(document.activeElement!=this){return;}term.keyDown(ev);},true);on(term.element,'keypress',function(ev){if(document.activeElement!=this){return;}term.keyPress(ev);},true);on(term.element,'keyup',term.focus.bind(term));on(term.textarea,'keydown',function(ev){term.keyDown(ev);},true);on(term.textarea,'keypress',function(ev){term.keyPress(ev);// Truncate the textarea's value, since it is not needed
-	this.value='';},true);on(term.textarea,'compositionstart',term.compositionHelper.compositionstart.bind(term.compositionHelper));on(term.textarea,'compositionupdate',term.compositionHelper.compositionupdate.bind(term.compositionHelper));on(term.textarea,'compositionend',term.compositionHelper.compositionend.bind(term.compositionHelper));term.on('refresh',term.compositionHelper.updateCompositionElements.bind(term.compositionHelper));};/**
+	     */// Terminal.bindKeys = function(term) {
+	//   on(term.element, 'keydown', function(ev) {
+	//     if (document.activeElement != this) {
+	//       return
+	//      }
+	//      term.keyDown(ev)
+	//   }, true)
+	//   on(term.element, 'keypress', function(ev) {
+	//     if (document.activeElement != this) {
+	//       return
+	//     }
+	//     term.keyPress(ev)
+	//   }, true)
+	//   on(term.element, 'keyup', term.focus.bind(term))
+	//   on(term.textarea, 'keydown', function(ev) {
+	//     term.keyDown(ev)
+	//   }, true)
+	//   on(term.textarea, 'keypress', function(ev) {
+	//     term.keyPress(ev)
+	//     // Truncate the textarea's value, since it is not needed
+	//     this.value = ''
+	//   }, true)
+	//   on(term.textarea, 'compositionstart', term.compositionHelper.compositionstart.bind(term.compositionHelper))
+	//   on(term.textarea, 'compositionupdate', term.compositionHelper.compositionupdate.bind(term.compositionHelper))
+	//   on(term.textarea, 'compositionend', term.compositionHelper.compositionend.bind(term.compositionHelper))
+	//   term.on('refresh', term.compositionHelper.updateCompositionElements.bind(term.compositionHelper))
+	// }
+	/**
 	     * Binds copy functionality to the given terminal.
 	     * @static
-	     */Terminal.bindCopy=function(term){on(term.element,'copy',function(ev){return;// temporary
-	});};/**
+	     */// Terminal.bindCopy = function(term) {
+	//   on(term.element, 'copy', function(ev) {
+	//     return // temporary
+	//   })
+	// }
+	/**
 	     * Insert the given row to the terminal or produce a new one
 	     * if no row argument is passed. Return the inserted row.
 	     * @param {HTMLElement} row (optional) The row to append to the terminal.
-	     */Terminal.prototype.insertRow=function(row){if((typeof row==='undefined'?'undefined':_typeof(row))!='object'){row=document.createElement('div');}this.rowContainer.appendChild(row);this.children.push(row);return row;};/**
+	     */Terminal.prototype.insertRow=function(row){if((typeof row==='undefined'?'undefined':__webpack_require__(8).typeof(row))!='object'){row=document.createElement('div');}this.rowContainer.appendChild(row);this.children.push(row);return row;};/**
 	     * Opens the terminal within an element.
 	     *
 	     * @param {HTMLElement} parent The element to create the terminal within.
@@ -565,13 +990,21 @@
 	      * Create the container that will hold helpers like the textarea for
 	      * capturing DOM Events. Then produce the helpers.
 	      */this.helperContainer=document.createElement('div');this.helperContainer.classList.add('xterm-helpers');// TODO: This should probably be inserted once it's filled to prevent an additional layout
-	this.element.appendChild(this.helperContainer);this.textarea=document.createElement('textarea');this.textarea.classList.add('xterm-helper-textarea');this.textarea.setAttribute('autocorrect','off');this.textarea.setAttribute('autocapitalize','off');this.textarea.setAttribute('spellcheck','false');this.textarea.tabIndex=0;this.textarea.addEventListener('focus',function(){self.emit('focus',{terminal:self});});this.textarea.addEventListener('blur',function(){self.emit('blur',{terminal:self});});this.helperContainer.appendChild(this.textarea);this.compositionView=document.createElement('div');this.compositionView.classList.add('composition-view');this.compositionHelper=new CompositionHelper(this.textarea,this.compositionView,this);this.helperContainer.appendChild(this.compositionView);this.charMeasureElement=document.createElement('div');this.charMeasureElement.classList.add('xterm-char-measure-element');this.charMeasureElement.innerHTML='W';this.helperContainer.appendChild(this.charMeasureElement);for(;i<this.rows;i++){this.insertRow();}this.parent.appendChild(this.element);this.viewport=new Viewport(this,this.viewportElement,this.viewportScrollArea,this.charMeasureElement);// Draw the screen.
+	this.element.appendChild(this.helperContainer);this.textarea=document.createElement('textarea');this.textarea.classList.add('xterm-helper-textarea');this.textarea.setAttribute('autocorrect','off');this.textarea.setAttribute('autocapitalize','off');this.textarea.setAttribute('spellcheck','false');this.textarea.tabIndex=0;// this.textarea.addEventListener('focus', function() {
+	//   self.emit('focus', {terminal: self})
+	// })
+	// this.textarea.addEventListener('blur', function() {
+	//   self.emit('blur', {terminal: self})
+	// })
+	this.helperContainer.appendChild(this.textarea);this.compositionView=document.createElement('div');this.compositionView.classList.add('composition-view');// this.compositionHelper = new CompositionHelper(this.textarea, this.compositionView, this)
+	this.helperContainer.appendChild(this.compositionView);this.charMeasureElement=document.createElement('div');this.charMeasureElement.classList.add('xterm-char-measure-element');this.charMeasureElement.innerHTML='W';this.helperContainer.appendChild(this.charMeasureElement);for(;i<this.rows;i++){this.insertRow();}this.parent.appendChild(this.element);this.viewport=new Viewport(this,this.viewportElement,this.viewportScrollArea,this.charMeasureElement);// Draw the screen.
 	this.refresh(0,this.rows-1);// Initialize global actions that
 	// need to be taken on the document.
 	this.initGlobal();// Ensure there is a Terminal.focus.
 	this.focus();on(this.element,'mouseup',function(){var selection=document.getSelection(),collapsed=selection.isCollapsed,isRange=typeof collapsed=='boolean'?!collapsed:selection.type=='Range';if(!isRange){self.focus();}});// Listen for mouse events and translate
 	// them into terminal mouse protocols.
-	this.bindMouse();// Figure out whether boldness affects
+	// this.bindMouse()
+	// Figure out whether boldness affects
 	// the character width of monospace fonts.
 	if(Terminal.brokenBold==null){Terminal.brokenBold=isBoldBroken(this.document);}this.emit('open');};/**
 	     * XTerm mouse events
@@ -582,69 +1015,282 @@
 	     *   button.c, charproc.c, misc.c
 	     * Relevant functions in xterm/button.c:
 	     *   BtnCode, EmitButtonCode, EditorButton, SendMousePosition
-	     */Terminal.prototype.bindMouse=function(){var el=this.element,self=this,pressed=32;// mouseup, mousedown, wheel
-	// left click: ^[[M 3<^[[M#3<
-	// wheel up: ^[[M`3>
-	function sendButton(ev){var button,pos;// get the xterm-style button
-	button=getButton(ev);// get mouse coordinates
-	pos=getCoords(ev);if(!pos)return;sendEvent(button,pos);switch(ev.overrideType||ev.type){case'mousedown':pressed=button;break;case'mouseup':// keep it at the left
-	// button, just in case.
-	pressed=32;break;case'wheel':// nothing. don't
-	// interfere with
-	// `pressed`.
-	break;}}// motion example of a left click:
-	// ^[[M 3<^[[M@4<^[[M@5<^[[M@6<^[[M@7<^[[M#7<
-	function sendMove(ev){var button=pressed,pos;pos=getCoords(ev);if(!pos)return;// buttons marked as motions
-	// are incremented by 32
-	button+=32;sendEvent(button,pos);}// encode button and
-	// position to characters
-	function encode(data,ch){if(!self.utfMouse){if(ch===255)return data.push(0);if(ch>127)ch=127;data.push(ch);}else{if(ch===2047)return data.push(0);if(ch<127){data.push(ch);}else{if(ch>2047)ch=2047;data.push(0xC0|ch>>6);data.push(0x80|ch&0x3F);}}}// send a mouse event:
-	// regular/utf8: ^[[M Cb Cx Cy
-	// urxvt: ^[[ Cb ; Cx ; Cy M
-	// sgr: ^[[ Cb ; Cx ; Cy M/m
-	// vt300: ^[[ 24(1/3/5)~ [ Cx , Cy ] \r
-	// locator: CSI P e ; P b ; P r ; P c ; P p & w
-	function sendEvent(button,pos){// self.emit('mouse', {
-	//   x: pos.x - 32,
-	//   y: pos.x - 32,
-	//   button: button
-	// });
-	if(self.vt300Mouse){// NOTE: Unstable.
-	// http://www.vt100.net/docs/vt3xx-gp/chapter15.html
-	button&=3;pos.x-=32;pos.y-=32;var data='\x1b[24';if(button===0)data+='1';else if(button===1)data+='3';else if(button===2)data+='5';else if(button===3)return;else data+='0';data+='~['+pos.x+','+pos.y+']\r';self.send(data);return;}if(self.decLocator){// NOTE: Unstable.
-	button&=3;pos.x-=32;pos.y-=32;if(button===0)button=2;else if(button===1)button=4;else if(button===2)button=6;else if(button===3)button=3;self.send('\x1b['+button+';'+(button===3?4:0)+';'+pos.y+';'+pos.x+';'+(pos.page||0)+'&w');return;}if(self.urxvtMouse){pos.x-=32;pos.y-=32;pos.x++;pos.y++;self.send('\x1b['+button+';'+pos.x+';'+pos.y+'M');return;}if(self.sgrMouse){pos.x-=32;pos.y-=32;self.send('\x1b[<'+((button&3)===3?button&~3:button)+';'+pos.x+';'+pos.y+((button&3)===3?'m':'M'));return;}var data=[];encode(data,button);encode(data,pos.x);encode(data,pos.y);self.send('\x1b[M'+String.fromCharCode.apply(String,data));}function getButton(ev){var button,shift,meta,ctrl,mod;// two low bits:
-	// 0 = left
-	// 1 = middle
-	// 2 = right
-	// 3 = release
-	// wheel up/down:
-	// 1, and 2 - with 64 added
-	switch(ev.overrideType||ev.type){case'mousedown':button=ev.button!=null?+ev.button:ev.which!=null?ev.which-1:null;if(self.isMSIE){button=button===1?0:button===4?1:button;}break;case'mouseup':button=3;break;case'DOMMouseScroll':button=ev.detail<0?64:65;break;case'wheel':button=ev.wheelDeltaY>0?64:65;break;}// next three bits are the modifiers:
-	// 4 = shift, 8 = meta, 16 = control
-	shift=ev.shiftKey?4:0;meta=ev.metaKey?8:0;ctrl=ev.ctrlKey?16:0;mod=shift|meta|ctrl;// no mods
-	if(self.vt200Mouse){// ctrl only
-	mod&=ctrl;}else if(!self.normalMouse){mod=0;}// increment to SP
-	button=32+(mod<<2)+button;return button;}// mouse coordinates measured in cols/rows
-	function getCoords(ev){var x,y,w,h,el;// ignore browsers without pageX for now
-	if(ev.pageX==null)return;x=ev.pageX;y=ev.pageY;el=self.element;// should probably check offsetParent
-	// but this is more portable
-	while(el&&el!==self.document.documentElement){x-=el.offsetLeft;y-=el.offsetTop;el='offsetParent'in el?el.offsetParent:el.parentNode;}// convert to cols/rows
-	w=self.element.clientWidth;h=self.element.clientHeight;x=Math.round(x/w*self.cols);y=Math.round(y/h*self.rows);// be sure to avoid sending
-	// bad positions to the program
-	if(x<0)x=0;if(x>self.cols)x=self.cols;if(y<0)y=0;if(y>self.rows)y=self.rows;// xterm sends raw bytes and
-	// starts at 32 (SP) for each.
-	x+=32;y+=32;return{x:x,y:y,type:'wheel'};}on(el,'mousedown',function(ev){if(!self.mouseEvents)return;// send the button
-	sendButton(ev);// ensure focus
-	self.focus();// fix for odd bug
-	//if (self.vt200Mouse && !self.normalMouse) {
-	if(self.vt200Mouse){ev.overrideType='mouseup';sendButton(ev);return self.cancel(ev);}// bind events
-	if(self.normalMouse)on(self.document,'mousemove',sendMove);// x10 compatibility mode can't send button releases
-	if(!self.x10Mouse){on(self.document,'mouseup',function up(ev){sendButton(ev);if(self.normalMouse)off(self.document,'mousemove',sendMove);off(self.document,'mouseup',up);return self.cancel(ev);});}return self.cancel(ev);});//if (self.normalMouse) {
-	//  on(self.document, 'mousemove', sendMove);
-	//}
-	on(el,'wheel',function(ev){if(!self.mouseEvents)return;if(self.x10Mouse||self.vt300Mouse||self.decLocator)return;sendButton(ev);return self.cancel(ev);});// allow wheel scrolling in
-	// the shell for example
-	on(el,'wheel',function(ev){if(self.mouseEvents)return;if(self.applicationKeypad)return;self.viewport.onWheel(ev);return self.cancel(ev);});};/**
+	     */// Terminal.prototype.bindMouse = function() {
+	//   var el = this.element, self = this, pressed = 32
+	//   // mouseup, mousedown, wheel
+	//   // left click: ^[[M 3<^[[M#3<
+	//   // wheel up: ^[[M`3>
+	//   function sendButton(ev) {
+	//     var button
+	//       , pos
+	//     // get the xterm-style button
+	//     button = getButton(ev)
+	//     // get mouse coordinates
+	//     pos = getCoords(ev)
+	//     if (!pos) return
+	//     sendEvent(button, pos)
+	//     switch (ev.overrideType || ev.type) {
+	//       case 'mousedown':
+	//         pressed = button
+	//         break
+	//       case 'mouseup':
+	//         // keep it at the left
+	//         // button, just in case.
+	//         pressed = 32
+	//         break
+	//       case 'wheel':
+	//         // nothing. don't
+	//         // interfere with
+	//         // `pressed`.
+	//         break
+	//     }
+	//   }
+	//   // motion example of a left click:
+	//   // ^[[M 3<^[[M@4<^[[M@5<^[[M@6<^[[M@7<^[[M#7<
+	//   function sendMove(ev) {
+	//     var button = pressed
+	//       , pos
+	//     pos = getCoords(ev)
+	//     if (!pos) return
+	//     // buttons marked as motions
+	//     // are incremented by 32
+	//     button += 32
+	//     sendEvent(button, pos)
+	//   }
+	//   // encode button and
+	//   // position to characters
+	//   function encode(data, ch) {
+	//     if (!self.utfMouse) {
+	//       if (ch === 255) return data.push(0)
+	//       if (ch > 127) ch = 127
+	//       data.push(ch)
+	//     } else {
+	//       if (ch === 2047) return data.push(0)
+	//       if (ch < 127) {
+	//         data.push(ch)
+	//       } else {
+	//         if (ch > 2047) ch = 2047
+	//         data.push(0xC0 | (ch >> 6))
+	//         data.push(0x80 | (ch & 0x3F))
+	//       }
+	//     }
+	//   }
+	//   // send a mouse event:
+	//   // regular/utf8: ^[[M Cb Cx Cy
+	//   // urxvt: ^[[ Cb ; Cx ; Cy M
+	//   // sgr: ^[[ Cb ; Cx ; Cy M/m
+	//   // vt300: ^[[ 24(1/3/5)~ [ Cx , Cy ] \r
+	//   // locator: CSI P e ; P b ; P r ; P c ; P p & w
+	//   function sendEvent(button, pos) {
+	//     // self.emit('mouse', {
+	//     //   x: pos.x - 32,
+	//     //   y: pos.x - 32,
+	//     //   button: button
+	//     // });
+	//     if (self.vt300Mouse) {
+	//       // NOTE: Unstable.
+	//       // http://www.vt100.net/docs/vt3xx-gp/chapter15.html
+	//       button &= 3
+	//       pos.x -= 32
+	//       pos.y -= 32
+	//       var data = '\x1b[24'
+	//       if (button === 0) data += '1'
+	//       else if (button === 1) data += '3'
+	//       else if (button === 2) data += '5'
+	//       else if (button === 3) return
+	//       else data += '0'
+	//       data += '~[' + pos.x + ',' + pos.y + ']\r'
+	//       self.send(data)
+	//       return
+	//     }
+	//     if (self.decLocator) {
+	//       // NOTE: Unstable.
+	//       button &= 3
+	//       pos.x -= 32
+	//       pos.y -= 32
+	//       if (button === 0) button = 2
+	//       else if (button === 1) button = 4
+	//       else if (button === 2) button = 6
+	//       else if (button === 3) button = 3
+	//       self.send('\x1b['
+	//         + button
+	//         + ';'
+	//         + (button === 3 ? 4 : 0)
+	//         + ';'
+	//         + pos.y
+	//         + ';'
+	//         + pos.x
+	//         + ';'
+	//         + (pos.page || 0)
+	//         + '&w')
+	//       return
+	//     }
+	//     if (self.urxvtMouse) {
+	//       pos.x -= 32
+	//       pos.y -= 32
+	//       pos.x++
+	//       pos.y++
+	//       self.send('\x1b[' + button + ';' + pos.x + ';' + pos.y + 'M')
+	//       return
+	//     }
+	//     if (self.sgrMouse) {
+	//       pos.x -= 32
+	//       pos.y -= 32
+	//       self.send('\x1b[<'
+	//         + ((button & 3) === 3 ? button & ~3 : button)
+	//         + ';'
+	//         + pos.x
+	//         + ';'
+	//         + pos.y
+	//         + ((button & 3) === 3 ? 'm' : 'M'))
+	//       return
+	//     }
+	//     var data = []
+	//     encode(data, button)
+	//     encode(data, pos.x)
+	//     encode(data, pos.y)
+	//     self.send('\x1b[M' + String.fromCharCode.apply(String, data))
+	//   }
+	//   function getButton(ev) {
+	//     var button
+	//       , shift
+	//       , meta
+	//       , ctrl
+	//       , mod
+	//     // two low bits:
+	//     // 0 = left
+	//     // 1 = middle
+	//     // 2 = right
+	//     // 3 = release
+	//     // wheel up/down:
+	//     // 1, and 2 - with 64 added
+	//     switch (ev.overrideType || ev.type) {
+	//       case 'mousedown':
+	//         button = ev.button != null
+	//           ? +ev.button
+	//           : ev.which != null
+	//             ? ev.which - 1
+	//             : null
+	//         if (self.isMSIE) {
+	//           button = button === 1 ? 0 : button === 4 ? 1 : button
+	//         }
+	//         break
+	//       case 'mouseup':
+	//         button = 3
+	//         break
+	//       case 'DOMMouseScroll':
+	//         button = ev.detail < 0
+	//           ? 64
+	//           : 65
+	//         break
+	//       case 'wheel':
+	//         button = ev.wheelDeltaY > 0
+	//           ? 64
+	//           : 65
+	//         break
+	//     }
+	//     // next three bits are the modifiers:
+	//     // 4 = shift, 8 = meta, 16 = control
+	//     shift = ev.shiftKey ? 4 : 0
+	//     meta = ev.metaKey ? 8 : 0
+	//     ctrl = ev.ctrlKey ? 16 : 0
+	//     mod = shift | meta | ctrl
+	//     // no mods
+	//     if (self.vt200Mouse) {
+	//       // ctrl only
+	//       mod &= ctrl
+	//     } else if (!self.normalMouse) {
+	//       mod = 0
+	//     }
+	//     // increment to SP
+	//     button = (32 + (mod << 2)) + button
+	//     return button
+	//   }
+	//   // mouse coordinates measured in cols/rows
+	//   function getCoords(ev) {
+	//     var x, y, w, h, el
+	//     // ignore browsers without pageX for now
+	//     if (ev.pageX == null) return
+	//     x = ev.pageX
+	//     y = ev.pageY
+	//     el = self.element
+	//     // should probably check offsetParent
+	//     // but this is more portable
+	//     while (el && el !== self.document.documentElement) {
+	//       x -= el.offsetLeft
+	//       y -= el.offsetTop
+	//       el = 'offsetParent' in el
+	//         ? el.offsetParent
+	//         : el.parentNode
+	//     }
+	//     // convert to cols/rows
+	//     w = self.element.clientWidth
+	//     h = self.element.clientHeight
+	//     x = Math.round((x / w) * self.cols)
+	//     y = Math.round((y / h) * self.rows)
+	//     // be sure to avoid sending
+	//     // bad positions to the program
+	//     if (x < 0) x = 0
+	//     if (x > self.cols) x = self.cols
+	//     if (y < 0) y = 0
+	//     if (y > self.rows) y = self.rows
+	//     // xterm sends raw bytes and
+	//     // starts at 32 (SP) for each.
+	//     x += 32
+	//     y += 32
+	//     return {
+	//       x: x,
+	//       y: y,
+	//       type: 'wheel'
+	//     }
+	//   }
+	//   on(el, 'mousedown', function(ev) {
+	//     if (!self.mouseEvents) return
+	//     // send the button
+	//     sendButton(ev)
+	//     // ensure focus
+	//     self.focus()
+	//     // fix for odd bug
+	//     //if (self.vt200Mouse && !self.normalMouse) {
+	//     if (self.vt200Mouse) {
+	//       ev.overrideType = 'mouseup'
+	//       sendButton(ev)
+	//       return self.cancel(ev)
+	//     }
+	//     // bind events
+	//     if (self.normalMouse) on(self.document, 'mousemove', sendMove)
+	//     // x10 compatibility mode can't send button releases
+	//     if (!self.x10Mouse) {
+	//       on(self.document, 'mouseup', function up(ev) {
+	//         sendButton(ev)
+	//         if (self.normalMouse) off(self.document, 'mousemove', sendMove)
+	//         off(self.document, 'mouseup', up)
+	//         return self.cancel(ev)
+	//       })
+	//     }
+	//     return self.cancel(ev)
+	//   })
+	//   //if (self.normalMouse) {
+	//   //  on(self.document, 'mousemove', sendMove);
+	//   //}
+	//   on(el, 'wheel', function(ev) {
+	//     if (!self.mouseEvents) return
+	//     if (self.x10Mouse
+	//         || self.vt300Mouse
+	//         || self.decLocator) return
+	//     sendButton(ev)
+	//     return self.cancel(ev)
+	//   })
+	//   // allow wheel scrolling in
+	//   // the shell for example
+	//   on(el, 'wheel', function(ev) {
+	//     if (self.mouseEvents) return
+	//     if (self.applicationKeypad) return
+	//     self.viewport.onWheel(ev)
+	//     return self.cancel(ev)
+	//   })
+	// }
+	/**
 	     * Destroys the terminal.
 	     */Terminal.prototype.destroy=function(){this.readable=false;this.writable=false;this._events={};this.handler=function(){};this.write=function(){};if(this.element.parentNode){this.element.parentNode.removeChild(this.element);}//this.emit('close');
 	};/**
@@ -865,9 +1511,11 @@
 	//   [1,1]) (HVP).
 	case'f':this.HVPosition(this.params);break;// CSI Pm h  Set Mode (SM).
 	// CSI ? Pm h - mouse escape codes, cursor escape codes
-	case'h':this.setMode(this.params);break;// CSI Pm l  Reset Mode (RM).
+	case'h':// this.setMode(this.params)
+	break;// CSI Pm l  Reset Mode (RM).
 	// CSI ? Pm l
-	case'l':this.resetMode(this.params);break;// CSI Ps ; Ps r
+	case'l':// this.resetMode(this.params)
+	break;// CSI Ps ; Ps r
 	//   Set Scrolling Region [top;bottom] (default = full size of win-
 	//   dow) (DECSTBM).
 	// CSI ? Pm r
@@ -1092,44 +1740,209 @@
 	     * Key Resources:
 	     *   - https://developer.mozilla.org/en-US/docs/DOM/KeyboardEvent
 	     * @param {KeyboardEvent} ev The keydown event to be handled.
-	     */Terminal.prototype.keyDown=function(ev){if(this.customKeydownHandler&&this.customKeydownHandler(ev)===false){return false;}if(!this.compositionHelper.keydown.bind(this.compositionHelper)(ev)){return false;}var self=this;var result=this.evaluateKeyEscapeSequence(ev);if(result.scrollDisp){this.scrollDisp(result.scrollDisp);return this.cancel(ev);}if(isThirdLevelShift(this,ev)){return true;}if(result.cancel){// The event is canceled at the end already, is this necessary?
-	this.cancel(ev,true);}if(!result.key){return true;}this.emit('keydown',ev);this.emit('key',result.key,ev);this.showCursor();this.handler(result.key);return this.cancel(ev,true);};/**
+	     */// Terminal.prototype.keyDown = function(ev) {
+	//   if (this.customKeydownHandler && this.customKeydownHandler(ev) === false) {
+	//     return false
+	//   }
+	//   if (!this.compositionHelper.keydown.bind(this.compositionHelper)(ev)) {
+	//     return false
+	//   }
+	//   var self = this
+	//   var result = this.evaluateKeyEscapeSequence(ev)
+	//   if (result.scrollDisp) {
+	//     this.scrollDisp(result.scrollDisp)
+	//     return this.cancel(ev)
+	//   }
+	//   if (isThirdLevelShift(this, ev)) {
+	//     return true
+	//   }
+	//   if (result.cancel ) {
+	//     // The event is canceled at the end already, is this necessary?
+	//     this.cancel(ev, true)
+	//   }
+	//   if (!result.key) {
+	//     return true
+	//   }
+	//   this.emit('keydown', ev)
+	//   this.emit('key', result.key, ev)
+	//   this.showCursor()
+	//   this.handler(result.key)
+	//   return this.cancel(ev, true)
+	// }
+	/**
 	     * Returns an object that determines how a KeyboardEvent should be handled. The key of the
 	     * returned value is the new key code to pass to the PTY.
 	     *
 	     * Reference: http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
 	     * @param {KeyboardEvent} ev The keyboard event to be translated to key escape sequence.
-	     */Terminal.prototype.evaluateKeyEscapeSequence=function(ev){var result={// Whether to cancel event propogation (NOTE: this may not be needed since the event is
-	// canceled at the end of keyDown
-	cancel:false,// The new key even to emit
-	key:undefined,// The number of characters to scroll, if this is defined it will cancel the event
-	scrollDisp:undefined};var modifiers=ev.shiftKey<<0|ev.altKey<<1|ev.ctrlKey<<2|ev.metaKey<<3;switch(ev.keyCode){// backspace
-	case 8:if(ev.shiftKey){result.key='\x08';// ^H
-	break;}result.key='\x7f';// ^?
-	break;// tab
-	case 9:if(ev.shiftKey){result.key='\x1b[Z';break;}result.key='\t';result.cancel=true;break;// return/enter
-	case 13:result.key='\r';result.cancel=true;break;// escape
-	case 27:result.key='\x1b';result.cancel=true;break;// left-arrow
-	case 37:if(modifiers)result.key='\x1b[1;'+(modifiers+1)+'D';else if(this.applicationCursor)result.key='\x1bOD';else result.key='\x1b[D';break;// right-arrow
-	case 39:if(modifiers)result.key='\x1b[1;'+(modifiers+1)+'C';else if(this.applicationCursor)result.key='\x1bOC';else result.key='\x1b[C';break;// up-arrow
-	case 38:if(modifiers)result.key='\x1b[1;'+(modifiers+1)+'A';else if(this.applicationCursor)result.key='\x1bOA';else result.key='\x1b[A';break;// down-arrow
-	case 40:if(modifiers)result.key='\x1b[1;'+(modifiers+1)+'B';else if(this.applicationCursor)result.key='\x1bOB';else result.key='\x1b[B';break;// insert
-	case 45:if(!ev.shiftKey&&!ev.ctrlKey){// <Ctrl> or <Shift> + <Insert> are used to
-	// copy-paste on some systems.
-	result.key='\x1b[2~';}break;// delete
-	case 46:result.key='\x1b[3~';break;// home
-	case 36:if(modifiers)result.key='\x1b[1;'+(modifiers+1)+'H';else if(this.applicationCursor)result.key='\x1bOH';else result.key='\x1b[H';break;// end
-	case 35:if(modifiers)result.key='\x1b[1;'+(modifiers+1)+'F';else if(this.applicationCursor)result.key='\x1bOF';else result.key='\x1b[F';break;// page up
-	case 33:if(ev.shiftKey){result.scrollDisp=-(this.rows-1);}else{result.key='\x1b[5~';}break;// page down
-	case 34:if(ev.shiftKey){result.scrollDisp=this.rows-1;}else{result.key='\x1b[6~';}break;// F1-F12
-	case 112:result.key='\x1bOP';break;case 113:result.key='\x1bOQ';break;case 114:result.key='\x1bOR';break;case 115:result.key='\x1bOS';break;case 116:result.key='\x1b[15~';break;case 117:result.key='\x1b[17~';break;case 118:result.key='\x1b[18~';break;case 119:result.key='\x1b[19~';break;case 120:result.key='\x1b[20~';break;case 121:result.key='\x1b[21~';break;case 122:result.key='\x1b[23~';break;case 123:result.key='\x1b[24~';break;default:// a-z and space
-	if(ev.ctrlKey&&!ev.shiftKey&&!ev.altKey&&!ev.metaKey){if(ev.keyCode>=65&&ev.keyCode<=90){result.key=String.fromCharCode(ev.keyCode-64);}else if(ev.keyCode===32){// NUL
-	result.key=String.fromCharCode(0);}else if(ev.keyCode>=51&&ev.keyCode<=55){// escape, file sep, group sep, record sep, unit sep
-	result.key=String.fromCharCode(ev.keyCode-51+27);}else if(ev.keyCode===56){// delete
-	result.key=String.fromCharCode(127);}else if(ev.keyCode===219){// ^[ - escape
-	result.key=String.fromCharCode(27);}else if(ev.keyCode===221){// ^] - group sep
-	result.key=String.fromCharCode(29);}}else if(!this.isMac&&ev.altKey&&!ev.ctrlKey&&!ev.metaKey){// On Mac this is a third level shift. Use <Esc> instead.
-	if(ev.keyCode>=65&&ev.keyCode<=90){result.key='\x1b'+String.fromCharCode(ev.keyCode+32);}else if(ev.keyCode===192){result.key='\x1b`';}else if(ev.keyCode>=48&&ev.keyCode<=57){result.key='\x1b'+(ev.keyCode-48);}}break;}return result;};/**
+	     */// Terminal.prototype.evaluateKeyEscapeSequence = function(ev) {
+	//   var result = {
+	//     // Whether to cancel event propogation (NOTE: this may not be needed since the event is
+	//     // canceled at the end of keyDown
+	//     cancel: false,
+	//     // The new key even to emit
+	//     key: undefined,
+	//     // The number of characters to scroll, if this is defined it will cancel the event
+	//     scrollDisp: undefined
+	//   }
+	//   var modifiers = ev.shiftKey << 0 | ev.altKey << 1 | ev.ctrlKey << 2 | ev.metaKey << 3
+	//   switch (ev.keyCode) {
+	//     // backspace
+	//     case 8:
+	//       if (ev.shiftKey) {
+	//         result.key = '\x08' // ^H
+	//         break
+	//       }
+	//       result.key = '\x7f' // ^?
+	//       break
+	//     // tab
+	//     case 9:
+	//       if (ev.shiftKey) {
+	//         result.key = '\x1b[Z'
+	//         break
+	//       }
+	//       result.key = '\t'
+	//       result.cancel = true
+	//       break
+	//     // return/enter
+	//     case 13:
+	//       result.key = '\r'
+	//       result.cancel = true
+	//       break
+	//     // escape
+	//     case 27:
+	//       result.key = '\x1b'
+	//       result.cancel = true
+	//       break
+	//     // left-arrow
+	//     case 37:
+	//       if (modifiers)
+	//         result.key = '\x1b[1;' + (modifiers + 1) + 'D'
+	//       else if (this.applicationCursor)
+	//         result.key = '\x1bOD'
+	//       else
+	//         result.key = '\x1b[D'
+	//       break
+	//     // right-arrow
+	//     case 39:
+	//       if (modifiers)
+	//         result.key = '\x1b[1;' + (modifiers + 1) + 'C'
+	//       else if (this.applicationCursor)
+	//         result.key = '\x1bOC'
+	//       else
+	//         result.key = '\x1b[C'
+	//       break
+	//     // up-arrow
+	//     case 38:
+	//       if (modifiers)
+	//         result.key = '\x1b[1;' + (modifiers + 1) + 'A'
+	//       else if (this.applicationCursor)
+	//         result.key = '\x1bOA'
+	//       else
+	//         result.key = '\x1b[A'
+	//       break
+	//     // down-arrow
+	//     case 40:
+	//       if (modifiers)
+	//         result.key = '\x1b[1;' + (modifiers + 1) + 'B'
+	//       else if (this.applicationCursor)
+	//         result.key = '\x1bOB'
+	//       else
+	//         result.key = '\x1b[B'
+	//       break
+	//     // insert
+	//     case 45:
+	//       if (!ev.shiftKey && !ev.ctrlKey) {
+	//         // <Ctrl> or <Shift> + <Insert> are used to
+	//         // copy-paste on some systems.
+	//         result.key = '\x1b[2~'
+	//       }
+	//       break
+	//     // delete
+	//     case 46: result.key = '\x1b[3~'; break
+	//     // home
+	//     case 36:
+	//       if (modifiers)
+	//         result.key = '\x1b[1;' + (modifiers + 1) + 'H'
+	//       else if (this.applicationCursor)
+	//         result.key = '\x1bOH'
+	//       else
+	//         result.key = '\x1b[H'
+	//       break
+	//     // end
+	//     case 35:
+	//       if (modifiers)
+	//         result.key = '\x1b[1;' + (modifiers + 1) + 'F'
+	//       else if (this.applicationCursor)
+	//         result.key = '\x1bOF'
+	//       else
+	//         result.key = '\x1b[F'
+	//       break
+	//     // page up
+	//     case 33:
+	//       if (ev.shiftKey) {
+	//         result.scrollDisp = -(this.rows - 1)
+	//       } else {
+	//         result.key = '\x1b[5~'
+	//       }
+	//       break
+	//     // page down
+	//     case 34:
+	//       if (ev.shiftKey) {
+	//         result.scrollDisp = this.rows - 1
+	//       } else {
+	//         result.key = '\x1b[6~'
+	//       }
+	//       break
+	//     // F1-F12
+	//     case 112: result.key = '\x1bOP'; break
+	//     case 113: result.key = '\x1bOQ'; break
+	//     case 114: result.key = '\x1bOR'; break
+	//     case 115: result.key = '\x1bOS'; break
+	//     case 116: result.key = '\x1b[15~'; break
+	//     case 117: result.key = '\x1b[17~'; break
+	//     case 118: result.key = '\x1b[18~'; break
+	//     case 119: result.key = '\x1b[19~'; break
+	//     case 120: result.key = '\x1b[20~'; break
+	//     case 121: result.key = '\x1b[21~'; break
+	//     case 122: result.key = '\x1b[23~'; break
+	//     case 123: result.key = '\x1b[24~'; break
+	//     default:
+	//       // a-z and space
+	//       if (ev.ctrlKey && !ev.shiftKey && !ev.altKey && !ev.metaKey) {
+	//         if (ev.keyCode >= 65 && ev.keyCode <= 90) {
+	//           result.key = String.fromCharCode(ev.keyCode - 64)
+	//         } else if (ev.keyCode === 32) {
+	//           // NUL
+	//           result.key = String.fromCharCode(0)
+	//         } else if (ev.keyCode >= 51 && ev.keyCode <= 55) {
+	//           // escape, file sep, group sep, record sep, unit sep
+	//           result.key = String.fromCharCode(ev.keyCode - 51 + 27)
+	//         } else if (ev.keyCode === 56) {
+	//           // delete
+	//           result.key = String.fromCharCode(127)
+	//         } else if (ev.keyCode === 219) {
+	//           // ^[ - escape
+	//           result.key = String.fromCharCode(27)
+	//         } else if (ev.keyCode === 221) {
+	//           // ^] - group sep
+	//           result.key = String.fromCharCode(29)
+	//         }
+	//       } else if (!this.isMac && ev.altKey && !ev.ctrlKey && !ev.metaKey) {
+	//         // On Mac this is a third level shift. Use <Esc> instead.
+	//         if (ev.keyCode >= 65 && ev.keyCode <= 90) {
+	//           result.key = '\x1b' + String.fromCharCode(ev.keyCode + 32)
+	//         } else if (ev.keyCode === 192) {
+	//           result.key = '\x1b`'
+	//         } else if (ev.keyCode >= 48 && ev.keyCode <= 57) {
+	//           result.key = '\x1b' + (ev.keyCode - 48)
+	//         }
+	//       }
+	//       break
+	//   }
+	//   return result
+	// }
+	/**
 	     * Set the G level of the terminal
 	     * @param g
 	     */Terminal.prototype.setgLevel=function(g){this.glevel=g;this.charset=this.charsets[g];};/**
@@ -1141,7 +1954,31 @@
 	     * Key Resources:
 	     *   - https://developer.mozilla.org/en-US/docs/DOM/KeyboardEvent
 	     * @param {KeyboardEvent} ev The keypress event to be handled.
-	     */Terminal.prototype.keyPress=function(ev){var key;this.cancel(ev);if(ev.charCode){key=ev.charCode;}else if(ev.which==null){key=ev.keyCode;}else if(ev.which!==0&&ev.charCode!==0){key=ev.which;}else{return false;}if(!key||(ev.altKey||ev.ctrlKey||ev.metaKey)&&!isThirdLevelShift(this,ev)){return false;}key=String.fromCharCode(key);this.emit('keypress',key,ev);this.emit('key',key,ev);this.showCursor();this.handler(key);return false;};/**
+	     */// Terminal.prototype.keyPress = function(ev) {
+	//   var key
+	//   this.cancel(ev)
+	//   if (ev.charCode) {
+	//     key = ev.charCode
+	//   } else if (ev.which == null) {
+	//     key = ev.keyCode
+	//   } else if (ev.which !== 0 && ev.charCode !== 0) {
+	//     key = ev.which
+	//   } else {
+	//     return false
+	//   }
+	//   if (!key || (
+	//     (ev.altKey || ev.ctrlKey || ev.metaKey) && !isThirdLevelShift(this, ev)
+	//   )) {
+	//     return false
+	//   }
+	//   key = String.fromCharCode(key)
+	//   this.emit('keypress', key, ev)
+	//   this.emit('key', key, ev)
+	//   this.showCursor()
+	//   this.handler(key)
+	//   return false
+	// }
+	/**
 	     * Send data for handling to the terminal
 	     * @param {string} data
 	     */Terminal.prototype.send=function(data){var self=this;if(!this.queue){setTimeout(function(){self.handler(self.queue);self.queue='';},1);}this.queue+=data;};/**
@@ -1576,46 +2413,126 @@
 	     *     Ps = 2 0 0 4  -> Set bracketed paste mode.
 	     * Modes:
 	     *   http: *vt100.net/docs/vt220-rm/chapter4.html
-	     */Terminal.prototype.setMode=function(params){if((typeof params==='undefined'?'undefined':_typeof(params))==='object'){var l=params.length,i=0;for(;i<l;i++){this.setMode(params[i]);}return;}if(!this.prefix){switch(params){case 4:this.insertMode=true;break;case 20://this.convertEol = true;
-	break;}}else if(this.prefix==='?'){switch(params){case 1:this.applicationCursor=true;break;case 2:this.setgCharset(0,Terminal.charsets.US);this.setgCharset(1,Terminal.charsets.US);this.setgCharset(2,Terminal.charsets.US);this.setgCharset(3,Terminal.charsets.US);// set VT100 mode here
-	break;case 3:// 132 col mode
-	this.savedCols=this.cols;this.resize(132,this.rows);break;case 6:this.originMode=true;break;case 7:this.wraparoundMode=true;break;case 12:// this.cursorBlink = true;
-	break;case 66:this.log('Serial port requested application keypad.');this.applicationKeypad=true;this.viewport.setApplicationMode(true);break;case 9:// X10 Mouse
-	// no release, no motion, no wheel, no modifiers.
-	case 1000:// vt200 mouse
-	// no motion.
-	// no modifiers, except control on the wheel.
-	case 1002:// button event mouse
-	case 1003:// any event mouse
-	// any event - sends motion events,
-	// even if there is no button held down.
-	this.x10Mouse=params===9;this.vt200Mouse=params===1000;this.normalMouse=params>1000;this.mouseEvents=true;this.element.style.cursor='default';this.log('Binding to mouse events.');break;case 1004:// send focusin/focusout events
-	// focusin: ^[[I
-	// focusout: ^[[O
-	this.sendFocus=true;break;case 1005:// utf8 ext mode mouse
-	this.utfMouse=true;// for wide terminals
-	// simply encodes large values as utf8 characters
-	break;case 1006:// sgr ext mode mouse
-	this.sgrMouse=true;// for wide terminals
-	// does not add 32 to fields
-	// press: ^[[<b;x;yM
-	// release: ^[[<b;x;ym
-	break;case 1015:// urxvt ext mode mouse
-	this.urxvtMouse=true;// for wide terminals
-	// numbers for fields
-	// press: ^[[b;x;yM
-	// motion: ^[[b;x;yT
-	break;case 25:// show cursor
-	this.cursorHidden=false;break;case 1049:// alt screen buffer cursor
-	//this.saveCursor();
-	// FALL-THROUGH
-	case 47:// alt screen buffer
-	case 1047:// alt screen buffer
-	if(!this.normal){var normal={lines:this.lines,ybase:this.ybase,ydisp:this.ydisp,x:this.x,y:this.y,scrollTop:this.scrollTop,scrollBottom:this.scrollBottom,tabs:this.tabs// XXX save charset(s) here?
-	// charset: this.charset,
-	// glevel: this.glevel,
-	// charsets: this.charsets
-	};this.reset();this.normal=normal;this.showCursor();}break;}}};/**
+	     */// Terminal.prototype.setMode = function(params) {
+	//   if (typeof params === 'object') {
+	//     var l = params.length
+	//       , i = 0
+	//     for (; i < l; i++) {
+	//       this.setMode(params[i])
+	//     }
+	//     return
+	//   }
+	//   if (!this.prefix) {
+	//     switch (params) {
+	//       case 4:
+	//         this.insertMode = true
+	//         break
+	//       case 20:
+	//         //this.convertEol = true;
+	//         break
+	//     }
+	//   } else if (this.prefix === '?') {
+	//     switch (params) {
+	//       case 1:
+	//         this.applicationCursor = true
+	//         break
+	//       case 2:
+	//         this.setgCharset(0, Terminal.charsets.US)
+	//         this.setgCharset(1, Terminal.charsets.US)
+	//         this.setgCharset(2, Terminal.charsets.US)
+	//         this.setgCharset(3, Terminal.charsets.US)
+	//         // set VT100 mode here
+	//         break
+	//       case 3: // 132 col mode
+	//         this.savedCols = this.cols
+	//         this.resize(132, this.rows)
+	//         break
+	//       case 6:
+	//         this.originMode = true
+	//         break
+	//       case 7:
+	//         this.wraparoundMode = true
+	//         break
+	//       case 12:
+	//         // this.cursorBlink = true;
+	//         break
+	//       case 66:
+	//         this.log('Serial port requested application keypad.')
+	//         this.applicationKeypad = true
+	//         this.viewport.setApplicationMode(true)
+	//         break
+	//       case 9: // X10 Mouse
+	//         // no release, no motion, no wheel, no modifiers.
+	//       case 1000: // vt200 mouse
+	//         // no motion.
+	//         // no modifiers, except control on the wheel.
+	//       case 1002: // button event mouse
+	//       case 1003: // any event mouse
+	//         // any event - sends motion events,
+	//         // even if there is no button held down.
+	//         this.x10Mouse = params === 9
+	//         this.vt200Mouse = params === 1000
+	//         this.normalMouse = params > 1000
+	//         this.mouseEvents = true
+	//         this.element.style.cursor = 'default'
+	//         this.log('Binding to mouse events.')
+	//         break
+	//       case 1004: // send focusin/focusout events
+	//         // focusin: ^[[I
+	//         // focusout: ^[[O
+	//         this.sendFocus = true
+	//         break
+	//       case 1005: // utf8 ext mode mouse
+	//         this.utfMouse = true
+	//         // for wide terminals
+	//         // simply encodes large values as utf8 characters
+	//         break
+	//       case 1006: // sgr ext mode mouse
+	//         this.sgrMouse = true
+	//         // for wide terminals
+	//         // does not add 32 to fields
+	//         // press: ^[[<b;x;yM
+	//         // release: ^[[<b;x;ym
+	//         break
+	//       case 1015: // urxvt ext mode mouse
+	//         this.urxvtMouse = true
+	//         // for wide terminals
+	//         // numbers for fields
+	//         // press: ^[[b;x;yM
+	//         // motion: ^[[b;x;yT
+	//         break
+	//       case 25: // show cursor
+	//         this.cursorHidden = false
+	//         break
+	//       case 1049: // alt screen buffer cursor
+	//         //this.saveCursor();
+	//          // FALL-THROUGH
+	//       case 47: // alt screen buffer
+	//       case 1047: // alt screen buffer
+	//         if (!this.normal) {
+	//           var normal = {
+	//             lines: this.lines,
+	//             ybase: this.ybase,
+	//             ydisp: this.ydisp,
+	//             x: this.x,
+	//             y: this.y,
+	//             scrollTop: this.scrollTop,
+	//             scrollBottom: this.scrollBottom,
+	//             tabs: this.tabs
+	//             // XXX save charset(s) here?
+	//             // charset: this.charset,
+	//             // glevel: this.glevel,
+	//             // charsets: this.charsets
+	//           }
+	//           this.reset()
+	//           this.normal = normal
+	//           this.showCursor()
+	//         }
+	//         break
+	//     }
+	//   }
+	// }
+	/**
 	     * CSI Pm l  Reset Mode (RM).
 	     *     Ps = 2  -> Keyboard Action Mode (AM).
 	     *     Ps = 4  -> Replace Mode (IRM).
@@ -1696,26 +2613,100 @@
 	     *     Ps = 1 0 6 0  -> Reset legacy keyboard emulation (X11R6).
 	     *     Ps = 1 0 6 1  -> Reset keyboard emulation to Sun/PC style.
 	     *     Ps = 2 0 0 4  -> Reset bracketed paste mode.
-	     */Terminal.prototype.resetMode=function(params){if((typeof params==='undefined'?'undefined':_typeof(params))==='object'){var l=params.length,i=0;for(;i<l;i++){this.resetMode(params[i]);}return;}if(!this.prefix){switch(params){case 4:this.insertMode=false;break;case 20://this.convertEol = false;
-	break;}}else if(this.prefix==='?'){switch(params){case 1:this.applicationCursor=false;break;case 3:if(this.cols===132&&this.savedCols){this.resize(this.savedCols,this.rows);}delete this.savedCols;break;case 6:this.originMode=false;break;case 7:this.wraparoundMode=false;break;case 12:// this.cursorBlink = false;
-	break;case 66:this.log('Switching back to normal keypad.');this.viewport.setApplicationMode(false);this.applicationKeypad=false;break;case 9:// X10 Mouse
-	case 1000:// vt200 mouse
-	case 1002:// button event mouse
-	case 1003:// any event mouse
-	this.x10Mouse=false;this.vt200Mouse=false;this.normalMouse=false;this.mouseEvents=false;this.element.style.cursor='';break;case 1004:// send focusin/focusout events
-	this.sendFocus=false;break;case 1005:// utf8 ext mode mouse
-	this.utfMouse=false;break;case 1006:// sgr ext mode mouse
-	this.sgrMouse=false;break;case 1015:// urxvt ext mode mouse
-	this.urxvtMouse=false;break;case 25:// hide cursor
-	this.cursorHidden=true;break;case 1049:// alt screen buffer cursor
-	// FALL-THROUGH
-	case 47:// normal screen buffer
-	case 1047:// normal screen buffer - clearing it first
-	if(this.normal){this.lines=this.normal.lines;this.ybase=this.normal.ybase;this.ydisp=this.normal.ydisp;this.x=this.normal.x;this.y=this.normal.y;this.scrollTop=this.normal.scrollTop;this.scrollBottom=this.normal.scrollBottom;this.tabs=this.normal.tabs;this.normal=null;// if (params === 1049) {
-	//   this.x = this.savedX;
-	//   this.y = this.savedY;
+	     */// Terminal.prototype.resetMode = function(params) {
+	//   if (typeof params === 'object') {
+	//     var l = params.length
+	//       , i = 0
+	//     for (; i < l; i++) {
+	//       this.resetMode(params[i])
+	//     }
+	//     return
+	//   }
+	//   if (!this.prefix) {
+	//     switch (params) {
+	//       case 4:
+	//         this.insertMode = false
+	//         break
+	//       case 20:
+	//         //this.convertEol = false;
+	//         break
+	//     }
+	//   } else if (this.prefix === '?') {
+	//     switch (params) {
+	//       case 1:
+	//         this.applicationCursor = false
+	//         break
+	//       case 3:
+	//         if (this.cols === 132 && this.savedCols) {
+	//           this.resize(this.savedCols, this.rows)
+	//         }
+	//         delete this.savedCols
+	//         break
+	//       case 6:
+	//         this.originMode = false
+	//         break
+	//       case 7:
+	//         this.wraparoundMode = false
+	//         break
+	//       case 12:
+	//         // this.cursorBlink = false;
+	//         break
+	//       case 66:
+	//         this.log('Switching back to normal keypad.')
+	//         this.viewport.setApplicationMode(false)
+	//         this.applicationKeypad = false
+	//         break
+	//       case 9: // X10 Mouse
+	//       case 1000: // vt200 mouse
+	//       case 1002: // button event mouse
+	//       case 1003: // any event mouse
+	//         this.x10Mouse = false
+	//         this.vt200Mouse = false
+	//         this.normalMouse = false
+	//         this.mouseEvents = false
+	//         this.element.style.cursor = ''
+	//         break
+	//       case 1004: // send focusin/focusout events
+	//         this.sendFocus = false
+	//         break
+	//       case 1005: // utf8 ext mode mouse
+	//         this.utfMouse = false
+	//         break
+	//       case 1006: // sgr ext mode mouse
+	//         this.sgrMouse = false
+	//         break
+	//       case 1015: // urxvt ext mode mouse
+	//         this.urxvtMouse = false
+	//         break
+	//       case 25: // hide cursor
+	//         this.cursorHidden = true
+	//         break
+	//       case 1049: // alt screen buffer cursor
+	//          // FALL-THROUGH
+	//       case 47: // normal screen buffer
+	//       case 1047: // normal screen buffer - clearing it first
+	//         if (this.normal) {
+	//           this.lines = this.normal.lines
+	//           this.ybase = this.normal.ybase
+	//           this.ydisp = this.normal.ydisp
+	//           this.x = this.normal.x
+	//           this.y = this.normal.y
+	//           this.scrollTop = this.normal.scrollTop
+	//           this.scrollBottom = this.normal.scrollBottom
+	//           this.tabs = this.normal.tabs
+	//           this.normal = null
+	//           // if (params === 1049) {
+	//           //   this.x = this.savedX;
+	//           //   this.y = this.savedY;
+	//           // }
+	//           this.refresh(0, this.rows - 1)
+	//           this.showCursor()
+	//         }
+	//         break
+	//     }
+	//   }
 	// }
-	this.refresh(0,this.rows-1);this.showCursor();}break;}}};/**
+	/**
 	     * CSI Ps ; Ps r
 	     *   Set Scrolling Region [top;bottom] (default = full size of win-
 	     *   dow) (DECSTBM).
@@ -2001,7 +2992,8 @@
 	ucs>=0xffe0&&ucs<=0xffe6||ucs>=0x20000&&ucs<=0x2fffd||ucs>=0x30000&&ucs<=0x3fffd));}return wcwidth;}({nul:0,control:0});// configurable options
 	/**
 	     * Expose
-	     */Terminal.EventEmitter=EventEmitter;Terminal.CompositionHelper=CompositionHelper;Terminal.Viewport=Viewport;Terminal.inherits=inherits;/**
+	     */Terminal.EventEmitter=EventEmitter;// Terminal.CompositionHelper = CompositionHelper
+	Terminal.Viewport=Viewport;Terminal.inherits=inherits;/**
 	     * Adds an event listener to the terminal.
 	     *
 	     * @param {string} event The name of the event. TODO: Document all event types
@@ -2009,247 +3001,188 @@
 	     */Terminal.on=on;Terminal.off=off;Terminal.cancel=cancel;return Terminal;}.call(window);
 
 /***/ },
-/* 8 */
+/* 10 */
 /***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 
-	exports.__esModule = true;
-	exports.isArray = isArray;
-	exports.isString = isString;
-	exports.assign = assign;
-	exports.readUtf8 = readUtf8;
-	exports.fetchArrayBuffer = fetchArrayBuffer;
-	exports.element = element;
-	exports.closet = closet;
-	var hasOwnProperty = Object.prototype.hasOwnProperty;
-	var toString = Object.prototype.toString;
+	var colors = [["2e3436", "cc0000", "4e9a06", "c4a000", "3465a4", "75507b", "06989a", "d3d7cf", "555753", "ef2929", "8ae234", "fce94f", "729fcf", "ad7fa8", "34e2e2", "eeeeec", "000000", "00005f", "000087", "0000af", "0000d7", "0000ff", "005f00", "005f5f", "005f87", "005faf", "005fd7", "005fff", "008700", "00875f", "008787", "0087af", "0087d7", "0087ff", "00af00", "00af5f", "00af87", "00afaf", "00afd7", "00afff", "00d700", "00d75f", "00d787", "00d7af", "00d7d7", "00d7ff", "00ff00", "00ff5f", "00ff87", "00ffaf", "00ffd7", "00ffff", "5f0000", "5f005f", "5f0087", "5f00af", "5f00d7", "5f00ff", "5f5f00", "5f5f5f", "5f5f87", "5f5faf", "5f5fd7", "5f5fff", "5f8700", "5f875f", "5f8787", "5f87af", "5f87d7", "5f87ff", "5faf00", "5faf5f", "5faf87", "5fafaf", "5fafd7", "5fafff", "5fd700", "5fd75f", "5fd787", "5fd7af", "5fd7d7", "5fd7ff", "5fff00", "5fff5f", "5fff87", "5fffaf", "5fffd7", "5fffff", "870000", "87005f", "870087", "8700af", "8700d7", "8700ff", "875f00", "875f5f", "875f87", "875faf", "875fd7", "875fff", "878700", "87875f", "878787", "8787af", "8787d7", "8787ff", "87af00", "87af5f", "87af87", "87afaf", "87afd7", "87afff", "87d700", "87d75f", "87d787", "87d7af", "87d7d7", "87d7ff", "87ff00", "87ff5f", "87ff87", "87ffaf", "87ffd7", "87ffff", "af0000", "af005f", "af0087", "af00af", "af00d7", "af00ff", "af5f00", "af5f5f", "af5f87", "af5faf", "af5fd7", "af5fff", "af8700", "af875f", "af8787", "af87af", "af87d7", "af87ff", "afaf00", "afaf5f", "afaf87", "afafaf", "afafd7", "afafff", "afd700", "afd75f", "afd787", "afd7af", "afd7d7", "afd7ff", "afff00", "afff5f", "afff87", "afffaf", "afffd7", "afffff", "d70000", "d7005f", "d70087", "d700af", "d700d7", "d700ff", "d75f00", "d75f5f", "d75f87", "d75faf", "d75fd7", "d75fff", "d78700", "d7875f", "d78787", "d787af", "d787d7", "d787ff", "d7af00", "d7af5f", "d7af87", "d7afaf", "d7afd7", "d7afff", "d7d700", "d7d75f", "d7d787", "d7d7af", "d7d7d7", "d7d7ff", "d7ff00", "d7ff5f", "d7ff87", "d7ffaf", "d7ffd7", "d7ffff", "ff0000", "ff005f", "ff0087", "ff00af", "ff00d7", "ff00ff", "ff5f00", "ff5f5f", "ff5f87", "ff5faf", "ff5fd7", "ff5fff", "ff8700", "ff875f", "ff8787", "ff87af", "ff87d7", "ff87ff", "ffaf00", "ffaf5f", "ffaf87", "ffafaf", "ffafd7", "ffafff", "ffd700", "ffd75f", "ffd787", "ffd7af", "ffd7d7", "ffd7ff", "ffff00", "ffff5f", "ffff87", "ffffaf", "ffffd7", "ffffff", "080808", "121212", "1c1c1c", "262626", "303030", "3a3a3a", "444444", "4e4e4e", "585858", "626262", "6c6c6c", "767676", "808080", "8a8a8a", "949494", "9e9e9e", "a8a8a8", "b2b2b2", "bcbcbc", "c6c6c6", "d0d0d0", "dadada", "e4e4e4", "eeeeee"], ["2e3436", "cc0000", "4e9a06", "c4a000", "3465a4", "75507b", "06989a", "d3d7cf", "555753", "ef2929", "8ae234", "fce94f", "729fcf", "ad7fa8", "34e2e2", "eeeeec", "000000", "00005f", "000087", "0000af", "0000d7", "0000ff", "005f00", "005f5f", "005f87", "005faf", "005fd7", "005fff", "008700", "00875f", "008787", "0087af", "0087d7", "0087ff", "00af00", "00af5f", "00af87", "00afaf", "00afd7", "00afff", "00d700", "00d75f", "00d787", "00d7af", "00d7d7", "00d7ff", "00ff00", "00ff5f", "00ff87", "00ffaf", "00ffd7", "00ffff", "5f0000", "5f005f", "5f0087", "5f00af", "5f00d7", "5f00ff", "5f5f00", "5f5f5f", "5f5f87", "5f5faf", "5f5fd7", "5f5fff", "5f8700", "5f875f", "5f8787", "5f87af", "5f87d7", "5f87ff", "5faf00", "5faf5f", "5faf87", "5fafaf", "5fafd7", "5fafff", "5fd700", "5fd75f", "5fd787", "5fd7af", "5fd7d7", "5fd7ff", "5fff00", "5fff5f", "5fff87", "5fffaf", "5fffd7", "5fffff", "870000", "87005f", "870087", "8700af", "8700d7", "8700ff", "875f00", "875f5f", "875f87", "875faf", "875fd7", "875fff", "878700", "87875f", "878787", "8787af", "8787d7", "8787ff", "87af00", "87af5f", "87af87", "87afaf", "87afd7", "87afff", "87d700", "87d75f", "87d787", "87d7af", "87d7d7", "87d7ff", "87ff00", "87ff5f", "87ff87", "87ffaf", "87ffd7", "87ffff", "af0000", "af005f", "af0087", "af00af", "af00d7", "af00ff", "af5f00", "af5f5f", "af5f87", "af5faf", "af5fd7", "af5fff", "af8700", "af875f", "af8787", "af87af", "af87d7", "af87ff", "afaf00", "afaf5f", "afaf87", "afafaf", "afafd7", "afafff", "afd700", "afd75f", "afd787", "afd7af", "afd7d7", "afd7ff", "afff00", "afff5f", "afff87", "afffaf", "afffd7", "afffff", "d70000", "d7005f", "d70087", "d700af", "d700d7", "d700ff", "d75f00", "d75f5f", "d75f87", "d75faf", "d75fd7", "d75fff", "d78700", "d7875f", "d78787", "d787af", "d787d7", "d787ff", "d7af00", "d7af5f", "d7af87", "d7afaf", "d7afd7", "d7afff", "d7d700", "d7d75f", "d7d787", "d7d7af", "d7d7d7", "d7d7ff", "d7ff00", "d7ff5f", "d7ff87", "d7ffaf", "d7ffd7", "d7ffff", "ff0000", "ff005f", "ff0087", "ff00af", "ff00d7", "ff00ff", "ff5f00", "ff5f5f", "ff5f87", "ff5faf", "ff5fd7", "ff5fff", "ff8700", "ff875f", "ff8787", "ff87af", "ff87d7", "ff87ff", "ffaf00", "ffaf5f", "ffaf87", "ffafaf", "ffafd7", "ffafff", "ffd700", "ffd75f", "ffd787", "ffd7af", "ffd7d7", "ffd7ff", "ffff00", "ffff5f", "ffff87", "ffffaf", "ffffd7", "ffffff", "080808", "121212", "1c1c1c", "262626", "303030", "3a3a3a", "444444", "4e4e4e", "585858", "626262", "6c6c6c", "767676", "808080", "8a8a8a", "949494", "9e9e9e", "a8a8a8", "b2b2b2", "bcbcbc", "c6c6c6", "d0d0d0", "dadada", "e4e4e4", "eeeeee"]];
 
-	function isArray(arr) {
-	  return toString.call(arr) === '[object Array]';
-	}
+	var css = colors[0].map(function (color, i) {
+	  return "\n  .terminal .xc-" + i + " {\n    color: #" + color + ";\n  }\n";
+	}).join('\n') + colors[1].map(function (color, i) {
+	  return "\n  .terminal .xbc-" + i + " {\n    background-color: #" + color + ";\n  }\n";
+	}).join('\n');
 
-	function isString(str) {
-	  return typeof str === 'string';
-	}
-
-	function assign(a, b) {
-	  for (var key in b) {
-	    if (hasOwnProperty.call(b, key)) {
-	      a[key] = b[key];
-	    }
-	  }
-
-	  return a;
-	}
-
-	/**
-	 * @param {ArrayBuffer} arrayBuffer
-	 * @param {number} start
-	 * @param {number} length
-	 */
-	function readUtf8(arrayBuffer, start, length) {
-	  return decodeURIComponent(escape(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer, start, length))));
-	}
-
-	/**
-	 * @param {string} url
-	 * @param {function} callback
-	 */
-	function fetchArrayBuffer(url, callback) {
-	  var xhr = new XMLHttpRequest();
-	  xhr.open('GET', url, true);
-	  xhr.responseType = 'arraybuffer';
-	  xhr.send();
-	  var error = new Error('XMLHttpRequest error.');
-	  xhr.onload = function (_) {
-	    if (!/^2/.test(xhr.status)) {
-	      return callback(error);
-	    }
-	    callback(null, xhr.response);
-	  };
-	  xhr.onerror = function (_) {
-	    return callback(error);
-	  };
-	}
-
-	var div = document.createElement('div');
-	function element(template) {
-	  div.innerHTML = template;
-
-	  var refsElement = div.querySelectorAll('[ref]');
-	  var refs = {};
-
-	  for (var i = 0, len = refsElement.length; i < len; i++) {
-	    var node = refsElement[i];
-	    var ref = node.getAttribute('ref');
-	    node.removeAttribute('ref');
-	    refs[ref] = node;
-	  }
-
-	  return {
-	    refs: refs,
-	    element: div.children[0]
-	  };
-	}
-
-	/**
-	 * @param {Element} el
-	 * @param {function(Element): boolean} cond
-	 */
-	function closet(el, cond) {
-	  var elem = el;
-
-	  while (elem && elem !== document) {
-	    if (cond(elem)) {
-	      return elem;
-	    }
-
-	    elem = elem.parentNode;
-	  }
-	}
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	exports.__esModule = true;
-	exports.default = Select;
-
-	var _component = __webpack_require__(10);
-
-	var _component2 = _interopRequireDefault(_component);
-
-	var _utils = __webpack_require__(8);
-
-	var _xterm = __webpack_require__(7);
-
-	var _xterm2 = _interopRequireDefault(_xterm);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var inherits = _xterm2.default.inherits;
-
-	function Select(trigger, select) {
-	  _component2.default.call(this);
-
-	  this.trigger = trigger;
-	  this.selector = select;
-	  this.bindEvents();
-	  this.set('active', false);
-	}
-
-	inherits(Select, _component2.default);
-
-	(0, _utils.assign)(Select.prototype, {
-	  bindEvents: function bindEvents() {
-	    var _this = this;
-
-	    this.trigger.addEventListener('click', function (e) {
-	      e.stopPropagation();
-	      _this.set('active', !_this.get('active'));
-	    }, false);
-
-	    this.selector.addEventListener('click', function (e) {
-	      e.preventDefault();
-	      var optionItem = (0, _utils.closet)(e.target, function (el) {
-	        return el.dataset.value;
-	      });
-	      optionItem && _this.select(optionItem);
-	    }, false);
-
-	    document.addEventListener('click', function (_) {
-	      _this.set('active', false);
-	    });
-	  },
-	  select: function select(item) {
-	    var optionItem = void 0;
-	    if (item.tagName) {
-	      optionItem = item;
-	    } else {
-	      optionItem = this.selector.querySelector('[data-value="' + item + '"]');
-	    }
-
-	    if (optionItem) {
-	      var value = optionItem.dataset.value;
-	      var text = optionItem.textContent;
-	      this.set('value', value);
-	      this.set('text', text);
-	    }
-	  },
-	  onChange: function onChange(key, value) {
-	    if (key === 'active') {
-	      if (value) {
-	        this.selector.classList.remove('hide');
-	      } else {
-	        this.selector.classList.add('hide');
-	      }
-	      return;
-	    }
-
-	    if (key === 'value') {
-	      this.emit('change', value);
-	      return;
-	    }
-
-	    if (key === 'text') {
-	      this.trigger.textContent = value;
-	    }
-	  }
-	});
-
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	exports.__esModule = true;
-	exports.default = Component;
-
-	var _xterm = __webpack_require__(7);
-
-	var _xterm2 = _interopRequireDefault(_xterm);
-
-	var _utils = __webpack_require__(8);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var EventEmitter = _xterm2.default.EventEmitter;
-	var inherits = _xterm2.default.inherits;
-
-	function Component() {
-	  EventEmitter.call(this);
-	}
-
-	inherits(Component, EventEmitter);
-
-	(0, _utils.assign)(Component.prototype, {
-	  set: function set(key, value) {
-	    var data = this.data || (this.data = {});
-	    var prev = this.get(key);
-	    data[key] = value;
-	    if (prev !== value) {
-	      this.onChange && this.onChange(key, value);
-	    }
-	  },
-	  get: function get(key) {
-	    return this.data && this.data[key];
-	  }
-	});
+	var styleElement = document.createElement('style');
+	styleElement.setAttribute('type', 'text/css');
+	styleElement.textContent = css;
+	document.head.appendChild(styleElement);
 
 /***/ },
 /* 11 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 12 */,
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	exports.__esModule = true;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _component = __webpack_require__(14);
+
+	var _component2 = __webpack_require__(8).interopRequireDefault(_component);
+
+	var _utils = __webpack_require__(7);
+
+	var Select = function (_Component) {
+	  __webpack_require__(8).inherits(Select, _Component);
+
+	  function Select(trigger, select) {
+	    __webpack_require__(8).classCallCheck(this, Select);
+
+	    var _this = __webpack_require__(8).possibleConstructorReturn(this, (Select.__proto__ || Object.getPrototypeOf(Select)).call(this));
+
+	    _this.trigger = trigger;
+	    _this.selector = select;
+	    _this.bindEvents();
+	    _this.set('active', false);
+	    return _this;
+	  }
+
+	  __webpack_require__(8).createClass(Select, [{
+	    key: 'bindEvents',
+	    value: function bindEvents() {
+	      var _this2 = this;
+
+	      this.trigger.addEventListener('click', function (e) {
+	        e.stopPropagation();
+	        _this2.set('active', !_this2.get('active'));
+	      }, false);
+
+	      this.selector.addEventListener('click', function (e) {
+	        e.preventDefault();
+	        var optionItem = (0, _utils.closet)(e.target, function (el) {
+	          return el.dataset.value;
+	        });
+	        optionItem && _this2.select(optionItem);
+	      }, false);
+
+	      document.addEventListener('click', function (_) {
+	        _this2.set('active', false);
+	      });
+	    }
+	  }, {
+	    key: 'select',
+	    value: function select(item) {
+	      var optionItem = void 0;
+	      if (item.tagName) {
+	        optionItem = item;
+	      } else {
+	        optionItem = this.selector.querySelector('[data-value="' + item + '"]');
+	      }
+
+	      if (optionItem) {
+	        var value = optionItem.dataset.value;
+	        var text = optionItem.textContent;
+	        this.set('value', value);
+	        this.set('text', text);
+	      }
+	    }
+	  }, {
+	    key: 'onChange',
+	    value: function onChange(key, value) {
+	      if (key === 'active') {
+	        if (value) {
+	          this.selector.classList.remove('hide');
+	        } else {
+	          this.selector.classList.add('hide');
+	        }
+	        return;
+	      }
+
+	      if (key === 'value') {
+	        this.emit('change', value);
+	        return;
+	      }
+
+	      if (key === 'text') {
+	        this.trigger.textContent = value;
+	      }
+	    }
+	  }]);
+
+	  return Select;
+	}(_component2.default);
+
+	exports.default = Select;
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _xterm = __webpack_require__(9);
+
+	var _xterm2 = __webpack_require__(8).interopRequireDefault(_xterm);
+
+	var EventEmitter = _xterm2.default.EventEmitter;
+
+	var Component = function (_EventEmitter) {
+	  __webpack_require__(8).inherits(Component, _EventEmitter);
+
+	  function Component() {
+	    __webpack_require__(8).classCallCheck(this, Component);
+
+	    return __webpack_require__(8).possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this));
+	  }
+
+	  __webpack_require__(8).createClass(Component, [{
+	    key: 'set',
+	    value: function set(key, value) {
+	      var data = this.data || (this.data = {});
+	      var prev = this.get(key);
+	      data[key] = value;
+	      if (prev !== value) {
+	        this.onChange && this.onChange(key, value);
+	      }
+	    }
+	  }, {
+	    key: 'get',
+	    value: function get(key) {
+	      return this.data && this.data[key];
+	    }
+	  }]);
+
+	  return Component;
+	}(EventEmitter);
+
+	exports.default = Component;
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	exports.default = decode;
 
-	var _utils = __webpack_require__(8);
+	var _utils = __webpack_require__(7);
 
 	/**
 	 * @param {ArrayBuffer} arrayBuffer
@@ -2280,7 +3213,7 @@
 	}
 
 /***/ },
-/* 12 */
+/* 16 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"ttyplayer\" ref=\"container\">\n<header class=\"ttyplayer-header\">TTYPlayer</header>\n<div class=\"ttyplayer-body\" ref=\"body\"></div>\n<footer class=\"ttyplayer-footer\">\n<button class=\"play hide\" ref=\"playButton\">\n<i></i>\n<span>play</span>\n</button>\n<button class=\"pause hide\" ref=\"pauseButton\">\n<i></i>\n<span>pause</span>\n</button>\n<div class=\"button-wrap\">\n<div class=\"select-wrap\" ref=\"speedSelect\">\n<div class=\"select\">\n<a href=\"#\" data-value=\"8\">8x</a>\n<a href=\"#\" data-value=\"4\">4x</a>\n<a href=\"#\" data-value=\"2\">2x</a>\n<a href=\"#\" data-value=\"1\">1x</a>\n<a href=\"#\" data-value=\"0.5\">0.5x</a>\n<a href=\"#\" data-value=\"0.25\">0.25x</a>\n</div>\n</div>\n<button class=\"speed\" ref=\"speedButton\">\n1x\n</button>\n</div>\n</footer>\n</div>\n"

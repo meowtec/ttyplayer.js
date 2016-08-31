@@ -30,8 +30,6 @@ export default class TermPlayer extends Component {
   }
 
   mount(parentNode) {
-    let target, playButton, pauseButton, speedButton
-
     const { element, refs } = $(template)
 
     parentNode.appendChild(element)
