@@ -30,6 +30,8 @@
  *   has been extended to include xterm CSI codes, among
  *   other features.
  */
+import './xterm-css'
+import './xterm.css'
 
 export default (function() {
     /**
