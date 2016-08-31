@@ -1,3 +1,4 @@
+import Timer from './timer'
 import Terminal from '../libs/xterm.js'
 import { assign } from './utils'
 const EventEmitter = Terminal.EventEmitter
@@ -40,16 +41,12 @@ assign(TermPlayer.prototype, {
   },
 
   pause() {
-    clearTimeout(this._nextTimer)
+    this._nextTimer.pause()
     this.emit('pause')
   },
 
   resume() {
-    if (this.atEnd()) {
-      this.play()
-    } else {
-      this.renderFrame()
-    }
+    this._nextTimer.resume()
     this.emit('play')
   },
 
@@ -67,12 +64,17 @@ assign(TermPlayer.prototype, {
 
   next(currentFrame, nextFrame) {
     if (nextFrame) {
-      this._nextTimer = setTimeout(
+      this._nextTimer = new Timer(
         _ => this.renderFrame(),
-        (nextFrame.time - currentFrame.time) / this.speed
+        (nextFrame.time - currentFrame.time),
+        this.speed
       )
     } else if (this.repeat) {
-      this._nextTimer = setTimeout(_ => this.play(), this.interval)
+      this._nextTimer = new Timer(
+        _ => this.play(),
+        this.interval,
+        this.speed
+      )
     } else {
       this.emit('end')
     }
