@@ -3,30 +3,23 @@ import './player.less'
 import Core from './player-core'
 import Select from './select'
 import Component from './component'
-import Terminal from '../libs/xterm.js'
 import decode from './decode'
 import { element as $, assign, fetchArrayBuffer } from './utils'
 import template from './player.htm'
 
-const inherits = Terminal.inherits
-const EventEmitter = Terminal.EventEmitter
+export default class TermPlayer extends Component {
+  constructor(options) {
+    super()
 
-export default function TermPlayer(options) {
-  Component.call(this)
+    this.options = assign({}, options)
+    this.mount(options.parent)
+    this.createCorePlayer()
+    this.delegate()
+    this.createSpeedSelect()
+    this.bindEvent()
 
-  this.options = assign({}, options)
-  this.mount(options.parent)
-  this.createCorePlayer()
-  this.delegate()
-  this.createSpeedSelect()
-  this.bindEvent()
-
-  this.set('isPlaying', false)
-}
-
-inherits(TermPlayer, Component)
-
-assign(TermPlayer.prototype, {
+    this.set('isPlaying', false)
+  }
 
   onChange(key, value) {
     if (key === 'isPlaying') {
@@ -34,7 +27,7 @@ assign(TermPlayer.prototype, {
       this.refs.pauseButton.classList[value ? 'remove' : 'add']('hide')
       return
     }
-  },
+  }
 
   mount(parentNode) {
     let target, playButton, pauseButton, speedButton
@@ -44,7 +37,7 @@ assign(TermPlayer.prototype, {
     parentNode.appendChild(element)
     this.options.parent = refs.body
     this.refs = refs
-  },
+  }
 
   delegate() {
     const player = this.player
@@ -52,7 +45,7 @@ assign(TermPlayer.prototype, {
     ;[ 'play', 'resume', 'pause' ].forEach(method => {
       this[method] = player[method].bind(player)
     })
-  },
+  }
 
   bindEvent() {
     this.refs.playButton.addEventListener('click', this.resume)
@@ -69,15 +62,15 @@ assign(TermPlayer.prototype, {
     this.speedSelect.on('change', value => {
       this.player.speed = value
     })
-  },
+  }
 
   createCorePlayer() {
     this.player = new Core(this.options)
-  },
+  }
 
   createSpeedSelect() {
     this.speedSelect = new Select(this.refs.speedButton, this.refs.speedSelect)
-  },
+  }
 
   load(url) {
     fetchArrayBuffer(url, (err, data) => {
@@ -95,31 +88,31 @@ assign(TermPlayer.prototype, {
       this.play(frames)
     })
   }
-})
 
-/**
- * Usage:
- *
- * <div
- *  data-termplayer-source="./a.rec"
- *  data-termplayer-cols="120"
- *  data-termplayer-rows="40"
- * ></div>
- *
- * TermPlayer.initAll()
- */
-TermPlayer.initAll = function() {
-  const attrSource = 'data-termplayer-source'
-  const targets = document.querySelectorAll('[' + attrSource + ']')
-  let target
+  /**
+   * Usage:
+   *
+   * <div
+   *  data-termplayer-source="./a.rec"
+   *  data-termplayer-cols="120"
+   *  data-termplayer-rows="40"
+   * ></div>
+   *
+   * TermPlayer.initAll()
+   */
+  static initAll() {
+    const attrSource = 'data-termplayer-source'
+    const targets = document.querySelectorAll('[' + attrSource + ']')
+    let target
 
-  for (let i = 0; i < targets.length; i++) {
-    target = targets[i]
-    new TermPlayer({
-      parent: target,
-      cols: parseInt(target.getAttribute('data-termplayer-cols') || defaultCols, 10),
-      rows: parseInt(target.getAttribute('data-termplayer-rows') || defaultRows, 10)
-    }).load(target.getAttribute(attrSource))
+    for (let i = 0; i < targets.length; i++) {
+      target = targets[i]
+      new TermPlayer({
+        parent: target,
+        cols: parseInt(target.getAttribute('data-termplayer-cols') || defaultCols, 10),
+        rows: parseInt(target.getAttribute('data-termplayer-rows') || defaultRows, 10)
+      }).load(target.getAttribute(attrSource))
+    }
   }
 }
 

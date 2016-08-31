@@ -1,21 +1,15 @@
 import Component from './component'
-import { assign, closet } from './utils'
-import Terminal from '../libs/xterm.js'
+import { closet } from './utils'
 
-const inherits = Terminal.inherits
+export default class Select extends Component {
+  constructor(trigger, select) {
+    super()
 
-export default function Select(trigger, select) {
-  Component.call(this)
-
-  this.trigger = trigger
-  this.selector = select
-  this.bindEvents()
-  this.set('active', false)
-}
-
-inherits(Select, Component)
-
-assign(Select.prototype, {
+    this.trigger = trigger
+    this.selector = select
+    this.bindEvents()
+    this.set('active', false)
+  }
 
   bindEvents() {
     this.trigger.addEventListener('click', e => {
@@ -32,7 +26,7 @@ assign(Select.prototype, {
     document.addEventListener('click', _ => {
       this.set('active', false)
     })
-  },
+  }
 
   select(item) {
     let optionItem
@@ -48,7 +42,7 @@ assign(Select.prototype, {
       this.set('value', value)
       this.set('text', text)
     }
-  },
+  }
 
   onChange(key, value) {
     if (key === 'active') {
@@ -69,4 +63,4 @@ assign(Select.prototype, {
       this.trigger.textContent = value
     }
   }
-})
+}

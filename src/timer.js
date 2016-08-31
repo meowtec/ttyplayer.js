@@ -1,11 +1,11 @@
 import { assign } from './utils'
 
-export default function Timer(callback, time, rate = 1) {
-  this._rate = rate
-  this._setTimeout(callback, time)
-}
+export default class Timer {
+  constructor(callback, time, rate = 1) {
+    this._rate = rate
+    this._setTimeout(callback, time)
+  }
 
-assign(Timer.prototype, {
   set rate(x) {
     this._rate = x
 
@@ -13,7 +13,7 @@ assign(Timer.prototype, {
       this.pause()
       this.resume()
     }
-  },
+  }
 
   get rest() {
     if (this.finish) {
@@ -24,11 +24,11 @@ assign(Timer.prototype, {
       const rest = this._time - (new Date() - this._startTime)
       return rest > 0 ? rest : 0
     }
-  },
+  }
 
   get finish() {
     return this._finish
-  },
+  }
 
   _setTimeout(callback, time) {
     this._timer = setTimeout(() => {
@@ -42,21 +42,22 @@ assign(Timer.prototype, {
     this._startTime = new Date()
     this._callback = callback
     this._rest = null
-  },
+  }
 
   pause() {
     clearTimeout(this._timer)
     this._rest = this.rest
-  },
+  }
 
   resume() {
     if (this._rest != null) {
       this._setTimeout(this._callback, this._rest)
     }
-  },
+  }
 
   clear() {
     this.pause()
     this._rest = null
   }
-})
+}
+

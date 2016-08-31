@@ -2,33 +2,23 @@ import Timer from './timer'
 import Terminal from '../libs/xterm.js'
 import { assign } from './utils'
 const EventEmitter = Terminal.EventEmitter
-const inherits = Terminal.inherits
 
 const defaultCols = 80
 const defaultRows = 30
 
-export default function TermPlayer(options) {
-  EventEmitter.call(this)
+export default class TermPlayer extends EventEmitter {
+  constructor(options) {
+    super()
 
-  const term = new Terminal(options)
-  term.open()
+    const term = new Terminal(options)
+    term.open()
 
-  this.term = term
-}
-
-inherits(TermPlayer, EventEmitter)
-
-assign(TermPlayer.prototype, {
-
-  speed: 1,
-
-  repeat: true,
-
-  interval: 3000,
+    this.term = term
+  }
 
   atEnd() {
     return this.step === this.frames.length
-  },
+  }
 
   play(frames) {
     if (frames) {
@@ -38,17 +28,17 @@ assign(TermPlayer.prototype, {
     this.step = 0
     this.renderFrame()
     this.emit('play')
-  },
+  }
 
   pause() {
     this._nextTimer.pause()
     this.emit('pause')
-  },
+  }
 
   resume() {
     this._nextTimer.resume()
     this.emit('play')
-  },
+  }
 
   renderFrame() {
     const step = this.step
@@ -60,7 +50,7 @@ assign(TermPlayer.prototype, {
     this.step = step + 1
 
     this.next(currentFrame, nextFrame)
-  },
+  }
 
   next(currentFrame, nextFrame) {
     if (nextFrame) {
@@ -79,4 +69,10 @@ assign(TermPlayer.prototype, {
       this.emit('end')
     }
   }
+}
+
+assign(TermPlayer.prototype, {
+  speed: 1,
+  repeat: true,
+  interval: 3000,
 })
