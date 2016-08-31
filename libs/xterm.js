@@ -123,85 +123,85 @@ export default (function() {
      * @param {HTMLElement} compositionView The element to display the in-progress composition in.
      * @param {Terminal} terminal The Terminal to forward the finished composition to.
      */
-    function CompositionHelper(textarea, compositionView, terminal) {
-      this.textarea = textarea
-      this.compositionView = compositionView
-      this.terminal = terminal
+    // function CompositionHelper(textarea, compositionView, terminal) {
+    //   this.textarea = textarea
+    //   this.compositionView = compositionView
+    //   this.terminal = terminal
 
-      // Whether input composition is currently happening, eg. via a mobile keyboard, speech input
-      // or IME. This variable determines whether the compositionText should be displayed on the UI.
-      this.isComposing = false
+    //   // Whether input composition is currently happening, eg. via a mobile keyboard, speech input
+    //   // or IME. This variable determines whether the compositionText should be displayed on the UI.
+    //   this.isComposing = false
 
-      // The input currently being composed, eg. via a mobile keyboard, speech input or IME.
-      this.compositionText = null
+    //   // The input currently being composed, eg. via a mobile keyboard, speech input or IME.
+    //   this.compositionText = null
 
-      // The position within the input textarea's value of the current composition.
-      this.compositionPosition = { start: null, end: null }
+    //   // The position within the input textarea's value of the current composition.
+    //   this.compositionPosition = { start: null, end: null }
 
-      // Whether a composition is in the process of being sent, setting this to false will cancel
-      // any in-progress composition.
-      this.isSendingComposition = false
-    }
+    //   // Whether a composition is in the process of being sent, setting this to false will cancel
+    //   // any in-progress composition.
+    //   this.isSendingComposition = false
+    // }
 
     /**
      * Handles the compositionstart event, activating the composition view.
      */
-    CompositionHelper.prototype.compositionstart = function() {
-      this.isComposing = true
-      this.compositionPosition.start = this.textarea.value.length
-      this.compositionView.textContent = ''
-      this.compositionView.classList.add('active')
-    }
+    // CompositionHelper.prototype.compositionstart = function() {
+    //   this.isComposing = true
+    //   this.compositionPosition.start = this.textarea.value.length
+    //   this.compositionView.textContent = ''
+    //   this.compositionView.classList.add('active')
+    // }
 
     /**
      * Handles the compositionupdate event, updating the composition view.
      * @param {CompositionEvent} ev The event.
      */
-    CompositionHelper.prototype.compositionupdate = function(ev) {
-      this.compositionView.textContent = ev.data
-      this.updateCompositionElements()
-      var self = this
-      setTimeout(function() {
-        self.compositionPosition.end = self.textarea.value.length
-      }, 0)
-    }
+    // CompositionHelper.prototype.compositionupdate = function(ev) {
+    //   this.compositionView.textContent = ev.data
+    //   this.updateCompositionElements()
+    //   var self = this
+    //   setTimeout(function() {
+    //     self.compositionPosition.end = self.textarea.value.length
+    //   }, 0)
+    // }
 
     /**
      * Handles the compositionend event, hiding the composition view and sending the composition to
      * the handler.
      */
-    CompositionHelper.prototype.compositionend = function() {
-      this.finalizeComposition(true)
-    }
+    // CompositionHelper.prototype.compositionend = function() {
+    //   this.finalizeComposition(true)
+    // }
 
     /**
      * Handles the keydown event, routing any necessary events to the CompositionHelper functions.
      * @return Whether the Terminal should continue processing the keydown event.
      */
-    CompositionHelper.prototype.keydown = function(ev) {
-      if (this.isComposing || this.isSendingComposition) {
-        if (ev.keyCode === 229) {
-          // Continue composing if the keyCode is the "composition character"
-          return false
-        } else if (ev.keyCode === 16 || ev.keyCode === 17 || ev.keyCode === 18) {
-          // Continue composing if the keyCode is a modifier key
-          return false
-        } else {
-          // Finish composition immediately. This is mainly here for the case where enter is
-          // pressed and the handler needs to be triggered before the command is executed.
-          this.finalizeComposition(false)
-        }
-      }
+    // CompositionHelper.prototype.keydown = function(ev) {
+    //   if (this.isComposing || this.isSendingComposition) {
+    //     if (ev.keyCode === 229) {
+    //       // Continue composing if the keyCode is the "composition character"
+    //       return false
+    //     } else if (ev.keyCode === 16 || ev.keyCode === 17 || ev.keyCode === 18) {
+    //       // Continue composing if the keyCode is a modifier key
+    //       return false
+    //     } else {
+    //       // Finish composition immediately. This is mainly here for the case where enter is
+    //       // pressed and the handler needs to be triggered before the command is executed.
+    //       this.finalizeComposition(false)
+    //     }
+    //   }
 
-      if (ev.keyCode === 229) {
-        // If the "composition character" is used but gets to this point it means a non-composition
-        // character (eg. numbers and punctuation) was pressed when the IME was active.
-        this.handleAnyTextareaChanges()
-        return false
-      }
+    //   if (ev.keyCode === 229) {
+    //     // If the "composition character" is used but gets to this point it means a non-composition
+    //     // character (eg. numbers and punctuation) was pressed when the IME was active.
+    //     this.handleAnyTextareaChanges()
+    //     return false
+    //   }
 
-      return true
-    }
+    //   return true
+    // }
 
     /**
      * Finalizes the composition, resuming regular input actions. This is called when a composition
@@ -211,53 +211,53 @@ export default (function() {
      *   compositionend event is triggered, such as enter, so that the composition is send before
      *   the command is executed.
      */
-    CompositionHelper.prototype.finalizeComposition = function(waitForPropogation) {
-      this.compositionView.classList.remove('active')
-      this.isComposing = false
-      this.clearTextareaPosition()
+    // CompositionHelper.prototype.finalizeComposition = function(waitForPropogation) {
+    //   this.compositionView.classList.remove('active')
+    //   this.isComposing = false
+    //   this.clearTextareaPosition()
 
-      if (!waitForPropogation) {
-        // Cancel any delayed composition send requests and send the input immediately.
-        this.isSendingComposition = false
-        var input = this.textarea.value.substring(this.compositionPosition.start, this.compositionPosition.end)
-        this.terminal.handler(input)
-      } else {
-        // Make a deep copy of the composition position here as a new compositionstart event may
-        // fire before the setTimeout executes.
-        var currentCompositionPosition = {
-          start: this.compositionPosition.start,
-          end: this.compositionPosition.end,
-        }
+    //   if (!waitForPropogation) {
+    //     // Cancel any delayed composition send requests and send the input immediately.
+    //     this.isSendingComposition = false
+    //     var input = this.textarea.value.substring(this.compositionPosition.start, this.compositionPosition.end)
+    //     this.terminal.handler(input)
+    //   } else {
+    //     // Make a deep copy of the composition position here as a new compositionstart event may
+    //     // fire before the setTimeout executes.
+    //     var currentCompositionPosition = {
+    //       start: this.compositionPosition.start,
+    //       end: this.compositionPosition.end,
+    //     }
 
-        // Since composition* events happen before the changes take place in the textarea on most
-        // browsers, use a setTimeout with 0ms time to allow the native compositionend event to
-        // complete. This ensures the correct character is retrieved, this solution was used
-        // because:
-        // - The compositionend event's data property is unreliable, at least on Chromium
-        // - The last compositionupdate event's data property does not always accurately describe
-        //   the character, a counter example being Korean where an ending consonsant can move to
-        //   the following character if the following input is a vowel.
-        var self = this
-        this.isSendingComposition = true
-        setTimeout(function () {
-          // Ensure that the input has not already been sent
-          if (self.isSendingComposition) {
-            self.isSendingComposition = false
-            var input
-            if (self.isComposing) {
-              // Use the end position to get the string if a new composition has started.
-              input = self.textarea.value.substring(currentCompositionPosition.start, currentCompositionPosition.end)
-            } else {
-              // Don't use the end position here in order to pick up any characters after the
-              // composition has finished, for example when typing a non-composition character
-              // (eg. 2) after a composition character.
-              input = self.textarea.value.substring(currentCompositionPosition.start)
-            }
-            self.terminal.handler(input)
-          }
-        }, 0)
-      }
-    }
+    //     // Since composition* events happen before the changes take place in the textarea on most
+    //     // browsers, use a setTimeout with 0ms time to allow the native compositionend event to
+    //     // complete. This ensures the correct character is retrieved, this solution was used
+    //     // because:
+    //     // - The compositionend event's data property is unreliable, at least on Chromium
+    //     // - The last compositionupdate event's data property does not always accurately describe
+    //     //   the character, a counter example being Korean where an ending consonsant can move to
+    //     //   the following character if the following input is a vowel.
+    //     var self = this
+    //     this.isSendingComposition = true
+    //     setTimeout(function () {
+    //       // Ensure that the input has not already been sent
+    //       if (self.isSendingComposition) {
+    //         self.isSendingComposition = false
+    //         var input
+    //         if (self.isComposing) {
+    //           // Use the end position to get the string if a new composition has started.
+    //           input = self.textarea.value.substring(currentCompositionPosition.start, currentCompositionPosition.end)
+    //         } else {
+    //           // Don't use the end position here in order to pick up any characters after the
+    //           // composition has finished, for example when typing a non-composition character
+    //           // (eg. 2) after a composition character.
+    //           input = self.textarea.value.substring(currentCompositionPosition.start)
+    //         }
+    //         self.terminal.handler(input)
+    //       }
+    //     }, 0)
+    //   }
+    // }
 
     /**
      * Apply any changes made to the textarea after the current event chain is allowed to complete.
@@ -265,46 +265,46 @@ export default (function() {
      * character" (229) is triggered, in order to allow non-composition text to be entered when an
      * IME is active.
      */
-    CompositionHelper.prototype.handleAnyTextareaChanges = function() {
-      var oldValue = this.textarea.value
-      var self = this
-      setTimeout(function() {
-        // Ignore if a composition has started since the timeout
-        if (!self.isComposing) {
-          var newValue = self.textarea.value
-          var diff = newValue.replace(oldValue, '')
-          if (diff.length > 0) {
-            self.terminal.handler(diff)
-          }
-        }
-      }, 0)
-    }
+    // CompositionHelper.prototype.handleAnyTextareaChanges = function() {
+    //   var oldValue = this.textarea.value
+    //   var self = this
+    //   setTimeout(function() {
+    //     // Ignore if a composition has started since the timeout
+    //     if (!self.isComposing) {
+    //       var newValue = self.textarea.value
+    //       var diff = newValue.replace(oldValue, '')
+    //       if (diff.length > 0) {
+    //         self.terminal.handler(diff)
+    //       }
+    //     }
+    //   }, 0)
+    // }
 
     /**
      * Positions the composition view on top of the cursor and the textarea just below it (so the
      * IME helper dialog is positioned correctly).
      */
-    CompositionHelper.prototype.updateCompositionElements = function() {
-      if (!this.isComposing) {
-        return
-      }
-      var cursor = this.terminal.element.querySelector('.terminal-cursor')
-      if (cursor) {
-        this.compositionView.style.left = cursor.offsetLeft + 'px'
-        this.compositionView.style.top = cursor.offsetTop + 'px'
-        this.textarea.style.left = cursor.offsetLeft + 'px'
-        this.textarea.style.top = (cursor.offsetTop + cursor.offsetHeight) + 'px'
-      }
-    }
+    // CompositionHelper.prototype.updateCompositionElements = function() {
+    //   if (!this.isComposing) {
+    //     return
+    //   }
+    //   var cursor = this.terminal.element.querySelector('.terminal-cursor')
+    //   if (cursor) {
+    //     this.compositionView.style.left = cursor.offsetLeft + 'px'
+    //     this.compositionView.style.top = cursor.offsetTop + 'px'
+    //     this.textarea.style.left = cursor.offsetLeft + 'px'
+    //     this.textarea.style.top = (cursor.offsetTop + cursor.offsetHeight) + 'px'
+    //   }
+    // }
 
     /**
      * Clears the textarea's position so that the cursor does not blink on IE.
      * @private
      */
-    CompositionHelper.prototype.clearTextareaPosition = function() {
-      this.textarea.style.left = ''
-      this.textarea.style.top = ''
-    }
+    // CompositionHelper.prototype.clearTextareaPosition = function() {
+    //   this.textarea.style.left = ''
+    //   this.textarea.style.top = ''
+    // }
 
     /**
      * Represents the viewport of a terminal, the visible area within the larger buffer of output.
@@ -741,17 +741,17 @@ export default (function() {
      *
      * @static
      */
-    Terminal.bindFocus = function (term) {
-      on(term.textarea, 'focus', function (ev) {
-        if (term.sendFocus) {
-          term.send('\x1b[I')
-        }
-        term.element.classList.add('focus')
-        term.showCursor()
-        Terminal.focus = term
-        term.emit('focus', {terminal: term})
-      })
-    }
+    // Terminal.bindFocus = function (term) {
+    //   on(term.textarea, 'focus', function (ev) {
+    //     if (term.sendFocus) {
+    //       term.send('\x1b[I')
+    //     }
+    //     term.element.classList.add('focus')
+    //     term.showCursor()
+    //     Terminal.focus = term
+    //     term.emit('focus', {terminal: term})
+    //   })
+    // }
 
     /**
      * Blur the terminal. Delegates blur handling to the terminal's DOM element.
@@ -765,44 +765,50 @@ export default (function() {
      *
      * @static
      */
-    Terminal.bindBlur = function (term) {
-      on(term.textarea, 'blur', function (ev) {
-        term.refresh(term.y, term.y)
-        if (term.sendFocus) {
-          term.send('\x1b[O')
-        }
-        term.element.classList.remove('focus')
-        Terminal.focus = null
-        term.emit('blur', {terminal: term})
-      })
-    }
+    // Terminal.bindBlur = function (term) {
+    //   on(term.textarea, 'blur', function (ev) {
+    //     term.refresh(term.y, term.y)
+    //     if (term.sendFocus) {
+    //       term.send('\x1b[O')
+    //     }
+    //     term.element.classList.remove('focus')
+    //     Terminal.focus = null
+    //     term.emit('blur', {terminal: term})
+    //   })
+    // }
 
     /**
      * Initialize default behavior
      */
     Terminal.prototype.initGlobal = function() {
-      Terminal.bindPaste(this)
-      Terminal.bindKeys(this)
-      Terminal.bindCopy(this)
-      Terminal.bindFocus(this)
-      Terminal.bindBlur(this)
+      // Terminal.bindPaste(this)
+      // Terminal.bindKeys(this)
+      // Terminal.bindCopy(this)
+      // Terminal.bindFocus(this)
+      // Terminal.bindBlur(this)
+
+      setTimeout(() => {
+        this.send('\x1b[I')
+        this.element.classList.add('focus')
+        this.showCursor()
+      })
     }
 
     /**
      * Bind to paste event and allow both keyboard and right-click pasting, without having the
      * contentEditable value set to true.
      */
-    Terminal.bindPaste = function(term) {
-      on([term.textarea, term.element], 'paste', function(ev) {
-        ev.stopPropagation()
-        if (ev.clipboardData) {
-          var text = ev.clipboardData.getData('text/plain')
-          term.handler(text)
-          term.textarea.value = ''
-          return term.cancel(ev)
-        }
-      })
-    }
+    // Terminal.bindPaste = function(term) {
+    //   on([term.textarea, term.element], 'paste', function(ev) {
+    //     ev.stopPropagation()
+    //     if (ev.clipboardData) {
+    //       var text = ev.clipboardData.getData('text/plain')
+    //       term.handler(text)
+    //       term.textarea.value = ''
+    //       return term.cancel(ev)
+    //     }
+    //   })
+    // }
 
     /**
      * Prepares text copied from terminal selection, to be saved in the clipboard by:
@@ -832,48 +838,48 @@ export default (function() {
     /**
      * Apply key handling to the terminal
      */
-    Terminal.bindKeys = function(term) {
-      on(term.element, 'keydown', function(ev) {
-        if (document.activeElement != this) {
-          return
-         }
-         term.keyDown(ev)
-      }, true)
+    // Terminal.bindKeys = function(term) {
+    //   on(term.element, 'keydown', function(ev) {
+    //     if (document.activeElement != this) {
+    //       return
+    //      }
+    //      term.keyDown(ev)
+    //   }, true)
 
-      on(term.element, 'keypress', function(ev) {
-        if (document.activeElement != this) {
-          return
-        }
-        term.keyPress(ev)
-      }, true)
+    //   on(term.element, 'keypress', function(ev) {
+    //     if (document.activeElement != this) {
+    //       return
+    //     }
+    //     term.keyPress(ev)
+    //   }, true)
 
-      on(term.element, 'keyup', term.focus.bind(term))
+    //   on(term.element, 'keyup', term.focus.bind(term))
 
-      on(term.textarea, 'keydown', function(ev) {
-        term.keyDown(ev)
-      }, true)
+    //   on(term.textarea, 'keydown', function(ev) {
+    //     term.keyDown(ev)
+    //   }, true)
 
-      on(term.textarea, 'keypress', function(ev) {
-        term.keyPress(ev)
-        // Truncate the textarea's value, since it is not needed
-        this.value = ''
-      }, true)
+    //   on(term.textarea, 'keypress', function(ev) {
+    //     term.keyPress(ev)
+    //     // Truncate the textarea's value, since it is not needed
+    //     this.value = ''
+    //   }, true)
 
-      on(term.textarea, 'compositionstart', term.compositionHelper.compositionstart.bind(term.compositionHelper))
-      on(term.textarea, 'compositionupdate', term.compositionHelper.compositionupdate.bind(term.compositionHelper))
-      on(term.textarea, 'compositionend', term.compositionHelper.compositionend.bind(term.compositionHelper))
-      term.on('refresh', term.compositionHelper.updateCompositionElements.bind(term.compositionHelper))
-    }
+    //   on(term.textarea, 'compositionstart', term.compositionHelper.compositionstart.bind(term.compositionHelper))
+    //   on(term.textarea, 'compositionupdate', term.compositionHelper.compositionupdate.bind(term.compositionHelper))
+    //   on(term.textarea, 'compositionend', term.compositionHelper.compositionend.bind(term.compositionHelper))
+    //   term.on('refresh', term.compositionHelper.updateCompositionElements.bind(term.compositionHelper))
+    // }
 
     /**
      * Binds copy functionality to the given terminal.
      * @static
      */
-    Terminal.bindCopy = function(term) {
-      on(term.element, 'copy', function(ev) {
-        return // temporary
-      })
-    }
+    // Terminal.bindCopy = function(term) {
+    //   on(term.element, 'copy', function(ev) {
+    //     return // temporary
+    //   })
+    // }
 
 
     /**
@@ -979,17 +985,17 @@ export default (function() {
       this.textarea.setAttribute('autocapitalize', 'off')
       this.textarea.setAttribute('spellcheck', 'false')
       this.textarea.tabIndex = 0
-      this.textarea.addEventListener('focus', function() {
-        self.emit('focus', {terminal: self})
-      })
-      this.textarea.addEventListener('blur', function() {
-        self.emit('blur', {terminal: self})
-      })
+      // this.textarea.addEventListener('focus', function() {
+      //   self.emit('focus', {terminal: self})
+      // })
+      // this.textarea.addEventListener('blur', function() {
+      //   self.emit('blur', {terminal: self})
+      // })
       this.helperContainer.appendChild(this.textarea)
 
       this.compositionView = document.createElement('div')
       this.compositionView.classList.add('composition-view')
-      this.compositionHelper = new CompositionHelper(this.textarea, this.compositionView, this)
+      // this.compositionHelper = new CompositionHelper(this.textarea, this.compositionView, this)
       this.helperContainer.appendChild(this.compositionView)
 
       this.charMeasureElement = document.createElement('div')
@@ -1025,7 +1031,7 @@ export default (function() {
 
       // Listen for mouse events and translate
       // them into terminal mouse protocols.
-      this.bindMouse()
+      // this.bindMouse()
 
       // Figure out whether boldness affects
       // the character width of monospace fonts.
@@ -1046,324 +1052,324 @@ export default (function() {
      * Relevant functions in xterm/button.c:
      *   BtnCode, EmitButtonCode, EditorButton, SendMousePosition
      */
-    Terminal.prototype.bindMouse = function() {
-      var el = this.element, self = this, pressed = 32
+    // Terminal.prototype.bindMouse = function() {
+    //   var el = this.element, self = this, pressed = 32
 
-      // mouseup, mousedown, wheel
-      // left click: ^[[M 3<^[[M#3<
-      // wheel up: ^[[M`3>
-      function sendButton(ev) {
-        var button
-          , pos
+    //   // mouseup, mousedown, wheel
+    //   // left click: ^[[M 3<^[[M#3<
+    //   // wheel up: ^[[M`3>
+    //   function sendButton(ev) {
+    //     var button
+    //       , pos
 
-        // get the xterm-style button
-        button = getButton(ev)
+    //     // get the xterm-style button
+    //     button = getButton(ev)
 
-        // get mouse coordinates
-        pos = getCoords(ev)
-        if (!pos) return
+    //     // get mouse coordinates
+    //     pos = getCoords(ev)
+    //     if (!pos) return
 
-        sendEvent(button, pos)
+    //     sendEvent(button, pos)
 
-        switch (ev.overrideType || ev.type) {
-          case 'mousedown':
-            pressed = button
-            break
-          case 'mouseup':
-            // keep it at the left
-            // button, just in case.
-            pressed = 32
-            break
-          case 'wheel':
-            // nothing. don't
-            // interfere with
-            // `pressed`.
-            break
-        }
-      }
+    //     switch (ev.overrideType || ev.type) {
+    //       case 'mousedown':
+    //         pressed = button
+    //         break
+    //       case 'mouseup':
+    //         // keep it at the left
+    //         // button, just in case.
+    //         pressed = 32
+    //         break
+    //       case 'wheel':
+    //         // nothing. don't
+    //         // interfere with
+    //         // `pressed`.
+    //         break
+    //     }
+    //   }
 
-      // motion example of a left click:
-      // ^[[M 3<^[[M@4<^[[M@5<^[[M@6<^[[M@7<^[[M#7<
-      function sendMove(ev) {
-        var button = pressed
-          , pos
+    //   // motion example of a left click:
+    //   // ^[[M 3<^[[M@4<^[[M@5<^[[M@6<^[[M@7<^[[M#7<
+    //   function sendMove(ev) {
+    //     var button = pressed
+    //       , pos
 
-        pos = getCoords(ev)
-        if (!pos) return
+    //     pos = getCoords(ev)
+    //     if (!pos) return
 
-        // buttons marked as motions
-        // are incremented by 32
-        button += 32
+    //     // buttons marked as motions
+    //     // are incremented by 32
+    //     button += 32
 
-        sendEvent(button, pos)
-      }
+    //     sendEvent(button, pos)
+    //   }
 
-      // encode button and
-      // position to characters
-      function encode(data, ch) {
-        if (!self.utfMouse) {
-          if (ch === 255) return data.push(0)
-          if (ch > 127) ch = 127
-          data.push(ch)
-        } else {
-          if (ch === 2047) return data.push(0)
-          if (ch < 127) {
-            data.push(ch)
-          } else {
-            if (ch > 2047) ch = 2047
-            data.push(0xC0 | (ch >> 6))
-            data.push(0x80 | (ch & 0x3F))
-          }
-        }
-      }
+    //   // encode button and
+    //   // position to characters
+    //   function encode(data, ch) {
+    //     if (!self.utfMouse) {
+    //       if (ch === 255) return data.push(0)
+    //       if (ch > 127) ch = 127
+    //       data.push(ch)
+    //     } else {
+    //       if (ch === 2047) return data.push(0)
+    //       if (ch < 127) {
+    //         data.push(ch)
+    //       } else {
+    //         if (ch > 2047) ch = 2047
+    //         data.push(0xC0 | (ch >> 6))
+    //         data.push(0x80 | (ch & 0x3F))
+    //       }
+    //     }
+    //   }
 
-      // send a mouse event:
-      // regular/utf8: ^[[M Cb Cx Cy
-      // urxvt: ^[[ Cb ; Cx ; Cy M
-      // sgr: ^[[ Cb ; Cx ; Cy M/m
-      // vt300: ^[[ 24(1/3/5)~ [ Cx , Cy ] \r
-      // locator: CSI P e ; P b ; P r ; P c ; P p & w
-      function sendEvent(button, pos) {
-        // self.emit('mouse', {
-        //   x: pos.x - 32,
-        //   y: pos.x - 32,
-        //   button: button
-        // });
+    //   // send a mouse event:
+    //   // regular/utf8: ^[[M Cb Cx Cy
+    //   // urxvt: ^[[ Cb ; Cx ; Cy M
+    //   // sgr: ^[[ Cb ; Cx ; Cy M/m
+    //   // vt300: ^[[ 24(1/3/5)~ [ Cx , Cy ] \r
+    //   // locator: CSI P e ; P b ; P r ; P c ; P p & w
+    //   function sendEvent(button, pos) {
+    //     // self.emit('mouse', {
+    //     //   x: pos.x - 32,
+    //     //   y: pos.x - 32,
+    //     //   button: button
+    //     // });
 
-        if (self.vt300Mouse) {
-          // NOTE: Unstable.
-          // http://www.vt100.net/docs/vt3xx-gp/chapter15.html
-          button &= 3
-          pos.x -= 32
-          pos.y -= 32
-          var data = '\x1b[24'
-          if (button === 0) data += '1'
-          else if (button === 1) data += '3'
-          else if (button === 2) data += '5'
-          else if (button === 3) return
-          else data += '0'
-          data += '~[' + pos.x + ',' + pos.y + ']\r'
-          self.send(data)
-          return
-        }
+    //     if (self.vt300Mouse) {
+    //       // NOTE: Unstable.
+    //       // http://www.vt100.net/docs/vt3xx-gp/chapter15.html
+    //       button &= 3
+    //       pos.x -= 32
+    //       pos.y -= 32
+    //       var data = '\x1b[24'
+    //       if (button === 0) data += '1'
+    //       else if (button === 1) data += '3'
+    //       else if (button === 2) data += '5'
+    //       else if (button === 3) return
+    //       else data += '0'
+    //       data += '~[' + pos.x + ',' + pos.y + ']\r'
+    //       self.send(data)
+    //       return
+    //     }
 
-        if (self.decLocator) {
-          // NOTE: Unstable.
-          button &= 3
-          pos.x -= 32
-          pos.y -= 32
-          if (button === 0) button = 2
-          else if (button === 1) button = 4
-          else if (button === 2) button = 6
-          else if (button === 3) button = 3
-          self.send('\x1b['
-            + button
-            + ';'
-            + (button === 3 ? 4 : 0)
-            + ';'
-            + pos.y
-            + ';'
-            + pos.x
-            + ';'
-            + (pos.page || 0)
-            + '&w')
-          return
-        }
+    //     if (self.decLocator) {
+    //       // NOTE: Unstable.
+    //       button &= 3
+    //       pos.x -= 32
+    //       pos.y -= 32
+    //       if (button === 0) button = 2
+    //       else if (button === 1) button = 4
+    //       else if (button === 2) button = 6
+    //       else if (button === 3) button = 3
+    //       self.send('\x1b['
+    //         + button
+    //         + ';'
+    //         + (button === 3 ? 4 : 0)
+    //         + ';'
+    //         + pos.y
+    //         + ';'
+    //         + pos.x
+    //         + ';'
+    //         + (pos.page || 0)
+    //         + '&w')
+    //       return
+    //     }
 
-        if (self.urxvtMouse) {
-          pos.x -= 32
-          pos.y -= 32
-          pos.x++
-          pos.y++
-          self.send('\x1b[' + button + ';' + pos.x + ';' + pos.y + 'M')
-          return
-        }
+    //     if (self.urxvtMouse) {
+    //       pos.x -= 32
+    //       pos.y -= 32
+    //       pos.x++
+    //       pos.y++
+    //       self.send('\x1b[' + button + ';' + pos.x + ';' + pos.y + 'M')
+    //       return
+    //     }
 
-        if (self.sgrMouse) {
-          pos.x -= 32
-          pos.y -= 32
-          self.send('\x1b[<'
-            + ((button & 3) === 3 ? button & ~3 : button)
-            + ';'
-            + pos.x
-            + ';'
-            + pos.y
-            + ((button & 3) === 3 ? 'm' : 'M'))
-          return
-        }
+    //     if (self.sgrMouse) {
+    //       pos.x -= 32
+    //       pos.y -= 32
+    //       self.send('\x1b[<'
+    //         + ((button & 3) === 3 ? button & ~3 : button)
+    //         + ';'
+    //         + pos.x
+    //         + ';'
+    //         + pos.y
+    //         + ((button & 3) === 3 ? 'm' : 'M'))
+    //       return
+    //     }
 
-        var data = []
+    //     var data = []
 
-        encode(data, button)
-        encode(data, pos.x)
-        encode(data, pos.y)
+    //     encode(data, button)
+    //     encode(data, pos.x)
+    //     encode(data, pos.y)
 
-        self.send('\x1b[M' + String.fromCharCode.apply(String, data))
-      }
+    //     self.send('\x1b[M' + String.fromCharCode.apply(String, data))
+    //   }
 
-      function getButton(ev) {
-        var button
-          , shift
-          , meta
-          , ctrl
-          , mod
+    //   function getButton(ev) {
+    //     var button
+    //       , shift
+    //       , meta
+    //       , ctrl
+    //       , mod
 
-        // two low bits:
-        // 0 = left
-        // 1 = middle
-        // 2 = right
-        // 3 = release
-        // wheel up/down:
-        // 1, and 2 - with 64 added
-        switch (ev.overrideType || ev.type) {
-          case 'mousedown':
-            button = ev.button != null
-              ? +ev.button
-              : ev.which != null
-                ? ev.which - 1
-                : null
+    //     // two low bits:
+    //     // 0 = left
+    //     // 1 = middle
+    //     // 2 = right
+    //     // 3 = release
+    //     // wheel up/down:
+    //     // 1, and 2 - with 64 added
+    //     switch (ev.overrideType || ev.type) {
+    //       case 'mousedown':
+    //         button = ev.button != null
+    //           ? +ev.button
+    //           : ev.which != null
+    //             ? ev.which - 1
+    //             : null
 
-            if (self.isMSIE) {
-              button = button === 1 ? 0 : button === 4 ? 1 : button
-            }
-            break
-          case 'mouseup':
-            button = 3
-            break
-          case 'DOMMouseScroll':
-            button = ev.detail < 0
-              ? 64
-              : 65
-            break
-          case 'wheel':
-            button = ev.wheelDeltaY > 0
-              ? 64
-              : 65
-            break
-        }
+    //         if (self.isMSIE) {
+    //           button = button === 1 ? 0 : button === 4 ? 1 : button
+    //         }
+    //         break
+    //       case 'mouseup':
+    //         button = 3
+    //         break
+    //       case 'DOMMouseScroll':
+    //         button = ev.detail < 0
+    //           ? 64
+    //           : 65
+    //         break
+    //       case 'wheel':
+    //         button = ev.wheelDeltaY > 0
+    //           ? 64
+    //           : 65
+    //         break
+    //     }
 
-        // next three bits are the modifiers:
-        // 4 = shift, 8 = meta, 16 = control
-        shift = ev.shiftKey ? 4 : 0
-        meta = ev.metaKey ? 8 : 0
-        ctrl = ev.ctrlKey ? 16 : 0
-        mod = shift | meta | ctrl
+    //     // next three bits are the modifiers:
+    //     // 4 = shift, 8 = meta, 16 = control
+    //     shift = ev.shiftKey ? 4 : 0
+    //     meta = ev.metaKey ? 8 : 0
+    //     ctrl = ev.ctrlKey ? 16 : 0
+    //     mod = shift | meta | ctrl
 
-        // no mods
-        if (self.vt200Mouse) {
-          // ctrl only
-          mod &= ctrl
-        } else if (!self.normalMouse) {
-          mod = 0
-        }
+    //     // no mods
+    //     if (self.vt200Mouse) {
+    //       // ctrl only
+    //       mod &= ctrl
+    //     } else if (!self.normalMouse) {
+    //       mod = 0
+    //     }
 
-        // increment to SP
-        button = (32 + (mod << 2)) + button
+    //     // increment to SP
+    //     button = (32 + (mod << 2)) + button
 
-        return button
-      }
+    //     return button
+    //   }
 
-      // mouse coordinates measured in cols/rows
-      function getCoords(ev) {
-        var x, y, w, h, el
+    //   // mouse coordinates measured in cols/rows
+    //   function getCoords(ev) {
+    //     var x, y, w, h, el
 
-        // ignore browsers without pageX for now
-        if (ev.pageX == null) return
+    //     // ignore browsers without pageX for now
+    //     if (ev.pageX == null) return
 
-        x = ev.pageX
-        y = ev.pageY
-        el = self.element
+    //     x = ev.pageX
+    //     y = ev.pageY
+    //     el = self.element
 
-        // should probably check offsetParent
-        // but this is more portable
-        while (el && el !== self.document.documentElement) {
-          x -= el.offsetLeft
-          y -= el.offsetTop
-          el = 'offsetParent' in el
-            ? el.offsetParent
-            : el.parentNode
-        }
+    //     // should probably check offsetParent
+    //     // but this is more portable
+    //     while (el && el !== self.document.documentElement) {
+    //       x -= el.offsetLeft
+    //       y -= el.offsetTop
+    //       el = 'offsetParent' in el
+    //         ? el.offsetParent
+    //         : el.parentNode
+    //     }
 
-        // convert to cols/rows
-        w = self.element.clientWidth
-        h = self.element.clientHeight
-        x = Math.round((x / w) * self.cols)
-        y = Math.round((y / h) * self.rows)
+    //     // convert to cols/rows
+    //     w = self.element.clientWidth
+    //     h = self.element.clientHeight
+    //     x = Math.round((x / w) * self.cols)
+    //     y = Math.round((y / h) * self.rows)
 
-        // be sure to avoid sending
-        // bad positions to the program
-        if (x < 0) x = 0
-        if (x > self.cols) x = self.cols
-        if (y < 0) y = 0
-        if (y > self.rows) y = self.rows
+    //     // be sure to avoid sending
+    //     // bad positions to the program
+    //     if (x < 0) x = 0
+    //     if (x > self.cols) x = self.cols
+    //     if (y < 0) y = 0
+    //     if (y > self.rows) y = self.rows
 
-        // xterm sends raw bytes and
-        // starts at 32 (SP) for each.
-        x += 32
-        y += 32
+    //     // xterm sends raw bytes and
+    //     // starts at 32 (SP) for each.
+    //     x += 32
+    //     y += 32
 
-        return {
-          x: x,
-          y: y,
-          type: 'wheel'
-        }
-      }
+    //     return {
+    //       x: x,
+    //       y: y,
+    //       type: 'wheel'
+    //     }
+    //   }
 
-      on(el, 'mousedown', function(ev) {
-        if (!self.mouseEvents) return
+    //   on(el, 'mousedown', function(ev) {
+    //     if (!self.mouseEvents) return
 
-        // send the button
-        sendButton(ev)
+    //     // send the button
+    //     sendButton(ev)
 
-        // ensure focus
-        self.focus()
+    //     // ensure focus
+    //     self.focus()
 
-        // fix for odd bug
-        //if (self.vt200Mouse && !self.normalMouse) {
-        if (self.vt200Mouse) {
-          ev.overrideType = 'mouseup'
-          sendButton(ev)
-          return self.cancel(ev)
-        }
+    //     // fix for odd bug
+    //     //if (self.vt200Mouse && !self.normalMouse) {
+    //     if (self.vt200Mouse) {
+    //       ev.overrideType = 'mouseup'
+    //       sendButton(ev)
+    //       return self.cancel(ev)
+    //     }
 
-        // bind events
-        if (self.normalMouse) on(self.document, 'mousemove', sendMove)
+    //     // bind events
+    //     if (self.normalMouse) on(self.document, 'mousemove', sendMove)
 
-        // x10 compatibility mode can't send button releases
-        if (!self.x10Mouse) {
-          on(self.document, 'mouseup', function up(ev) {
-            sendButton(ev)
-            if (self.normalMouse) off(self.document, 'mousemove', sendMove)
-            off(self.document, 'mouseup', up)
-            return self.cancel(ev)
-          })
-        }
+    //     // x10 compatibility mode can't send button releases
+    //     if (!self.x10Mouse) {
+    //       on(self.document, 'mouseup', function up(ev) {
+    //         sendButton(ev)
+    //         if (self.normalMouse) off(self.document, 'mousemove', sendMove)
+    //         off(self.document, 'mouseup', up)
+    //         return self.cancel(ev)
+    //       })
+    //     }
 
-        return self.cancel(ev)
-      })
+    //     return self.cancel(ev)
+    //   })
 
-      //if (self.normalMouse) {
-      //  on(self.document, 'mousemove', sendMove);
-      //}
+    //   //if (self.normalMouse) {
+    //   //  on(self.document, 'mousemove', sendMove);
+    //   //}
 
-      on(el, 'wheel', function(ev) {
-        if (!self.mouseEvents) return
-        if (self.x10Mouse
-            || self.vt300Mouse
-            || self.decLocator) return
-        sendButton(ev)
-        return self.cancel(ev)
-      })
+    //   on(el, 'wheel', function(ev) {
+    //     if (!self.mouseEvents) return
+    //     if (self.x10Mouse
+    //         || self.vt300Mouse
+    //         || self.decLocator) return
+    //     sendButton(ev)
+    //     return self.cancel(ev)
+    //   })
 
-      // allow wheel scrolling in
-      // the shell for example
-      on(el, 'wheel', function(ev) {
-        if (self.mouseEvents) return
-        if (self.applicationKeypad) return
-        self.viewport.onWheel(ev)
-        return self.cancel(ev)
-      })
-    }
+    //   // allow wheel scrolling in
+    //   // the shell for example
+    //   on(el, 'wheel', function(ev) {
+    //     if (self.mouseEvents) return
+    //     if (self.applicationKeypad) return
+    //     self.viewport.onWheel(ev)
+    //     return self.cancel(ev)
+    //   })
+    // }
 
     /**
      * Destroys the terminal.
@@ -2369,13 +2375,13 @@ export default (function() {
               // CSI Pm h  Set Mode (SM).
               // CSI ? Pm h - mouse escape codes, cursor escape codes
               case 'h':
-                this.setMode(this.params)
+                // this.setMode(this.params)
                 break
 
               // CSI Pm l  Reset Mode (RM).
               // CSI ? Pm l
               case 'l':
-                this.resetMode(this.params)
+                // this.resetMode(this.params)
                 break
 
               // CSI Ps ; Ps r
@@ -2773,43 +2779,43 @@ export default (function() {
      *   - https://developer.mozilla.org/en-US/docs/DOM/KeyboardEvent
      * @param {KeyboardEvent} ev The keydown event to be handled.
      */
-    Terminal.prototype.keyDown = function(ev) {
-      if (this.customKeydownHandler && this.customKeydownHandler(ev) === false) {
-        return false
-      }
+    // Terminal.prototype.keyDown = function(ev) {
+    //   if (this.customKeydownHandler && this.customKeydownHandler(ev) === false) {
+    //     return false
+    //   }
 
-      if (!this.compositionHelper.keydown.bind(this.compositionHelper)(ev)) {
-        return false
-      }
+    //   if (!this.compositionHelper.keydown.bind(this.compositionHelper)(ev)) {
+    //     return false
+    //   }
 
-      var self = this
-      var result = this.evaluateKeyEscapeSequence(ev)
+    //   var self = this
+    //   var result = this.evaluateKeyEscapeSequence(ev)
 
-      if (result.scrollDisp) {
-        this.scrollDisp(result.scrollDisp)
-        return this.cancel(ev)
-      }
+    //   if (result.scrollDisp) {
+    //     this.scrollDisp(result.scrollDisp)
+    //     return this.cancel(ev)
+    //   }
 
-      if (isThirdLevelShift(this, ev)) {
-        return true
-      }
+    //   if (isThirdLevelShift(this, ev)) {
+    //     return true
+    //   }
 
-      if (result.cancel ) {
-        // The event is canceled at the end already, is this necessary?
-        this.cancel(ev, true)
-      }
+    //   if (result.cancel ) {
+    //     // The event is canceled at the end already, is this necessary?
+    //     this.cancel(ev, true)
+    //   }
 
-      if (!result.key) {
-        return true
-      }
+    //   if (!result.key) {
+    //     return true
+    //   }
 
-      this.emit('keydown', ev)
-      this.emit('key', result.key, ev)
-      this.showCursor()
-      this.handler(result.key)
+    //   this.emit('keydown', ev)
+    //   this.emit('key', result.key, ev)
+    //   this.showCursor()
+    //   this.handler(result.key)
 
-      return this.cancel(ev, true)
-    }
+    //   return this.cancel(ev, true)
+    // }
 
     /**
      * Returns an object that determines how a KeyboardEvent should be handled. The key of the
@@ -2818,173 +2824,173 @@ export default (function() {
      * Reference: http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
      * @param {KeyboardEvent} ev The keyboard event to be translated to key escape sequence.
      */
-    Terminal.prototype.evaluateKeyEscapeSequence = function(ev) {
-      var result = {
-        // Whether to cancel event propogation (NOTE: this may not be needed since the event is
-        // canceled at the end of keyDown
-        cancel: false,
-        // The new key even to emit
-        key: undefined,
-        // The number of characters to scroll, if this is defined it will cancel the event
-        scrollDisp: undefined
-      }
-      var modifiers = ev.shiftKey << 0 | ev.altKey << 1 | ev.ctrlKey << 2 | ev.metaKey << 3
-      switch (ev.keyCode) {
-        // backspace
-        case 8:
-          if (ev.shiftKey) {
-            result.key = '\x08' // ^H
-            break
-          }
-          result.key = '\x7f' // ^?
-          break
-        // tab
-        case 9:
-          if (ev.shiftKey) {
-            result.key = '\x1b[Z'
-            break
-          }
-          result.key = '\t'
-          result.cancel = true
-          break
-        // return/enter
-        case 13:
-          result.key = '\r'
-          result.cancel = true
-          break
-        // escape
-        case 27:
-          result.key = '\x1b'
-          result.cancel = true
-          break
-        // left-arrow
-        case 37:
-          if (modifiers)
-            result.key = '\x1b[1;' + (modifiers + 1) + 'D'
-          else if (this.applicationCursor)
-            result.key = '\x1bOD'
-          else
-            result.key = '\x1b[D'
-          break
-        // right-arrow
-        case 39:
-          if (modifiers)
-            result.key = '\x1b[1;' + (modifiers + 1) + 'C'
-          else if (this.applicationCursor)
-            result.key = '\x1bOC'
-          else
-            result.key = '\x1b[C'
-          break
-        // up-arrow
-        case 38:
-          if (modifiers)
-            result.key = '\x1b[1;' + (modifiers + 1) + 'A'
-          else if (this.applicationCursor)
-            result.key = '\x1bOA'
-          else
-            result.key = '\x1b[A'
-          break
-        // down-arrow
-        case 40:
-          if (modifiers)
-            result.key = '\x1b[1;' + (modifiers + 1) + 'B'
-          else if (this.applicationCursor)
-            result.key = '\x1bOB'
-          else
-            result.key = '\x1b[B'
-          break
-        // insert
-        case 45:
-          if (!ev.shiftKey && !ev.ctrlKey) {
-            // <Ctrl> or <Shift> + <Insert> are used to
-            // copy-paste on some systems.
-            result.key = '\x1b[2~'
-          }
-          break
-        // delete
-        case 46: result.key = '\x1b[3~'; break
-        // home
-        case 36:
-          if (modifiers)
-            result.key = '\x1b[1;' + (modifiers + 1) + 'H'
-          else if (this.applicationCursor)
-            result.key = '\x1bOH'
-          else
-            result.key = '\x1b[H'
-          break
-        // end
-        case 35:
-          if (modifiers)
-            result.key = '\x1b[1;' + (modifiers + 1) + 'F'
-          else if (this.applicationCursor)
-            result.key = '\x1bOF'
-          else
-            result.key = '\x1b[F'
-          break
-        // page up
-        case 33:
-          if (ev.shiftKey) {
-            result.scrollDisp = -(this.rows - 1)
-          } else {
-            result.key = '\x1b[5~'
-          }
-          break
-        // page down
-        case 34:
-          if (ev.shiftKey) {
-            result.scrollDisp = this.rows - 1
-          } else {
-            result.key = '\x1b[6~'
-          }
-          break
-        // F1-F12
-        case 112: result.key = '\x1bOP'; break
-        case 113: result.key = '\x1bOQ'; break
-        case 114: result.key = '\x1bOR'; break
-        case 115: result.key = '\x1bOS'; break
-        case 116: result.key = '\x1b[15~'; break
-        case 117: result.key = '\x1b[17~'; break
-        case 118: result.key = '\x1b[18~'; break
-        case 119: result.key = '\x1b[19~'; break
-        case 120: result.key = '\x1b[20~'; break
-        case 121: result.key = '\x1b[21~'; break
-        case 122: result.key = '\x1b[23~'; break
-        case 123: result.key = '\x1b[24~'; break
-        default:
-          // a-z and space
-          if (ev.ctrlKey && !ev.shiftKey && !ev.altKey && !ev.metaKey) {
-            if (ev.keyCode >= 65 && ev.keyCode <= 90) {
-              result.key = String.fromCharCode(ev.keyCode - 64)
-            } else if (ev.keyCode === 32) {
-              // NUL
-              result.key = String.fromCharCode(0)
-            } else if (ev.keyCode >= 51 && ev.keyCode <= 55) {
-              // escape, file sep, group sep, record sep, unit sep
-              result.key = String.fromCharCode(ev.keyCode - 51 + 27)
-            } else if (ev.keyCode === 56) {
-              // delete
-              result.key = String.fromCharCode(127)
-            } else if (ev.keyCode === 219) {
-              // ^[ - escape
-              result.key = String.fromCharCode(27)
-            } else if (ev.keyCode === 221) {
-              // ^] - group sep
-              result.key = String.fromCharCode(29)
-            }
-          } else if (!this.isMac && ev.altKey && !ev.ctrlKey && !ev.metaKey) {
-            // On Mac this is a third level shift. Use <Esc> instead.
-            if (ev.keyCode >= 65 && ev.keyCode <= 90) {
-              result.key = '\x1b' + String.fromCharCode(ev.keyCode + 32)
-            } else if (ev.keyCode === 192) {
-              result.key = '\x1b`'
-            } else if (ev.keyCode >= 48 && ev.keyCode <= 57) {
-              result.key = '\x1b' + (ev.keyCode - 48)
-            }
-          }
-          break
-      }
-      return result
-    }
+    // Terminal.prototype.evaluateKeyEscapeSequence = function(ev) {
+    //   var result = {
+    //     // Whether to cancel event propogation (NOTE: this may not be needed since the event is
+    //     // canceled at the end of keyDown
+    //     cancel: false,
+    //     // The new key even to emit
+    //     key: undefined,
+    //     // The number of characters to scroll, if this is defined it will cancel the event
+    //     scrollDisp: undefined
+    //   }
+    //   var modifiers = ev.shiftKey << 0 | ev.altKey << 1 | ev.ctrlKey << 2 | ev.metaKey << 3
+    //   switch (ev.keyCode) {
+    //     // backspace
+    //     case 8:
+    //       if (ev.shiftKey) {
+    //         result.key = '\x08' // ^H
+    //         break
+    //       }
+    //       result.key = '\x7f' // ^?
+    //       break
+    //     // tab
+    //     case 9:
+    //       if (ev.shiftKey) {
+    //         result.key = '\x1b[Z'
+    //         break
+    //       }
+    //       result.key = '\t'
+    //       result.cancel = true
+    //       break
+    //     // return/enter
+    //     case 13:
+    //       result.key = '\r'
+    //       result.cancel = true
+    //       break
+    //     // escape
+    //     case 27:
+    //       result.key = '\x1b'
+    //       result.cancel = true
+    //       break
+    //     // left-arrow
+    //     case 37:
+    //       if (modifiers)
+    //         result.key = '\x1b[1;' + (modifiers + 1) + 'D'
+    //       else if (this.applicationCursor)
+    //         result.key = '\x1bOD'
+    //       else
+    //         result.key = '\x1b[D'
+    //       break
+    //     // right-arrow
+    //     case 39:
+    //       if (modifiers)
+    //         result.key = '\x1b[1;' + (modifiers + 1) + 'C'
+    //       else if (this.applicationCursor)
+    //         result.key = '\x1bOC'
+    //       else
+    //         result.key = '\x1b[C'
+    //       break
+    //     // up-arrow
+    //     case 38:
+    //       if (modifiers)
+    //         result.key = '\x1b[1;' + (modifiers + 1) + 'A'
+    //       else if (this.applicationCursor)
+    //         result.key = '\x1bOA'
+    //       else
+    //         result.key = '\x1b[A'
+    //       break
+    //     // down-arrow
+    //     case 40:
+    //       if (modifiers)
+    //         result.key = '\x1b[1;' + (modifiers + 1) + 'B'
+    //       else if (this.applicationCursor)
+    //         result.key = '\x1bOB'
+    //       else
+    //         result.key = '\x1b[B'
+    //       break
+    //     // insert
+    //     case 45:
+    //       if (!ev.shiftKey && !ev.ctrlKey) {
+    //         // <Ctrl> or <Shift> + <Insert> are used to
+    //         // copy-paste on some systems.
+    //         result.key = '\x1b[2~'
+    //       }
+    //       break
+    //     // delete
+    //     case 46: result.key = '\x1b[3~'; break
+    //     // home
+    //     case 36:
+    //       if (modifiers)
+    //         result.key = '\x1b[1;' + (modifiers + 1) + 'H'
+    //       else if (this.applicationCursor)
+    //         result.key = '\x1bOH'
+    //       else
+    //         result.key = '\x1b[H'
+    //       break
+    //     // end
+    //     case 35:
+    //       if (modifiers)
+    //         result.key = '\x1b[1;' + (modifiers + 1) + 'F'
+    //       else if (this.applicationCursor)
+    //         result.key = '\x1bOF'
+    //       else
+    //         result.key = '\x1b[F'
+    //       break
+    //     // page up
+    //     case 33:
+    //       if (ev.shiftKey) {
+    //         result.scrollDisp = -(this.rows - 1)
+    //       } else {
+    //         result.key = '\x1b[5~'
+    //       }
+    //       break
+    //     // page down
+    //     case 34:
+    //       if (ev.shiftKey) {
+    //         result.scrollDisp = this.rows - 1
+    //       } else {
+    //         result.key = '\x1b[6~'
+    //       }
+    //       break
+    //     // F1-F12
+    //     case 112: result.key = '\x1bOP'; break
+    //     case 113: result.key = '\x1bOQ'; break
+    //     case 114: result.key = '\x1bOR'; break
+    //     case 115: result.key = '\x1bOS'; break
+    //     case 116: result.key = '\x1b[15~'; break
+    //     case 117: result.key = '\x1b[17~'; break
+    //     case 118: result.key = '\x1b[18~'; break
+    //     case 119: result.key = '\x1b[19~'; break
+    //     case 120: result.key = '\x1b[20~'; break
+    //     case 121: result.key = '\x1b[21~'; break
+    //     case 122: result.key = '\x1b[23~'; break
+    //     case 123: result.key = '\x1b[24~'; break
+    //     default:
+    //       // a-z and space
+    //       if (ev.ctrlKey && !ev.shiftKey && !ev.altKey && !ev.metaKey) {
+    //         if (ev.keyCode >= 65 && ev.keyCode <= 90) {
+    //           result.key = String.fromCharCode(ev.keyCode - 64)
+    //         } else if (ev.keyCode === 32) {
+    //           // NUL
+    //           result.key = String.fromCharCode(0)
+    //         } else if (ev.keyCode >= 51 && ev.keyCode <= 55) {
+    //           // escape, file sep, group sep, record sep, unit sep
+    //           result.key = String.fromCharCode(ev.keyCode - 51 + 27)
+    //         } else if (ev.keyCode === 56) {
+    //           // delete
+    //           result.key = String.fromCharCode(127)
+    //         } else if (ev.keyCode === 219) {
+    //           // ^[ - escape
+    //           result.key = String.fromCharCode(27)
+    //         } else if (ev.keyCode === 221) {
+    //           // ^] - group sep
+    //           result.key = String.fromCharCode(29)
+    //         }
+    //       } else if (!this.isMac && ev.altKey && !ev.ctrlKey && !ev.metaKey) {
+    //         // On Mac this is a third level shift. Use <Esc> instead.
+    //         if (ev.keyCode >= 65 && ev.keyCode <= 90) {
+    //           result.key = '\x1b' + String.fromCharCode(ev.keyCode + 32)
+    //         } else if (ev.keyCode === 192) {
+    //           result.key = '\x1b`'
+    //         } else if (ev.keyCode >= 48 && ev.keyCode <= 57) {
+    //           result.key = '\x1b' + (ev.keyCode - 48)
+    //         }
+    //       }
+    //       break
+    //   }
+    //   return result
+    // }
 
     /**
      * Set the G level of the terminal
@@ -3013,36 +3019,36 @@ export default (function() {
      *   - https://developer.mozilla.org/en-US/docs/DOM/KeyboardEvent
      * @param {KeyboardEvent} ev The keypress event to be handled.
      */
-    Terminal.prototype.keyPress = function(ev) {
-      var key
+    // Terminal.prototype.keyPress = function(ev) {
+    //   var key
 
-      this.cancel(ev)
+    //   this.cancel(ev)
 
-      if (ev.charCode) {
-        key = ev.charCode
-      } else if (ev.which == null) {
-        key = ev.keyCode
-      } else if (ev.which !== 0 && ev.charCode !== 0) {
-        key = ev.which
-      } else {
-        return false
-      }
+    //   if (ev.charCode) {
+    //     key = ev.charCode
+    //   } else if (ev.which == null) {
+    //     key = ev.keyCode
+    //   } else if (ev.which !== 0 && ev.charCode !== 0) {
+    //     key = ev.which
+    //   } else {
+    //     return false
+    //   }
 
-      if (!key || (
-        (ev.altKey || ev.ctrlKey || ev.metaKey) && !isThirdLevelShift(this, ev)
-      )) {
-        return false
-      }
+    //   if (!key || (
+    //     (ev.altKey || ev.ctrlKey || ev.metaKey) && !isThirdLevelShift(this, ev)
+    //   )) {
+    //     return false
+    //   }
 
-      key = String.fromCharCode(key)
+    //   key = String.fromCharCode(key)
 
-      this.emit('keypress', key, ev)
-      this.emit('key', key, ev)
-      this.showCursor()
-      this.handler(key)
+    //   this.emit('keypress', key, ev)
+    //   this.emit('key', key, ev)
+    //   this.showCursor()
+    //   this.handler(key)
 
-      return false
-    }
+    //   return false
+    // }
 
     /**
      * Send data for handling to the terminal
@@ -4239,128 +4245,128 @@ export default (function() {
      * Modes:
      *   http: *vt100.net/docs/vt220-rm/chapter4.html
      */
-    Terminal.prototype.setMode = function(params) {
-      if (typeof params === 'object') {
-        var l = params.length
-          , i = 0
+    // Terminal.prototype.setMode = function(params) {
+    //   if (typeof params === 'object') {
+    //     var l = params.length
+    //       , i = 0
 
-        for (; i < l; i++) {
-          this.setMode(params[i])
-        }
+    //     for (; i < l; i++) {
+    //       this.setMode(params[i])
+    //     }
 
-        return
-      }
+    //     return
+    //   }
 
-      if (!this.prefix) {
-        switch (params) {
-          case 4:
-            this.insertMode = true
-            break
-          case 20:
-            //this.convertEol = true;
-            break
-        }
-      } else if (this.prefix === '?') {
-        switch (params) {
-          case 1:
-            this.applicationCursor = true
-            break
-          case 2:
-            this.setgCharset(0, Terminal.charsets.US)
-            this.setgCharset(1, Terminal.charsets.US)
-            this.setgCharset(2, Terminal.charsets.US)
-            this.setgCharset(3, Terminal.charsets.US)
-            // set VT100 mode here
-            break
-          case 3: // 132 col mode
-            this.savedCols = this.cols
-            this.resize(132, this.rows)
-            break
-          case 6:
-            this.originMode = true
-            break
-          case 7:
-            this.wraparoundMode = true
-            break
-          case 12:
-            // this.cursorBlink = true;
-            break
-          case 66:
-            this.log('Serial port requested application keypad.')
-            this.applicationKeypad = true
-            this.viewport.setApplicationMode(true)
-            break
-          case 9: // X10 Mouse
-            // no release, no motion, no wheel, no modifiers.
-          case 1000: // vt200 mouse
-            // no motion.
-            // no modifiers, except control on the wheel.
-          case 1002: // button event mouse
-          case 1003: // any event mouse
-            // any event - sends motion events,
-            // even if there is no button held down.
-            this.x10Mouse = params === 9
-            this.vt200Mouse = params === 1000
-            this.normalMouse = params > 1000
-            this.mouseEvents = true
-            this.element.style.cursor = 'default'
-            this.log('Binding to mouse events.')
-            break
-          case 1004: // send focusin/focusout events
-            // focusin: ^[[I
-            // focusout: ^[[O
-            this.sendFocus = true
-            break
-          case 1005: // utf8 ext mode mouse
-            this.utfMouse = true
-            // for wide terminals
-            // simply encodes large values as utf8 characters
-            break
-          case 1006: // sgr ext mode mouse
-            this.sgrMouse = true
-            // for wide terminals
-            // does not add 32 to fields
-            // press: ^[[<b;x;yM
-            // release: ^[[<b;x;ym
-            break
-          case 1015: // urxvt ext mode mouse
-            this.urxvtMouse = true
-            // for wide terminals
-            // numbers for fields
-            // press: ^[[b;x;yM
-            // motion: ^[[b;x;yT
-            break
-          case 25: // show cursor
-            this.cursorHidden = false
-            break
-          case 1049: // alt screen buffer cursor
-            //this.saveCursor();
-             // FALL-THROUGH
-          case 47: // alt screen buffer
-          case 1047: // alt screen buffer
-            if (!this.normal) {
-              var normal = {
-                lines: this.lines,
-                ybase: this.ybase,
-                ydisp: this.ydisp,
-                x: this.x,
-                y: this.y,
-                scrollTop: this.scrollTop,
-                scrollBottom: this.scrollBottom,
-                tabs: this.tabs
-                // XXX save charset(s) here?
-                // charset: this.charset,
-                // glevel: this.glevel,
-                // charsets: this.charsets
-              }
-              this.reset()
-              this.normal = normal
-              this.showCursor()
-            }
-            break
-        }
-      }
-    }
+    //   if (!this.prefix) {
+    //     switch (params) {
+    //       case 4:
+    //         this.insertMode = true
+    //         break
+    //       case 20:
+    //         //this.convertEol = true;
+    //         break
+    //     }
+    //   } else if (this.prefix === '?') {
+    //     switch (params) {
+    //       case 1:
+    //         this.applicationCursor = true
+    //         break
+    //       case 2:
+    //         this.setgCharset(0, Terminal.charsets.US)
+    //         this.setgCharset(1, Terminal.charsets.US)
+    //         this.setgCharset(2, Terminal.charsets.US)
+    //         this.setgCharset(3, Terminal.charsets.US)
+    //         // set VT100 mode here
+    //         break
+    //       case 3: // 132 col mode
+    //         this.savedCols = this.cols
+    //         this.resize(132, this.rows)
+    //         break
+    //       case 6:
+    //         this.originMode = true
+    //         break
+    //       case 7:
+    //         this.wraparoundMode = true
+    //         break
+    //       case 12:
+    //         // this.cursorBlink = true;
+    //         break
+    //       case 66:
+    //         this.log('Serial port requested application keypad.')
+    //         this.applicationKeypad = true
+    //         this.viewport.setApplicationMode(true)
+    //         break
+    //       case 9: // X10 Mouse
+    //         // no release, no motion, no wheel, no modifiers.
+    //       case 1000: // vt200 mouse
+    //         // no motion.
+    //         // no modifiers, except control on the wheel.
+    //       case 1002: // button event mouse
+    //       case 1003: // any event mouse
+    //         // any event - sends motion events,
+    //         // even if there is no button held down.
+    //         this.x10Mouse = params === 9
+    //         this.vt200Mouse = params === 1000
+    //         this.normalMouse = params > 1000
+    //         this.mouseEvents = true
+    //         this.element.style.cursor = 'default'
+    //         this.log('Binding to mouse events.')
+    //         break
+    //       case 1004: // send focusin/focusout events
+    //         // focusin: ^[[I
+    //         // focusout: ^[[O
+    //         this.sendFocus = true
+    //         break
+    //       case 1005: // utf8 ext mode mouse
+    //         this.utfMouse = true
+    //         // for wide terminals
+    //         // simply encodes large values as utf8 characters
+    //         break
+    //       case 1006: // sgr ext mode mouse
+    //         this.sgrMouse = true
+    //         // for wide terminals
+    //         // does not add 32 to fields
+    //         // press: ^[[<b;x;yM
+    //         // release: ^[[<b;x;ym
+    //         break
+    //       case 1015: // urxvt ext mode mouse
+    //         this.urxvtMouse = true
+    //         // for wide terminals
+    //         // numbers for fields
+    //         // press: ^[[b;x;yM
+    //         // motion: ^[[b;x;yT
+    //         break
+    //       case 25: // show cursor
+    //         this.cursorHidden = false
+    //         break
+    //       case 1049: // alt screen buffer cursor
+    //         //this.saveCursor();
+    //          // FALL-THROUGH
+    //       case 47: // alt screen buffer
+    //       case 1047: // alt screen buffer
+    //         if (!this.normal) {
+    //           var normal = {
+    //             lines: this.lines,
+    //             ybase: this.ybase,
+    //             ydisp: this.ydisp,
+    //             x: this.x,
+    //             y: this.y,
+    //             scrollTop: this.scrollTop,
+    //             scrollBottom: this.scrollBottom,
+    //             tabs: this.tabs
+    //             // XXX save charset(s) here?
+    //             // charset: this.charset,
+    //             // glevel: this.glevel,
+    //             // charsets: this.charsets
+    //           }
+    //           this.reset()
+    //           this.normal = normal
+    //           this.showCursor()
+    //         }
+    //         break
+    //     }
+    //   }
+    // }
 
     /**
      * CSI Pm l  Reset Mode (RM).
@@ -4444,102 +4450,102 @@ export default (function() {
      *     Ps = 1 0 6 1  -> Reset keyboard emulation to Sun/PC style.
      *     Ps = 2 0 0 4  -> Reset bracketed paste mode.
      */
-    Terminal.prototype.resetMode = function(params) {
-      if (typeof params === 'object') {
-        var l = params.length
-          , i = 0
+    // Terminal.prototype.resetMode = function(params) {
+    //   if (typeof params === 'object') {
+    //     var l = params.length
+    //       , i = 0
 
-        for (; i < l; i++) {
-          this.resetMode(params[i])
-        }
+    //     for (; i < l; i++) {
+    //       this.resetMode(params[i])
+    //     }
 
-        return
-      }
+    //     return
+    //   }
 
-      if (!this.prefix) {
-        switch (params) {
-          case 4:
-            this.insertMode = false
-            break
-          case 20:
-            //this.convertEol = false;
-            break
-        }
-      } else if (this.prefix === '?') {
-        switch (params) {
-          case 1:
-            this.applicationCursor = false
-            break
-          case 3:
-            if (this.cols === 132 && this.savedCols) {
-              this.resize(this.savedCols, this.rows)
-            }
-            delete this.savedCols
-            break
-          case 6:
-            this.originMode = false
-            break
-          case 7:
-            this.wraparoundMode = false
-            break
-          case 12:
-            // this.cursorBlink = false;
-            break
-          case 66:
-            this.log('Switching back to normal keypad.')
-            this.viewport.setApplicationMode(false)
-            this.applicationKeypad = false
-            break
-          case 9: // X10 Mouse
-          case 1000: // vt200 mouse
-          case 1002: // button event mouse
-          case 1003: // any event mouse
-            this.x10Mouse = false
-            this.vt200Mouse = false
-            this.normalMouse = false
-            this.mouseEvents = false
-            this.element.style.cursor = ''
-            break
-          case 1004: // send focusin/focusout events
-            this.sendFocus = false
-            break
-          case 1005: // utf8 ext mode mouse
-            this.utfMouse = false
-            break
-          case 1006: // sgr ext mode mouse
-            this.sgrMouse = false
-            break
-          case 1015: // urxvt ext mode mouse
-            this.urxvtMouse = false
-            break
-          case 25: // hide cursor
-            this.cursorHidden = true
-            break
-          case 1049: // alt screen buffer cursor
-             // FALL-THROUGH
-          case 47: // normal screen buffer
-          case 1047: // normal screen buffer - clearing it first
-            if (this.normal) {
-              this.lines = this.normal.lines
-              this.ybase = this.normal.ybase
-              this.ydisp = this.normal.ydisp
-              this.x = this.normal.x
-              this.y = this.normal.y
-              this.scrollTop = this.normal.scrollTop
-              this.scrollBottom = this.normal.scrollBottom
-              this.tabs = this.normal.tabs
-              this.normal = null
-              // if (params === 1049) {
-              //   this.x = this.savedX;
-              //   this.y = this.savedY;
-              // }
-              this.refresh(0, this.rows - 1)
-              this.showCursor()
-            }
-            break
-        }
-      }
-    }
+    //   if (!this.prefix) {
+    //     switch (params) {
+    //       case 4:
+    //         this.insertMode = false
+    //         break
+    //       case 20:
+    //         //this.convertEol = false;
+    //         break
+    //     }
+    //   } else if (this.prefix === '?') {
+    //     switch (params) {
+    //       case 1:
+    //         this.applicationCursor = false
+    //         break
+    //       case 3:
+    //         if (this.cols === 132 && this.savedCols) {
+    //           this.resize(this.savedCols, this.rows)
+    //         }
+    //         delete this.savedCols
+    //         break
+    //       case 6:
+    //         this.originMode = false
+    //         break
+    //       case 7:
+    //         this.wraparoundMode = false
+    //         break
+    //       case 12:
+    //         // this.cursorBlink = false;
+    //         break
+    //       case 66:
+    //         this.log('Switching back to normal keypad.')
+    //         this.viewport.setApplicationMode(false)
+    //         this.applicationKeypad = false
+    //         break
+    //       case 9: // X10 Mouse
+    //       case 1000: // vt200 mouse
+    //       case 1002: // button event mouse
+    //       case 1003: // any event mouse
+    //         this.x10Mouse = false
+    //         this.vt200Mouse = false
+    //         this.normalMouse = false
+    //         this.mouseEvents = false
+    //         this.element.style.cursor = ''
+    //         break
+    //       case 1004: // send focusin/focusout events
+    //         this.sendFocus = false
+    //         break
+    //       case 1005: // utf8 ext mode mouse
+    //         this.utfMouse = false
+    //         break
+    //       case 1006: // sgr ext mode mouse
+    //         this.sgrMouse = false
+    //         break
+    //       case 1015: // urxvt ext mode mouse
+    //         this.urxvtMouse = false
+    //         break
+    //       case 25: // hide cursor
+    //         this.cursorHidden = true
+    //         break
+    //       case 1049: // alt screen buffer cursor
+    //          // FALL-THROUGH
+    //       case 47: // normal screen buffer
+    //       case 1047: // normal screen buffer - clearing it first
+    //         if (this.normal) {
+    //           this.lines = this.normal.lines
+    //           this.ybase = this.normal.ybase
+    //           this.ydisp = this.normal.ydisp
+    //           this.x = this.normal.x
+    //           this.y = this.normal.y
+    //           this.scrollTop = this.normal.scrollTop
+    //           this.scrollBottom = this.normal.scrollBottom
+    //           this.tabs = this.normal.tabs
+    //           this.normal = null
+    //           // if (params === 1049) {
+    //           //   this.x = this.savedX;
+    //           //   this.y = this.savedY;
+    //           // }
+    //           this.refresh(0, this.rows - 1)
+    //           this.showCursor()
+    //         }
+    //         break
+    //     }
+    //   }
+    // }
 
 
     /**
@@ -5356,7 +5362,7 @@ export default (function() {
      */
 
     Terminal.EventEmitter = EventEmitter
-    Terminal.CompositionHelper = CompositionHelper
+    // Terminal.CompositionHelper = CompositionHelper
     Terminal.Viewport = Viewport
     Terminal.inherits = inherits
 
