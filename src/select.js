@@ -47,9 +47,9 @@ export default class Select extends Component {
   onChange(key, value) {
     if (key === 'active') {
       if (value) {
-        this.selector.classList.remove('hide')
+        this.selector.classList.remove('tty-hide')
       } else {
-        this.selector.classList.add('hide')
+        this.selector.classList.add('tty-hide')
       }
       return
     }

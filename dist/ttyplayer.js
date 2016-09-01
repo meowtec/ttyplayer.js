@@ -74,6 +74,9 @@
 
 	var _player2 = __webpack_require__(8).interopRequireDefault(_player);
 
+	var defaultCols = 80;
+	var defaultRows = 20;
+
 	var TermPlayer = function (_Component) {
 	  __webpack_require__(8).inherits(TermPlayer, _Component);
 
@@ -97,8 +100,8 @@
 	    key: 'onChange',
 	    value: function onChange(key, value) {
 	      if (key === 'isPlaying') {
-	        this.refs.playButton.classList[value ? 'add' : 'remove']('hide');
-	        this.refs.pauseButton.classList[value ? 'remove' : 'add']('hide');
+	        this.refs.playButton.classList[value ? 'add' : 'remove']('tty-hide');
+	        this.refs.pauseButton.classList[value ? 'remove' : 'add']('tty-hide');
 	        return;
 	      }
 	    }
@@ -243,9 +246,6 @@
 	var _utils = __webpack_require__(7);
 
 	var EventEmitter = _xterm2.default.EventEmitter;
-
-	var defaultCols = 80;
-	var defaultRows = 30;
 
 	var TermPlayer = function (_EventEmitter) {
 	  __webpack_require__(8).inherits(TermPlayer, _EventEmitter);
@@ -3101,9 +3101,9 @@
 	    value: function onChange(key, value) {
 	      if (key === 'active') {
 	        if (value) {
-	          this.selector.classList.remove('hide');
+	          this.selector.classList.remove('tty-hide');
 	        } else {
-	          this.selector.classList.add('hide');
+	          this.selector.classList.add('tty-hide');
 	        }
 	        return;
 	      }
@@ -3216,7 +3216,7 @@
 /* 16 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"ttyplayer\" ref=\"container\">\n<header class=\"ttyplayer-header\">TTYPlayer</header>\n<div class=\"ttyplayer-body\" ref=\"body\"></div>\n<footer class=\"ttyplayer-footer\">\n<button class=\"play hide\" ref=\"playButton\">\n<i></i>\n<span>play</span>\n</button>\n<button class=\"pause hide\" ref=\"pauseButton\">\n<i></i>\n<span>pause</span>\n</button>\n<div class=\"button-wrap\">\n<div class=\"select-wrap\" ref=\"speedSelect\">\n<div class=\"select\">\n<a href=\"#\" data-value=\"8\">8x</a>\n<a href=\"#\" data-value=\"4\">4x</a>\n<a href=\"#\" data-value=\"2\">2x</a>\n<a href=\"#\" data-value=\"1\">1x</a>\n<a href=\"#\" data-value=\"0.5\">0.5x</a>\n<a href=\"#\" data-value=\"0.25\">0.25x</a>\n</div>\n</div>\n<button class=\"speed\" ref=\"speedButton\">\n1x\n</button>\n</div>\n</footer>\n</div>\n"
+	module.exports = "<div class=\"ttyplayer\" ref=\"container\">\n<header class=\"ttyplayer-header\"><a href=\"https://meowtec.github.io/ttyplayer.js/\" target=\"_blank\">TTYPlayer</a></header>\n<div class=\"ttyplayer-body\" ref=\"body\"></div>\n<footer class=\"ttyplayer-footer\">\n<button class=\"tty-play tty-hide\" ref=\"playButton\">\n<i></i>\n<span>play</span>\n</button>\n<button class=\"tty-pause tty-hide\" ref=\"pauseButton\">\n<i></i>\n<span>pause</span>\n</button>\n<div class=\"tty-button-wrap\">\n<div class=\"tty-select-wrap\" ref=\"speedSelect\">\n<div class=\"tty-select\">\n<a href=\"#\" data-value=\"8\">8x</a>\n<a href=\"#\" data-value=\"4\">4x</a>\n<a href=\"#\" data-value=\"2\">2x</a>\n<a href=\"#\" data-value=\"1\">1x</a>\n<a href=\"#\" data-value=\"0.5\">0.5x</a>\n<a href=\"#\" data-value=\"0.25\">0.25x</a>\n</div>\n</div>\n<button class=\"tty-speed\" ref=\"speedButton\">\n1x\n</button>\n</div>\n</footer>\n</div>\n"
 
 /***/ }
 /******/ ]);

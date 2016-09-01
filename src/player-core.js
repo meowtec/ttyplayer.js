@@ -3,9 +3,6 @@ import Terminal from '../libs/xterm.js'
 import { assign } from './utils'
 const EventEmitter = Terminal.EventEmitter
 
-const defaultCols = 80
-const defaultRows = 30
-
 export default class TermPlayer extends EventEmitter {
   constructor(options) {
     super()

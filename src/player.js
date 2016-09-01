@@ -7,6 +7,9 @@ import decode from './decode'
 import { element as $, assign, fetchArrayBuffer } from './utils'
 import template from './player.htm'
 
+const defaultCols = 80
+const defaultRows = 20
+
 export default class TermPlayer extends Component {
   constructor(options) {
     super()
@@ -23,8 +26,8 @@ export default class TermPlayer extends Component {
 
   onChange(key, value) {
     if (key === 'isPlaying') {
-      this.refs.playButton.classList[value ? 'add' : 'remove']('hide')
-      this.refs.pauseButton.classList[value ? 'remove' : 'add']('hide')
+      this.refs.playButton.classList[value ? 'add' : 'remove']('tty-hide')
+      this.refs.pauseButton.classList[value ? 'remove' : 'add']('tty-hide')
       return
     }
   }

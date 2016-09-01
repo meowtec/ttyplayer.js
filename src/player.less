@@ -1,8 +1,14 @@
 .ttyplayer {
   font-size: 12px;
+  font-family: monospace;
 
-  .hide {
+  .tty-hide {
     display: none;
+  }
+
+  a {
+    color: #fff;
+    text-decoration: none;
   }
 }
 
@@ -40,8 +46,8 @@
       color: #fff;
     }
 
-    &.play,
-    &.pause {
+    &.tty-play,
+    &.tty-pause {
       width: 60px;
     }
 
@@ -55,7 +61,7 @@
       vertical-align: middle;
     }
 
-    &.play > i:after {
+    &.tty-play > i:after {
       content: '';
       display: block;
       border: solid transparent;
@@ -63,7 +69,7 @@
       border-width: 4px 6px;
     }
 
-    &.pause {
+    &.tty-pause {
       > i:before,
       > i:after {
         content: '';
@@ -84,16 +90,16 @@
     }
   }
 
-  .button-wrap {
+  .tty-button-wrap {
     position: relative;
     display: inline-block;
   }
 
-  .select-wrap {
+  .tty-select-wrap {
     position: relative;
   }
 
-  .select {
+  .tty-select {
     position: absolute;
     background: #333;
     bottom: 0;
@@ -101,10 +107,9 @@
 
     a {
       display: block;
-      color: #fff;
       padding: 1px 3px;
 
-      &.selected {
+      &.tty-selected {
         color: #999;
       }
     }
