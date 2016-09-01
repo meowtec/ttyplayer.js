@@ -298,7 +298,11 @@
 	      var currentFrame = frames[step];
 	      var nextFrame = frames[step + 1];
 	      var str = currentFrame.content;
-	      this.term.write(str);
+	      // It seems to be unnecessary and may cause an unexpected behavior.
+	      // So I ignore it.
+	      if (str !== '\u001b[?1h\u001b=') {
+	        this.term.write(str);
+	      }
 	      this.step = step + 1;
 
 	      this.next(currentFrame, nextFrame);
