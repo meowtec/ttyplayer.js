@@ -89,32 +89,6 @@ export default class TermPlayer extends Component {
       this.play(frames)
     })
   }
-
-  /**
-   * Usage:
-   *
-   * <div
-   *  data-termplayer-source="./a.rec"
-   *  data-termplayer-cols="120"
-   *  data-termplayer-rows="40"
-   * ></div>
-   *
-   * TermPlayer.initAll()
-   */
-  static initAll() {
-    const attrSource = 'data-termplayer-source'
-    const targets = document.querySelectorAll('[' + attrSource + ']')
-    let target
-
-    for (let i = 0; i < targets.length; i++) {
-      target = targets[i]
-      new TermPlayer({
-        parent: target,
-        cols: parseInt(target.getAttribute('data-termplayer-cols') || defaultCols, 10),
-        rows: parseInt(target.getAttribute('data-termplayer-rows') || defaultRows, 10)
-      }).load(target.getAttribute(attrSource))
-    }
-  }
 }
 
-window.TermPlayer = TermPlayer
+module.exports = TTYPlayer

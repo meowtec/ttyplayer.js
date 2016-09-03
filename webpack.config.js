@@ -11,7 +11,9 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/dist',
-    filename: `[name]${minExt}.js`
+    filename: `[name]${minExt}.js`,
+    libraryTarget: 'umd',
+    library: 'TTYPlayer',
   },
   resolve: {
     extensions: ['',  '.js']
@@ -31,7 +33,7 @@ module.exports = {
       {
         test: /\.htm$/,
         loader: path.resolve(__dirname, './build/html-loader.js')
-      }
+      },
     ]
   },
 
