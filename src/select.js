@@ -23,7 +23,7 @@ export default class Select extends Component {
       optionItem && this.select(optionItem)
     }, false)
 
-    document.addEventListener('click', _ => {
+    document.addEventListener('click', e => {
       this.set('active', false)
     })
   }

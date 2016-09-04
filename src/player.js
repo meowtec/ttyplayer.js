@@ -10,11 +10,19 @@ import template from './player.htm'
 const defaultCols = 80
 const defaultRows = 20
 
-export default class TermPlayer extends Component {
+class TTYPlayer extends Component {
   constructor(options) {
     super()
 
-    this.options = assign({}, options)
+    const optionsCopy = assign({}, options)
+    if (!optionsCopy.rows) {
+      optionsCopy.rows = defaultRows
+    }
+    if (!optionsCopy.cols) {
+      optionsCopy.cols = defaultCols
+    }
+    this.options = optionsCopy
+
     this.mount(options.parent)
     this.createCorePlayer()
     this.delegate()
@@ -90,5 +98,7 @@ export default class TermPlayer extends Component {
     })
   }
 }
+
+TTYPlayer.VERSION = VERSION
 
 module.exports = TTYPlayer

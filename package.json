@@ -1,8 +1,12 @@
 {
-  "name": "ttyplayer.js",
+  "name": "ttyplayer",
   "version": "0.2.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/ttyplayer.js",
+  "keywords": [
+    "ttyrec",
+    "ttyplay"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server",

@@ -1,5 +1,7 @@
 const path = require('path')
+const webpack = require('webpack')
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
+const pkg = require('./package.json')
 
 const min = process.argv.indexOf('-p') > -1
 const minExt = min ? '.min' : ''
@@ -38,7 +40,10 @@ module.exports = {
   },
 
   plugins: [
-    new ExtractTextPlugin(`[name]${minExt}.css`)
+    new ExtractTextPlugin(`[name]${minExt}.css`),
+    new webpack.DefinePlugin({
+      VERSION: `'${pkg.version}'`
+    })
   ],
 
   devServer: {

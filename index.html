@@ -6,6 +6,7 @@
   <title>ttyplayer.js demo</title>
   <link rel="stylesheet" href="./dist/ttyplayer.css"/>
   <script src="./dist/ttyplayer.js"></script>
+  <script src="./ttyplayer.autoload.js"></script>
   <style>
     body {
       padding: 0;
@@ -34,14 +35,9 @@
     <h2><a href="https://github.com/meowtec/ttyplayer.js">ttyplayer.js</a></h2>
     <div
       class="player-container"
-      data-termplayer-source="./example/tty.rec"
-      data-termplayer-cols="80"
-      data-termplayer-rows="30"
+      tp-src="./example/tty.rec"
     ></div>
   </div>
-  <script>
-    TermPlayer.initAll()
-  </script>
 </body>
 
 </html>

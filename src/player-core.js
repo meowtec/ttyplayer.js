@@ -3,7 +3,7 @@ import Terminal from '../libs/xterm.js'
 import { assign } from './utils'
 const EventEmitter = Terminal.EventEmitter
 
-export default class TermPlayer extends EventEmitter {
+export default class TTYCorePlayer extends EventEmitter {
   constructor(options) {
     super()
 
@@ -72,7 +72,7 @@ export default class TermPlayer extends EventEmitter {
   }
 }
 
-assign(TermPlayer.prototype, {
+assign(TTYCorePlayer.prototype, {
   speed: 1,
   repeat: true,
   interval: 3000,
