@@ -12,20 +12,34 @@ export default class Select extends Component {
   }
 
   bindEvents() {
-    this.trigger.addEventListener('click', e => {
-      e.stopPropagation()
-      this.set('active', !this.get('active'))
-    }, false)
-
-    this.selector.addEventListener('click', e => {
-      e.preventDefault()
-      const optionItem = closet(e.target, el => el.dataset.value)
-      optionItem && this.select(optionItem)
-    }, false)
-
-    document.addEventListener('click', e => {
-      this.set('active', false)
+    ;[ 'triggerClick', 'listClick', 'docClick' ].forEach(method => {
+      this[method] = this[method].bind(this)
     })
+
+    this.trigger.addEventListener('click', this.triggerClick, false)
+    this.selector.addEventListener('click', this.listClick, false)
+    document.addEventListener('click', this.docClick, false)
+  }
+
+  unbindEvents() {
+    this.trigger.removeEventListener('click', this.triggerClick, false)
+    this.selector.removeEventListener('click', this.listClick, false)
+    document.removeEventListener('click', this.docClick, false)
+  }
+
+  triggerClick(e) {
+    e.stopPropagation()
+    this.set('active', !this.get('active'))
+  }
+
+  listClick(e) {
+    e.preventDefault()
+    const optionItem = closet(e.target, el => el.dataset.value)
+    optionItem && this.select(optionItem)
+  }
+
+  docClick() {
+    this.set('active', false)
   }
 
   select(item) {
@@ -62,5 +76,10 @@ export default class Select extends Component {
     if (key === 'text') {
       this.trigger.textContent = value
     }
+  }
+
+  destroy() {
+    this.unbindEvents()
+    this.removeAllListeners()
   }
 }

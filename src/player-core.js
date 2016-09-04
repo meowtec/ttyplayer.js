@@ -70,6 +70,12 @@ export default class TTYCorePlayer extends EventEmitter {
       this.emit('end')
     }
   }
+
+  destroy() {
+    this.term.destroy()
+    this.removeAllListeners()
+    this._nextTimer && this._nextTimer.clear()
+  }
 }
 
 assign(TTYCorePlayer.prototype, {

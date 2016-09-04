@@ -44,8 +44,14 @@ class TTYPlayer extends Component {
     const { element, refs } = $(template)
 
     parentNode.appendChild(element)
+    this.element = element
+    this.parentNode = parentNode
     this.options.parent = refs.body
     this.refs = refs
+  }
+
+  unmount() {
+    this.parentNode.removeChild(this.element)
   }
 
   delegate() {
@@ -73,6 +79,11 @@ class TTYPlayer extends Component {
     })
   }
 
+  unbindEvent() {
+    this.refs.playButton.removeEventListener('click', this.resume)
+    this.refs.pauseButton.removeEventListener('click', this.pause)
+  }
+
   createCorePlayer() {
     this.player = new Core(this.options)
   }
@@ -96,6 +107,14 @@ class TTYPlayer extends Component {
 
       this.play(frames)
     })
+  }
+
+  destroy() {
+    this.player.destroy()
+    this.speedSelect.destroy()
+    this.unbindEvent()
+    this.removeAllListeners()
+    this.unmount()
   }
 }
 
