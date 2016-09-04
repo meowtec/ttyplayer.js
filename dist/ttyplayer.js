@@ -1,4 +1,14 @@
-/******/ (function(modules) { // webpackBootstrap
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["TTYPlayer"] = factory();
+	else
+		root["TTYPlayer"] = factory();
+})(this, function() {
+return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 
@@ -46,10 +56,6 @@
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	__webpack_require__(1);
 
 	var _playerCore = __webpack_require__(5);
@@ -77,15 +83,23 @@
 	var defaultCols = 80;
 	var defaultRows = 20;
 
-	var TermPlayer = function (_Component) {
-	  __webpack_require__(8).inherits(TermPlayer, _Component);
+	var TTYPlayer = function (_Component) {
+	  __webpack_require__(8).inherits(TTYPlayer, _Component);
 
-	  function TermPlayer(options) {
-	    __webpack_require__(8).classCallCheck(this, TermPlayer);
+	  function TTYPlayer(options) {
+	    __webpack_require__(8).classCallCheck(this, TTYPlayer);
 
-	    var _this = __webpack_require__(8).possibleConstructorReturn(this, (TermPlayer.__proto__ || Object.getPrototypeOf(TermPlayer)).call(this));
+	    var _this = __webpack_require__(8).possibleConstructorReturn(this, (TTYPlayer.__proto__ || Object.getPrototypeOf(TTYPlayer)).call(this));
 
-	    _this.options = (0, _utils.assign)({}, options);
+	    var optionsCopy = (0, _utils.assign)({}, options);
+	    if (!optionsCopy.rows) {
+	      optionsCopy.rows = defaultRows;
+	    }
+	    if (!optionsCopy.cols) {
+	      optionsCopy.cols = defaultCols;
+	    }
+	    _this.options = optionsCopy;
+
 	    _this.mount(options.parent);
 	    _this.createCorePlayer();
 	    _this.delegate();
@@ -96,7 +110,7 @@
 	    return _this;
 	  }
 
-	  __webpack_require__(8).createClass(TermPlayer, [{
+	  __webpack_require__(8).createClass(TTYPlayer, [{
 	    key: 'onChange',
 	    value: function onChange(key, value) {
 	      if (key === 'isPlaying') {
@@ -115,8 +129,15 @@
 
 
 	      parentNode.appendChild(element);
+	      this.element = element;
+	      this.parentNode = parentNode;
 	      this.options.parent = refs.body;
 	      this.refs = refs;
+	    }
+	  }, {
+	    key: 'unmount',
+	    value: function unmount() {
+	      this.parentNode.removeChild(this.element);
 	    }
 	  }, {
 	    key: 'delegate',
@@ -148,6 +169,12 @@
 	      });
 	    }
 	  }, {
+	    key: 'unbindEvent',
+	    value: function unbindEvent() {
+	      this.refs.playButton.removeEventListener('click', this.resume);
+	      this.refs.pauseButton.removeEventListener('click', this.pause);
+	    }
+	  }, {
 	    key: 'createCorePlayer',
 	    value: function createCorePlayer() {
 	      this.player = new _playerCore2.default(this.options);
@@ -177,44 +204,23 @@
 	        _this4.play(frames);
 	      });
 	    }
-
-	    /**
-	     * Usage:
-	     *
-	     * <div
-	     *  data-termplayer-source="./a.rec"
-	     *  data-termplayer-cols="120"
-	     *  data-termplayer-rows="40"
-	     * ></div>
-	     *
-	     * TermPlayer.initAll()
-	     */
-
-	  }], [{
-	    key: 'initAll',
-	    value: function initAll() {
-	      var attrSource = 'data-termplayer-source';
-	      var targets = document.querySelectorAll('[' + attrSource + ']');
-	      var target = void 0;
-
-	      for (var i = 0; i < targets.length; i++) {
-	        target = targets[i];
-	        new TermPlayer({
-	          parent: target,
-	          cols: parseInt(target.getAttribute('data-termplayer-cols') || defaultCols, 10),
-	          rows: parseInt(target.getAttribute('data-termplayer-rows') || defaultRows, 10)
-	        }).load(target.getAttribute(attrSource));
-	      }
+	  }, {
+	    key: 'destroy',
+	    value: function destroy() {
+	      this.player.destroy();
+	      this.speedSelect.destroy();
+	      this.unbindEvent();
+	      this.removeAllListeners();
+	      this.unmount();
 	    }
 	  }]);
 
-	  return TermPlayer;
+	  return TTYPlayer;
 	}(_component2.default);
 
-	exports.default = TermPlayer;
+	TTYPlayer.VERSION = ('0.2.1');
 
-
-	window.TermPlayer = TermPlayer;
+	module.exports = TTYPlayer;
 
 /***/ },
 /* 1 */
@@ -247,13 +253,13 @@
 
 	var EventEmitter = _xterm2.default.EventEmitter;
 
-	var TermPlayer = function (_EventEmitter) {
-	  __webpack_require__(8).inherits(TermPlayer, _EventEmitter);
+	var TTYCorePlayer = function (_EventEmitter) {
+	  __webpack_require__(8).inherits(TTYCorePlayer, _EventEmitter);
 
-	  function TermPlayer(options) {
-	    __webpack_require__(8).classCallCheck(this, TermPlayer);
+	  function TTYCorePlayer(options) {
+	    __webpack_require__(8).classCallCheck(this, TTYCorePlayer);
 
-	    var _this = __webpack_require__(8).possibleConstructorReturn(this, (TermPlayer.__proto__ || Object.getPrototypeOf(TermPlayer)).call(this));
+	    var _this = __webpack_require__(8).possibleConstructorReturn(this, (TTYCorePlayer.__proto__ || Object.getPrototypeOf(TTYCorePlayer)).call(this));
 
 	    var term = new _xterm2.default(options);
 	    term.open();
@@ -262,7 +268,7 @@
 	    return _this;
 	  }
 
-	  __webpack_require__(8).createClass(TermPlayer, [{
+	  __webpack_require__(8).createClass(TTYCorePlayer, [{
 	    key: 'atEnd',
 	    value: function atEnd() {
 	      return this.step === this.frames.length;
@@ -324,15 +330,22 @@
 	        this.emit('end');
 	      }
 	    }
+	  }, {
+	    key: 'destroy',
+	    value: function destroy() {
+	      this.term.destroy();
+	      this.removeAllListeners();
+	      this._nextTimer && this._nextTimer.clear();
+	    }
 	  }]);
 
-	  return TermPlayer;
+	  return TTYCorePlayer;
 	}(EventEmitter);
 
-	exports.default = TermPlayer;
+	exports.default = TTYCorePlayer;
 
 
-	(0, _utils.assign)(TermPlayer.prototype, {
+	(0, _utils.assign)(TTYCorePlayer.prototype, {
 	  speed: 1,
 	  repeat: true,
 	  interval: 3000
@@ -3066,22 +3079,40 @@
 	    value: function bindEvents() {
 	      var _this2 = this;
 
-	      this.trigger.addEventListener('click', function (e) {
-	        e.stopPropagation();
-	        _this2.set('active', !_this2.get('active'));
-	      }, false);
-
-	      this.selector.addEventListener('click', function (e) {
-	        e.preventDefault();
-	        var optionItem = (0, _utils.closet)(e.target, function (el) {
-	          return el.dataset.value;
-	        });
-	        optionItem && _this2.select(optionItem);
-	      }, false);
-
-	      document.addEventListener('click', function (_) {
-	        _this2.set('active', false);
+	      ;['triggerClick', 'listClick', 'docClick'].forEach(function (method) {
+	        _this2[method] = _this2[method].bind(_this2);
 	      });
+
+	      this.trigger.addEventListener('click', this.triggerClick, false);
+	      this.selector.addEventListener('click', this.listClick, false);
+	      document.addEventListener('click', this.docClick, false);
+	    }
+	  }, {
+	    key: 'unbindEvents',
+	    value: function unbindEvents() {
+	      this.trigger.removeEventListener('click', this.triggerClick, false);
+	      this.selector.removeEventListener('click', this.listClick, false);
+	      document.removeEventListener('click', this.docClick, false);
+	    }
+	  }, {
+	    key: 'triggerClick',
+	    value: function triggerClick(e) {
+	      e.stopPropagation();
+	      this.set('active', !this.get('active'));
+	    }
+	  }, {
+	    key: 'listClick',
+	    value: function listClick(e) {
+	      e.preventDefault();
+	      var optionItem = (0, _utils.closet)(e.target, function (el) {
+	        return el.dataset.value;
+	      });
+	      optionItem && this.select(optionItem);
+	    }
+	  }, {
+	    key: 'docClick',
+	    value: function docClick() {
+	      this.set('active', false);
 	    }
 	  }, {
 	    key: 'select',
@@ -3120,6 +3151,12 @@
 	      if (key === 'text') {
 	        this.trigger.textContent = value;
 	      }
+	    }
+	  }, {
+	    key: 'destroy',
+	    value: function destroy() {
+	      this.unbindEvents();
+	      this.removeAllListeners();
 	    }
 	  }]);
 
@@ -3223,4 +3260,6 @@
 	module.exports = "<div class=\"ttyplayer\" ref=\"container\">\n<header class=\"ttyplayer-header\"><a href=\"https://meowtec.github.io/ttyplayer.js/\" target=\"_blank\">TTYPlayer</a></header>\n<div class=\"ttyplayer-body\" ref=\"body\"></div>\n<footer class=\"ttyplayer-footer\">\n<button class=\"tty-play tty-hide\" ref=\"playButton\">\n<i></i>\n<span>play</span>\n</button>\n<button class=\"tty-pause tty-hide\" ref=\"pauseButton\">\n<i></i>\n<span>pause</span>\n</button>\n<div class=\"tty-button-wrap\">\n<div class=\"tty-select-wrap\" ref=\"speedSelect\">\n<div class=\"tty-select\">\n<a href=\"#\" data-value=\"8\">8x</a>\n<a href=\"#\" data-value=\"4\">4x</a>\n<a href=\"#\" data-value=\"2\">2x</a>\n<a href=\"#\" data-value=\"1\">1x</a>\n<a href=\"#\" data-value=\"0.5\">0.5x</a>\n<a href=\"#\" data-value=\"0.25\">0.25x</a>\n</div>\n</div>\n<button class=\"tty-speed\" ref=\"speedButton\">\n1x\n</button>\n</div>\n</footer>\n</div>\n"
 
 /***/ }
-/******/ ]);
+/******/ ])
+});
+;

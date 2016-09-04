@@ -55,11 +55,11 @@ function initAll() {
     if (pre.tagName.toUpperCase() !== 'PRE') return
 
     var options = parseCodeBlock(codeBlock.textContent)
-    var div = document.createElement('div')
-    doc.insertBefore(div, pre)
+    var p = document.createElement('p')
+    doc.insertBefore(p, pre)
     pre.style.display = 'none'
     new TTYPlayer({
-      parent: div,
+      parent: p,
       cols: toInt(options.cols),
       rows: toInt(options.rows),
     }).load(options.src)
