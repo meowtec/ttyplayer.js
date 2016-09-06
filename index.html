@@ -11,6 +11,8 @@
     body {
       padding: 0;
       margin: 0;
+      color: #666;
+      padding-bottom: 60px;
     }
 
     .center {
@@ -27,16 +29,46 @@
       text-decoration: underline;
     }
 
+    pre {
+      border: 1px solid #eee;
+      padding: 10px;
+    }
+
   </style>
 </head>
 
 <body>
   <div class="center">
-    <h2><a href="https://github.com/meowtec/ttyplayer.js">ttyplayer.js</a></h2>
+    <h1><a href="https://github.com/meowtec/ttyplayer.js">ttyplayer.js</a></h1>
+    <p>ttyplayer 是一个浏览器端的 tty 播放器，使用它录制和分享你的命令行。</p>
     <div
       class="player-container"
       tp-src="./example/tty.rec"
     ></div>
+    <h2>如何使用</h2>
+    <h3>安装 ttyrec</h3>
+    <p>在使用 ttyplayer 之前，你需要使用 ttyrec 录制记录文件。如何安装 ttyrec 我就不详细说了，在 Mac 下可以使用 homebrew 安装。</p>
+    <h3>使用 ttyrec</h3>
+    <p>使用如下命令开始进行录制：</p>
+<pre><code>ttyrec your.rec</code></pre>
+    <p>录制完成后，使用 exit 退出。
+    </p>
+    <h3>使用 ttyplayer</h3>
+    <p>把 dist 目录下的 ttyplayer.min.css 和 ttyplayer.min.js 两个文件引入你的项目，然后初始化播放器：</p>
+<pre class="highlight"><code>new TTYPlayer({
+  parent: document.getElement('player-parent')
+}).load('/your.rec')
+</code></pre>
+    <h3>注意</h3>
+    <p>由于网页宽度限制，ttyplayer 默认宽高为 80 * 20，所以在录制前需要把终端宽高调整到和播放器一致。
+      你也可以传入 cols 和 rows 控制播放器宽高。
+    </p>
+<pre class="highlight"><code>new TTYPlayer({
+  parent: document.getElement('player-parent')，
+  cols: 90,
+  rows: 30
+}).load('/your.rec')
+</code></pre>
   </div>
 </body>
 
