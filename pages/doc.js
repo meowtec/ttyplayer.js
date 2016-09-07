@@ -9,8 +9,11 @@ term.open()
 
 var text = `\u001b[32mTTYPlayer\u001b[39m
 
-Play back \u001b[35mtty\u001b[39m recorded data in browser.
+Playback \u001b[35mtty\u001b[39m recorded data in browser.
 Easy to embed in your \u001b[35mblog\u001b[39m such as \u001b[33mjekyll\u001b[39m and \u001b[32mGhost\u001b[39m.
+
+
+
 
 
 Scroll down to learn more...`.replace(/\n\r?/g, '\n\r')
