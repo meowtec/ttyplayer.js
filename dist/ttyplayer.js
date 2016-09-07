@@ -233,7 +233,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = TTYPlayer;
 
 
-	TTYPlayer.VERSION = ('0.2.2');
+	TTYPlayer.VERSION = ('0.2.3');
 	TTYPlayer.Core = _playerCore2.default;
 	TTYPlayer.Terminal = _playerCore2.default.Terminal;
 
@@ -860,8 +860,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	// focusKeys: false,
 	};Terminal.options={};Terminal.focus=null;each(keys(Terminal.defaults),function(key){Terminal[key]=Terminal.defaults[key];Terminal.options[key]=Terminal.defaults[key];});/**
 	     * Focus the terminal. Delegates focus handling to the terminal's DOM element.
-	     */Terminal.prototype.focus=function(){}// return this.textarea.focus()
-	/**
+	     */Terminal.prototype.focus=function(){var _this=this;setTimeout(function(){_this.send('\x1b[I');_this.element.classList.add('focus');_this.showCursor();});// return this.textarea.focus()
+	};/**
 	     * Binds the desired focus behavior on a given terminal object.
 	     *
 	     * @static
@@ -878,7 +878,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// }
 	/**
 	     * Blur the terminal. Delegates blur handling to the terminal's DOM element.
-	     */;Terminal.prototype.blur=function(){return this.textarea.blur();};/**
+	     */Terminal.prototype.blur=function(){return this.textarea.blur();};/**
 	     * Binds the desired blur behavior on a given terminal object.
 	     *
 	     * @static
@@ -895,12 +895,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	// }
 	/**
 	     * Initialize default behavior
-	     */Terminal.prototype.initGlobal=function(){var _this=this;// Terminal.bindPaste(this)
+	     */// Terminal.prototype.initGlobal = function() {
+	// Terminal.bindPaste(this)
 	// Terminal.bindKeys(this)
 	// Terminal.bindCopy(this)
 	// Terminal.bindFocus(this)
 	// Terminal.bindBlur(this)
-	setTimeout(function(){_this.send('\x1b[I');_this.element.classList.add('focus');_this.showCursor();});};/**
+	// }
+	/**
 	     * Bind to paste event and allow both keyboard and right-click pasting, without having the
 	     * contentEditable value set to true.
 	     */// Terminal.bindPaste = function(term) {
@@ -996,7 +998,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	this.helperContainer.appendChild(this.compositionView);this.charMeasureElement=document.createElement('div');this.charMeasureElement.classList.add('xterm-char-measure-element');this.charMeasureElement.innerHTML='W';this.helperContainer.appendChild(this.charMeasureElement);for(;i<this.rows;i++){this.insertRow();}this.parent.appendChild(this.element);this.viewport=new Viewport(this,this.viewportElement,this.viewportScrollArea,this.charMeasureElement);// Draw the screen.
 	this.refresh(0,this.rows-1);// Initialize global actions that
 	// need to be taken on the document.
-	this.initGlobal();// Ensure there is a Terminal.focus.
+	// this.initGlobal()
+	// Ensure there is a Terminal.focus.
 	this.focus();// on(this.element, 'mouseup', function() {
 	//   var selection = document.getSelection(),
 	//       collapsed = selection.isCollapsed,
@@ -2073,7 +2076,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	this.lines.splice(this.y+this.ybase,0,this.blankLine(true));j=this.rows-1-this.scrollBottom;this.lines.splice(this.rows-1+this.ybase-j+1,1);// this.maxRange();
 	this.updateRange(this.scrollTop);this.updateRange(this.scrollBottom);}this.state=normal;};/**
 	     * ESC c Full Reset (RIS).
-	     */Terminal.prototype.reset=function(){this.options.rows=this.rows;this.options.cols=this.cols;Terminal.call(this,this.options);this.refresh(0,this.rows-1);};/**
+	     */Terminal.prototype.reset=function(){this.options.rows=this.rows;this.options.cols=this.cols;Terminal.call(this,this.options);this.refresh(0,this.rows-1);this.focus();};/**
 	     * ESC H Tab Set (HTS is 0x88).
 	     */Terminal.prototype.tabSet=function(){this.tabs[this.x]=true;this.state=normal;};/**
 	     * CSI

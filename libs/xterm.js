@@ -735,6 +735,11 @@ export default (function() {
      * Focus the terminal. Delegates focus handling to the terminal's DOM element.
      */
     Terminal.prototype.focus = function() {
+      setTimeout(() => {
+        this.send('\x1b[I')
+        this.element.classList.add('focus')
+        this.showCursor()
+      })
       // return this.textarea.focus()
     }
 
@@ -782,19 +787,13 @@ export default (function() {
     /**
      * Initialize default behavior
      */
-    Terminal.prototype.initGlobal = function() {
+    // Terminal.prototype.initGlobal = function() {
       // Terminal.bindPaste(this)
       // Terminal.bindKeys(this)
       // Terminal.bindCopy(this)
       // Terminal.bindFocus(this)
       // Terminal.bindBlur(this)
-
-      setTimeout(() => {
-        this.send('\x1b[I')
-        this.element.classList.add('focus')
-        this.showCursor()
-      })
-    }
+    // }
 
     /**
      * Bind to paste event and allow both keyboard and right-click pasting, without having the
@@ -1017,7 +1016,7 @@ export default (function() {
 
       // Initialize global actions that
       // need to be taken on the document.
-      this.initGlobal()
+      // this.initGlobal()
 
       // Ensure there is a Terminal.focus.
       this.focus()
@@ -3439,6 +3438,7 @@ export default (function() {
       this.options.cols = this.cols
       Terminal.call(this, this.options)
       this.refresh(0, this.rows - 1)
+      this.focus()
     }
 
 
