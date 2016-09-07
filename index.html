@@ -3,21 +3,54 @@
 
 <head>
   <meta charset="utf-8">
-  <title>ttyplayer.js demo</title>
+  <title>ttyplayer.js Docs</title>
   <link rel="stylesheet" href="./dist/ttyplayer.css"/>
   <script src="./dist/ttyplayer.js"></script>
   <script src="./ttyplayer.autoload.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Lekton" rel="stylesheet">
   <style>
     body {
       padding: 0;
       margin: 0;
-      color: #666;
+      color: #ddd;
       padding-bottom: 60px;
+      background: #000;
+      font-family: monospace;
+    }
+
+    h2 {
+      margin-top: 40px;
+    }
+
+    h3 {
+      margin-top: 30px;
+    }
+
+    .header, .body {
+      position: absolute;
+      width: 100%;
+    }
+
+    .header {
+      box-sizing: border-box;
+      height: 100%;
+      padding-top: 200px;
+    }
+
+    .body {
+      position: absolute;
+      top: 100%;
+    }
+
+    .header .ttyplayer-header,
+    .header .ttyplayer-footer {
+      display: none;
     }
 
     .center {
-      width: 700px;
+      width: 600px;
       margin: 0 auto;
+      padding: 0 40px;
     }
 
     a {
@@ -30,46 +63,90 @@
     }
 
     pre {
-      border: 1px solid #eee;
+      border: 1px solid #999;
       padding: 10px;
+    }
+
+    .icon-down {
+      position: absolute;
+      padding: 10px;
+      left: 50%;
+      transform: translate(50%);
+      bottom: 50px;
+      background: none;
+      text-align:center;
+      cursor: pointer;
+      color: #999;
+      transition: color ease 0.4s;
+    }
+
+    .icon-down:before {
+      content: '';
+      display: block;
+      width: 10px;
+      height: 10px;
+      border: 1px solid currentColor;
+      border-top-width: 0;
+      border-right-width: 0;
+      transform: rotate(-45deg);
+    }
+    .icon-down:hover {
+      color: #fff;
+      cursor: pointer;
     }
 
   </style>
 </head>
 
 <body>
-  <div class="center">
-    <h1><a href="https://github.com/meowtec/ttyplayer.js">ttyplayer.js</a></h1>
-    <p>ttyplayer 是一个浏览器端的 tty 播放器，使用它录制和分享你的命令行。</p>
-    <div
-      class="player-container"
-      tp-src="./example/tty.rec"
-    ></div>
-    <h2>如何使用</h2>
-    <h3>安装 ttyrec</h3>
-    <p>在使用 ttyplayer 之前，你需要使用 ttyrec 录制记录文件。如何安装 ttyrec 我就不详细说了，在 Mac 下可以使用 homebrew 安装。</p>
-    <h3>使用 ttyrec</h3>
-    <p>使用如下命令开始进行录制：</p>
-<pre><code>ttyrec your.rec</code></pre>
-    <p>录制完成后，使用 exit 退出。
-    </p>
-    <h3>使用 ttyplayer</h3>
-    <p>把 dist 目录下的 ttyplayer.min.css 和 ttyplayer.min.js 两个文件引入你的项目，然后初始化播放器：</p>
+  <div class="header">
+    <div class="center" id="header"></div>
+    <a href="#body" class="icon-down" id="down"></a href="#body">
+  </div>
+  <div class="body" id="body">
+    <div class="center">
+      <h1><a href="https://github.com/meowtec/ttyplayer.js">TTYPlayer.js</a></h1>
+      <p><a href="https://github.com/meowtec/ttyplayer.js">TTYPlayer</a> is a player that playback terminal session.<br></p>
+
+      <h2>How To use</h2>
+
+      <h3>Install ttyrec</h3>
+      <p>Before use ttyplayer, you should install <a href="https://github.com/mjording/ttyrec">ttyrec</a>, and record your tty session using ttyrec.</p>
+      <p>For Mac OSX users, ttyrec can be installed with homebrew:</p>
+      <pre><code>brew install ttyrec</code></pre>
+
+      <h3>Record tty</h3>
+      <p>Use <code>ttyrec</code> command to record terminal session：</p>
+      <pre><code>ttyrec your.rec</code></pre>
+      <p>Use exit command to finish.</p>
+      <pre><code>exit</code></pre>
+
+      <h3>New TTYPlayer</h3>
+      <p>Include ttyplayer.min.css and ttyplayer.min.js in your page, then create a player:</p>
 <pre class="highlight"><code>new TTYPlayer({
   parent: document.getElement('player-parent')
-}).load('/your.rec')
-</code></pre>
-    <h3>注意</h3>
-    <p>由于网页宽度限制，ttyplayer 默认宽高为 80 * 20，所以在录制前需要把终端宽高调整到和播放器一致。
-      你也可以传入 cols 和 rows 控制播放器宽高。
-    </p>
+}).load('/your.rec')</code></pre>
+
+      <p>Now we get one:</p>
+      <div
+        class="player-container"
+        style="border: 1px solid #999;"
+        tp-src="./pages/demo.rec"
+      ></div>
+
+      <h3>With markdown</h3>
+      <p>Read my <a href="http://meowtec.github.io/blog/2016/09/01/tty-player.html">blog</a> and <a href="https://raw.githubusercontent.com/meowtec/meowtec.github.io/master/_posts/2016-09-01-tty-player.markdown">the markdown source code</a> to know how to generate ttyplayer in markdown.</p>
+      <h3>Notice</h3>
+      <p>The default cols and rows are 80 and 20. Before you record, make sure your terminal size is cols 80 and rows 20.</p>
+      <p>Or give a custom size:</p>
 <pre class="highlight"><code>new TTYPlayer({
   parent: document.getElement('player-parent')，
   cols: 90,
   rows: 30
-}).load('/your.rec')
-</code></pre>
+}).load('/your.rec')</code></pre>
+    </div>
   </div>
+  <script src="./pages/doc.js"></script>
 </body>
 
 </html>

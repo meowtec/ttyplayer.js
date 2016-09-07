@@ -83,3 +83,5 @@ assign(TTYCorePlayer.prototype, {
   repeat: true,
   interval: 3000,
 })
+
+TTYCorePlayer.Terminal = Terminal

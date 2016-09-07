@@ -1,6 +1,6 @@
 {
   "name": "ttyplayer",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "",
   "main": "dist/ttyplayer.js",
   "keywords": [
@@ -17,8 +17,6 @@
   "devDependencies": {
     "babel-core": "^6.14.0",
     "babel-loader": "^6.2.5",
-    "babel-plugin-transform-helper": "0.0.3",
-    "babel-preset-es2015": "^6.14.0",
     "babel-preset-es2015-loose": "^7.0.0",
     "browserify": "^13.1.0",
     "clean-css": "^3.4.19",

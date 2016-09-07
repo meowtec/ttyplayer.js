@@ -10,7 +10,7 @@ import template from './player.htm'
 const defaultCols = 80
 const defaultRows = 20
 
-class TTYPlayer extends Component {
+export default class TTYPlayer extends Component {
   constructor(options) {
     super()
 
@@ -119,5 +119,5 @@ class TTYPlayer extends Component {
 }
 
 TTYPlayer.VERSION = VERSION
-
-module.exports = TTYPlayer
+TTYPlayer.Core = Core
+TTYPlayer.Terminal = Core.Terminal

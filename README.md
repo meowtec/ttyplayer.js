@@ -3,7 +3,7 @@
 
 ttyplayer.js 是一个浏览器端的 tty 播放器。(IE 10+, Chrome, Firefox, Safari)
 
-[ttyplayer.js demo](https://meowtec.github.io/ttyplayer.js/)
+[https://meowtec.github.io/ttyplayer.js/](https://meowtec.github.io/ttyplayer.js/)
 
 ### Usage
 首先安装 ttyrec.

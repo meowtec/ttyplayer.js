@@ -8,7 +8,7 @@ const minExt = min ? '.min' : ''
 
 module.exports = {
   entry: {
-    ttyplayer: path.resolve(__dirname, './src/player.js')
+    ttyplayer: path.resolve(__dirname, './index.js')
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -17,6 +17,7 @@ module.exports = {
     libraryTarget: 'umd',
     library: 'TTYPlayer',
   },
+
   resolve: {
     extensions: ['',  '.js']
   },

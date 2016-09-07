@@ -735,7 +735,7 @@ export default (function() {
      * Focus the terminal. Delegates focus handling to the terminal's DOM element.
      */
     Terminal.prototype.focus = function() {
-      return this.textarea.focus()
+      // return this.textarea.focus()
     }
 
     /**
@@ -1022,14 +1022,14 @@ export default (function() {
       // Ensure there is a Terminal.focus.
       this.focus()
 
-      on(this.element, 'mouseup', function() {
-        var selection = document.getSelection(),
-            collapsed = selection.isCollapsed,
-            isRange = typeof collapsed == 'boolean' ? !collapsed : selection.type == 'Range'
-        if (!isRange) {
-          self.focus()
-        }
-      })
+      // on(this.element, 'mouseup', function() {
+      //   var selection = document.getSelection(),
+      //       collapsed = selection.isCollapsed,
+      //       isRange = typeof collapsed == 'boolean' ? !collapsed : selection.type == 'Range'
+      //   if (!isRange) {
+      //     self.focus()
+      //   }
+      // })
 
       // Listen for mouse events and translate
       // them into terminal mouse protocols.

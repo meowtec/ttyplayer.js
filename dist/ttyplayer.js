@@ -56,40 +56,64 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	__webpack_require__(1);
+	var _player = __webpack_require__(1);
 
-	var _playerCore = __webpack_require__(5);
+	var _player2 = _interopRequireDefault(_player);
 
-	var _playerCore2 = __webpack_require__(8).interopRequireDefault(_playerCore);
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	module.exports = _player2.default;
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	exports.__esModule = true;
+
+	__webpack_require__(2);
+
+	var _playerCore = __webpack_require__(6);
+
+	var _playerCore2 = _interopRequireDefault(_playerCore);
 
 	var _select = __webpack_require__(13);
 
-	var _select2 = __webpack_require__(8).interopRequireDefault(_select);
+	var _select2 = _interopRequireDefault(_select);
 
 	var _component = __webpack_require__(14);
 
-	var _component2 = __webpack_require__(8).interopRequireDefault(_component);
+	var _component2 = _interopRequireDefault(_component);
 
 	var _decode = __webpack_require__(15);
 
-	var _decode2 = __webpack_require__(8).interopRequireDefault(_decode);
+	var _decode2 = _interopRequireDefault(_decode);
 
-	var _utils = __webpack_require__(7);
+	var _utils = __webpack_require__(8);
 
 	var _player = __webpack_require__(16);
 
-	var _player2 = __webpack_require__(8).interopRequireDefault(_player);
+	var _player2 = _interopRequireDefault(_player);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var defaultCols = 80;
 	var defaultRows = 20;
 
 	var TTYPlayer = function (_Component) {
-	  __webpack_require__(8).inherits(TTYPlayer, _Component);
+	  _inherits(TTYPlayer, _Component);
 
 	  function TTYPlayer(options) {
-	    __webpack_require__(8).classCallCheck(this, TTYPlayer);
+	    _classCallCheck(this, TTYPlayer);
 
-	    var _this = __webpack_require__(8).possibleConstructorReturn(this, (TTYPlayer.__proto__ || Object.getPrototypeOf(TTYPlayer)).call(this));
+	    var _this = _possibleConstructorReturn(this, _Component.call(this));
 
 	    var optionsCopy = (0, _utils.assign)({}, options);
 	    if (!optionsCopy.rows) {
@@ -110,156 +134,153 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return _this;
 	  }
 
-	  __webpack_require__(8).createClass(TTYPlayer, [{
-	    key: 'onChange',
-	    value: function onChange(key, value) {
-	      if (key === 'isPlaying') {
-	        this.refs.playButton.classList[value ? 'add' : 'remove']('tty-hide');
-	        this.refs.pauseButton.classList[value ? 'remove' : 'add']('tty-hide');
-	        return;
+	  TTYPlayer.prototype.onChange = function onChange(key, value) {
+	    if (key === 'isPlaying') {
+	      this.refs.playButton.classList[value ? 'add' : 'remove']('tty-hide');
+	      this.refs.pauseButton.classList[value ? 'remove' : 'add']('tty-hide');
+	      return;
+	    }
+	  };
+
+	  TTYPlayer.prototype.mount = function mount(parentNode) {
+	    var _$ = (0, _utils.element)(_player2.default);
+
+	    var element = _$.element;
+	    var refs = _$.refs;
+
+
+	    parentNode.appendChild(element);
+	    this.element = element;
+	    this.parentNode = parentNode;
+	    this.options.parent = refs.body;
+	    this.refs = refs;
+	  };
+
+	  TTYPlayer.prototype.unmount = function unmount() {
+	    this.parentNode.removeChild(this.element);
+	  };
+
+	  TTYPlayer.prototype.delegate = function delegate() {
+	    var _this2 = this;
+
+	    var player = this.player;['play', 'resume', 'pause'].forEach(function (method) {
+	      _this2[method] = player[method].bind(player);
+	    });
+	  };
+
+	  TTYPlayer.prototype.bindEvent = function bindEvent() {
+	    var _this3 = this;
+
+	    this.refs.playButton.addEventListener('click', this.resume);
+	    this.refs.pauseButton.addEventListener('click', this.pause);
+
+	    this.player.on('play', function () {
+	      _this3.set('isPlaying', true);
+	    });
+
+	    this.player.on('pause', function () {
+	      _this3.set('isPlaying', false);
+	    });
+
+	    this.speedSelect.on('change', function (value) {
+	      _this3.player.speed = value;
+	    });
+	  };
+
+	  TTYPlayer.prototype.unbindEvent = function unbindEvent() {
+	    this.refs.playButton.removeEventListener('click', this.resume);
+	    this.refs.pauseButton.removeEventListener('click', this.pause);
+	  };
+
+	  TTYPlayer.prototype.createCorePlayer = function createCorePlayer() {
+	    this.player = new _playerCore2.default(this.options);
+	  };
+
+	  TTYPlayer.prototype.createSpeedSelect = function createSpeedSelect() {
+	    this.speedSelect = new _select2.default(this.refs.speedButton, this.refs.speedSelect);
+	  };
+
+	  TTYPlayer.prototype.load = function load(url) {
+	    var _this4 = this;
+
+	    (0, _utils.fetchArrayBuffer)(url, function (err, data) {
+	      if (err) {
+	        return _this4.emit('loadError', err);
 	      }
-	    }
-	  }, {
-	    key: 'mount',
-	    value: function mount(parentNode) {
-	      var _$ = (0, _utils.element)(_player2.default);
+	      var frames = void 0;
+	      try {
+	        frames = (0, _decode2.default)(data);
+	      } catch (err) {
+	        console.error(err);
+	        return _this4.emit('loadError', err);
+	      }
 
-	      var element = _$.element;
-	      var refs = _$.refs;
+	      _this4.play(frames);
+	    });
+	  };
 
-
-	      parentNode.appendChild(element);
-	      this.element = element;
-	      this.parentNode = parentNode;
-	      this.options.parent = refs.body;
-	      this.refs = refs;
-	    }
-	  }, {
-	    key: 'unmount',
-	    value: function unmount() {
-	      this.parentNode.removeChild(this.element);
-	    }
-	  }, {
-	    key: 'delegate',
-	    value: function delegate() {
-	      var _this2 = this;
-
-	      var player = this.player;['play', 'resume', 'pause'].forEach(function (method) {
-	        _this2[method] = player[method].bind(player);
-	      });
-	    }
-	  }, {
-	    key: 'bindEvent',
-	    value: function bindEvent() {
-	      var _this3 = this;
-
-	      this.refs.playButton.addEventListener('click', this.resume);
-	      this.refs.pauseButton.addEventListener('click', this.pause);
-
-	      this.player.on('play', function () {
-	        _this3.set('isPlaying', true);
-	      });
-
-	      this.player.on('pause', function () {
-	        _this3.set('isPlaying', false);
-	      });
-
-	      this.speedSelect.on('change', function (value) {
-	        _this3.player.speed = value;
-	      });
-	    }
-	  }, {
-	    key: 'unbindEvent',
-	    value: function unbindEvent() {
-	      this.refs.playButton.removeEventListener('click', this.resume);
-	      this.refs.pauseButton.removeEventListener('click', this.pause);
-	    }
-	  }, {
-	    key: 'createCorePlayer',
-	    value: function createCorePlayer() {
-	      this.player = new _playerCore2.default(this.options);
-	    }
-	  }, {
-	    key: 'createSpeedSelect',
-	    value: function createSpeedSelect() {
-	      this.speedSelect = new _select2.default(this.refs.speedButton, this.refs.speedSelect);
-	    }
-	  }, {
-	    key: 'load',
-	    value: function load(url) {
-	      var _this4 = this;
-
-	      (0, _utils.fetchArrayBuffer)(url, function (err, data) {
-	        if (err) {
-	          return _this4.emit('loadError', err);
-	        }
-	        var frames = void 0;
-	        try {
-	          frames = (0, _decode2.default)(data);
-	        } catch (err) {
-	          console.error(err);
-	          return _this4.emit('loadError', err);
-	        }
-
-	        _this4.play(frames);
-	      });
-	    }
-	  }, {
-	    key: 'destroy',
-	    value: function destroy() {
-	      this.player.destroy();
-	      this.speedSelect.destroy();
-	      this.unbindEvent();
-	      this.removeAllListeners();
-	      this.unmount();
-	    }
-	  }]);
+	  TTYPlayer.prototype.destroy = function destroy() {
+	    this.player.destroy();
+	    this.speedSelect.destroy();
+	    this.unbindEvent();
+	    this.removeAllListeners();
+	    this.unmount();
+	  };
 
 	  return TTYPlayer;
 	}(_component2.default);
 
-	TTYPlayer.VERSION = ('0.2.1');
+	exports.default = TTYPlayer;
 
-	module.exports = TTYPlayer;
+
+	TTYPlayer.VERSION = ('0.2.2');
+	TTYPlayer.Core = _playerCore2.default;
+	TTYPlayer.Terminal = _playerCore2.default.Terminal;
 
 /***/ },
-/* 1 */
+/* 2 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
 
 /***/ },
-/* 2 */,
 /* 3 */,
 /* 4 */,
-/* 5 */
+/* 5 */,
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
+	exports.__esModule = true;
 
-	var _timer = __webpack_require__(6);
+	var _timer = __webpack_require__(7);
 
-	var _timer2 = __webpack_require__(8).interopRequireDefault(_timer);
+	var _timer2 = _interopRequireDefault(_timer);
 
 	var _xterm = __webpack_require__(9);
 
-	var _xterm2 = __webpack_require__(8).interopRequireDefault(_xterm);
+	var _xterm2 = _interopRequireDefault(_xterm);
 
-	var _utils = __webpack_require__(7);
+	var _utils = __webpack_require__(8);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var EventEmitter = _xterm2.default.EventEmitter;
 
 	var TTYCorePlayer = function (_EventEmitter) {
-	  __webpack_require__(8).inherits(TTYCorePlayer, _EventEmitter);
+	  _inherits(TTYCorePlayer, _EventEmitter);
 
 	  function TTYCorePlayer(options) {
-	    __webpack_require__(8).classCallCheck(this, TTYCorePlayer);
+	    _classCallCheck(this, TTYCorePlayer);
 
-	    var _this = __webpack_require__(8).possibleConstructorReturn(this, (TTYCorePlayer.__proto__ || Object.getPrototypeOf(TTYCorePlayer)).call(this));
+	    var _this = _possibleConstructorReturn(this, _EventEmitter.call(this));
 
 	    var term = new _xterm2.default(options);
 	    term.open();
@@ -268,76 +289,67 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return _this;
 	  }
 
-	  __webpack_require__(8).createClass(TTYCorePlayer, [{
-	    key: 'atEnd',
-	    value: function atEnd() {
-	      return this.step === this.frames.length;
-	    }
-	  }, {
-	    key: 'play',
-	    value: function play(frames) {
-	      if (frames) {
-	        this.frames = frames;
-	      }
-	      this.term.reset();
-	      this.step = 0;
-	      this.renderFrame();
-	      this.emit('play');
-	    }
-	  }, {
-	    key: 'pause',
-	    value: function pause() {
-	      this._nextTimer.pause();
-	      this.emit('pause');
-	    }
-	  }, {
-	    key: 'resume',
-	    value: function resume() {
-	      this._nextTimer.resume();
-	      this.emit('play');
-	    }
-	  }, {
-	    key: 'renderFrame',
-	    value: function renderFrame() {
-	      var step = this.step;
-	      var frames = this.frames;
-	      var currentFrame = frames[step];
-	      var nextFrame = frames[step + 1];
-	      var str = currentFrame.content;
-	      // It seems to be unnecessary and may cause an unexpected behavior.
-	      // So I ignore it.
-	      if (str !== '\u001b[?1h\u001b=') {
-	        this.term.write(str);
-	      }
-	      this.step = step + 1;
+	  TTYCorePlayer.prototype.atEnd = function atEnd() {
+	    return this.step === this.frames.length;
+	  };
 
-	      this.next(currentFrame, nextFrame);
+	  TTYCorePlayer.prototype.play = function play(frames) {
+	    if (frames) {
+	      this.frames = frames;
 	    }
-	  }, {
-	    key: 'next',
-	    value: function next(currentFrame, nextFrame) {
-	      var _this2 = this;
+	    this.term.reset();
+	    this.step = 0;
+	    this.renderFrame();
+	    this.emit('play');
+	  };
 
-	      if (nextFrame) {
-	        this._nextTimer = new _timer2.default(function (_) {
-	          return _this2.renderFrame();
-	        }, nextFrame.time - currentFrame.time, this.speed);
-	      } else if (this.repeat) {
-	        this._nextTimer = new _timer2.default(function (_) {
-	          return _this2.play();
-	        }, this.interval, this.speed);
-	      } else {
-	        this.emit('end');
-	      }
+	  TTYCorePlayer.prototype.pause = function pause() {
+	    this._nextTimer.pause();
+	    this.emit('pause');
+	  };
+
+	  TTYCorePlayer.prototype.resume = function resume() {
+	    this._nextTimer.resume();
+	    this.emit('play');
+	  };
+
+	  TTYCorePlayer.prototype.renderFrame = function renderFrame() {
+	    var step = this.step;
+	    var frames = this.frames;
+	    var currentFrame = frames[step];
+	    var nextFrame = frames[step + 1];
+	    var str = currentFrame.content;
+	    // It seems to be unnecessary and may cause an unexpected behavior.
+	    // So I ignore it.
+	    if (str !== '\u001b[?1h\u001b=') {
+	      this.term.write(str);
 	    }
-	  }, {
-	    key: 'destroy',
-	    value: function destroy() {
-	      this.term.destroy();
-	      this.removeAllListeners();
-	      this._nextTimer && this._nextTimer.clear();
+	    this.step = step + 1;
+
+	    this.next(currentFrame, nextFrame);
+	  };
+
+	  TTYCorePlayer.prototype.next = function next(currentFrame, nextFrame) {
+	    var _this2 = this;
+
+	    if (nextFrame) {
+	      this._nextTimer = new _timer2.default(function (_) {
+	        return _this2.renderFrame();
+	      }, nextFrame.time - currentFrame.time, this.speed);
+	    } else if (this.repeat) {
+	      this._nextTimer = new _timer2.default(function (_) {
+	        return _this2.play();
+	      }, this.interval, this.speed);
+	    } else {
+	      this.emit('end');
 	    }
-	  }]);
+	  };
+
+	  TTYCorePlayer.prototype.destroy = function destroy() {
+	    this.term.destroy();
+	    this.removeAllListeners();
+	    this._nextTimer && this._nextTimer.clear();
+	  };
 
 	  return TTYCorePlayer;
 	}(EventEmitter);
@@ -351,65 +363,65 @@ return /******/ (function(modules) { // webpackBootstrap
 	  interval: 3000
 	});
 
+	TTYCorePlayer.Terminal = _xterm2.default;
+
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
+	exports.__esModule = true;
 
-	var _utils = __webpack_require__(7);
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _utils = __webpack_require__(8);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var Timer = function () {
 	  function Timer(callback, time) {
 	    var rate = arguments.length <= 2 || arguments[2] === undefined ? 1 : arguments[2];
 
-	    __webpack_require__(8).classCallCheck(this, Timer);
+	    _classCallCheck(this, Timer);
 
 	    this._rate = rate;
 	    this._setTimeout(callback, time);
 	  }
 
-	  __webpack_require__(8).createClass(Timer, [{
-	    key: '_setTimeout',
-	    value: function _setTimeout(callback, time) {
-	      var _this = this;
+	  Timer.prototype._setTimeout = function _setTimeout(callback, time) {
+	    var _this = this;
 
-	      this._timer = setTimeout(function () {
-	        callback();
-	        _this._finish = true;
-	        _this._rest = null;
-	      }, time / this._rate);
+	    this._timer = setTimeout(function () {
+	      callback();
+	      _this._finish = true;
+	      _this._rest = null;
+	    }, time / this._rate);
 
-	      this._finish = false;
-	      this._time = time;
-	      this._startTime = new Date();
-	      this._callback = callback;
-	      this._rest = null;
+	    this._finish = false;
+	    this._time = time;
+	    this._startTime = new Date();
+	    this._callback = callback;
+	    this._rest = null;
+	  };
+
+	  Timer.prototype.pause = function pause() {
+	    clearTimeout(this._timer);
+	    this._rest = this.rest;
+	  };
+
+	  Timer.prototype.resume = function resume() {
+	    if (this._rest != null) {
+	      this._setTimeout(this._callback, this._rest);
 	    }
-	  }, {
-	    key: 'pause',
-	    value: function pause() {
-	      clearTimeout(this._timer);
-	      this._rest = this.rest;
-	    }
-	  }, {
-	    key: 'resume',
-	    value: function resume() {
-	      if (this._rest != null) {
-	        this._setTimeout(this._callback, this._rest);
-	      }
-	    }
-	  }, {
-	    key: 'clear',
-	    value: function clear() {
-	      this.pause();
-	      this._rest = null;
-	    }
-	  }, {
+	  };
+
+	  Timer.prototype.clear = function clear() {
+	    this.pause();
+	    this._rest = null;
+	  };
+
+	  _createClass(Timer, [{
 	    key: 'rate',
 	    set: function set(x) {
 	      this._rate = x;
@@ -444,14 +456,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Timer;
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
+	exports.__esModule = true;
 	exports.isArray = isArray;
 	exports.isString = isString;
 	exports.assign = assign;
@@ -547,42 +557,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 8 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-	exports.inherits = function (subClass, superClass) {
-	  if (typeof superClass !== "function" && superClass !== null) {
-	    throw new TypeError("Super expression must either be null or a function, not " + (typeof superClass === "undefined" ? "undefined" : _typeof(superClass)));
-	  }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-	};exports.possibleConstructorReturn = function (self, call) {
-	  if (!self) {
-	    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-	  }return call && ((typeof call === "undefined" ? "undefined" : _typeof(call)) === "object" || typeof call === "function") ? call : self;
-	};exports.createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-	    }
-	  }return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-	  };
-	}();exports.classCallCheck = function (instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	};exports.interopRequireDefault = function (obj) {
-	  return obj && obj.__esModule ? obj : { default: obj };
-	};
-
-/***/ },
 /* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';Object.defineProperty(exports,"__esModule",{value:true});__webpack_require__(10);__webpack_require__(11);/**
+	'use strict';exports.__esModule=true;var _typeof=typeof Symbol==="function"&&typeof Symbol.iterator==="symbol"?function(obj){return typeof obj;}:function(obj){return obj&&typeof Symbol==="function"&&obj.constructor===Symbol?"symbol":typeof obj;};/**
 	 * xterm.js: xterm, in the browser
 	 * Copyright (c) 2014, sourceLair Limited (www.sourcelair.com (MIT License)
 	 * Copyright (c) 2012-2013, Christopher Jeffrey (MIT License)
@@ -613,7 +591,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *   The original design remains. The terminal itself
 	 *   has been extended to include xterm CSI codes, among
 	 *   other features.
-	 */exports.default=function(){/**
+	 */__webpack_require__(10);__webpack_require__(11);exports.default=function(){/**
 	     * Terminal Emulation References:
 	     *   http://vt100.net/
 	     *   http://invisible-island.net/xterm/ctlseqs/ctlseqs.txt
@@ -882,7 +860,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	// focusKeys: false,
 	};Terminal.options={};Terminal.focus=null;each(keys(Terminal.defaults),function(key){Terminal[key]=Terminal.defaults[key];Terminal.options[key]=Terminal.defaults[key];});/**
 	     * Focus the terminal. Delegates focus handling to the terminal's DOM element.
-	     */Terminal.prototype.focus=function(){return this.textarea.focus();};/**
+	     */Terminal.prototype.focus=function(){}// return this.textarea.focus()
+	/**
 	     * Binds the desired focus behavior on a given terminal object.
 	     *
 	     * @static
@@ -899,7 +878,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// }
 	/**
 	     * Blur the terminal. Delegates blur handling to the terminal's DOM element.
-	     */Terminal.prototype.blur=function(){return this.textarea.blur();};/**
+	     */;Terminal.prototype.blur=function(){return this.textarea.blur();};/**
 	     * Binds the desired blur behavior on a given terminal object.
 	     *
 	     * @static
@@ -986,7 +965,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Insert the given row to the terminal or produce a new one
 	     * if no row argument is passed. Return the inserted row.
 	     * @param {HTMLElement} row (optional) The row to append to the terminal.
-	     */Terminal.prototype.insertRow=function(row){if((typeof row==='undefined'?'undefined':__webpack_require__(8).typeof(row))!='object'){row=document.createElement('div');}this.rowContainer.appendChild(row);this.children.push(row);return row;};/**
+	     */Terminal.prototype.insertRow=function(row){if((typeof row==='undefined'?'undefined':_typeof(row))!='object'){row=document.createElement('div');}this.rowContainer.appendChild(row);this.children.push(row);return row;};/**
 	     * Opens the terminal within an element.
 	     *
 	     * @param {HTMLElement} parent The element to create the terminal within.
@@ -1018,7 +997,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	this.refresh(0,this.rows-1);// Initialize global actions that
 	// need to be taken on the document.
 	this.initGlobal();// Ensure there is a Terminal.focus.
-	this.focus();on(this.element,'mouseup',function(){var selection=document.getSelection(),collapsed=selection.isCollapsed,isRange=typeof collapsed=='boolean'?!collapsed:selection.type=='Range';if(!isRange){self.focus();}});// Listen for mouse events and translate
+	this.focus();// on(this.element, 'mouseup', function() {
+	//   var selection = document.getSelection(),
+	//       collapsed = selection.isCollapsed,
+	//       isRange = typeof collapsed == 'boolean' ? !collapsed : selection.type == 'Range'
+	//   if (!isRange) {
+	//     self.focus()
+	//   }
+	// })
+	// Listen for mouse events and translate
 	// them into terminal mouse protocols.
 	// this.bindMouse()
 	// Figure out whether boldness affects
@@ -3049,23 +3036,29 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
+	exports.__esModule = true;
 
 	var _component = __webpack_require__(14);
 
-	var _component2 = __webpack_require__(8).interopRequireDefault(_component);
+	var _component2 = _interopRequireDefault(_component);
 
-	var _utils = __webpack_require__(7);
+	var _utils = __webpack_require__(8);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var Select = function (_Component) {
-	  __webpack_require__(8).inherits(Select, _Component);
+	  _inherits(Select, _Component);
 
 	  function Select(trigger, select) {
-	    __webpack_require__(8).classCallCheck(this, Select);
+	    _classCallCheck(this, Select);
 
-	    var _this = __webpack_require__(8).possibleConstructorReturn(this, (Select.__proto__ || Object.getPrototypeOf(Select)).call(this));
+	    var _this = _possibleConstructorReturn(this, _Component.call(this));
 
 	    _this.trigger = trigger;
 	    _this.selector = select;
@@ -3074,91 +3067,81 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return _this;
 	  }
 
-	  __webpack_require__(8).createClass(Select, [{
-	    key: 'bindEvents',
-	    value: function bindEvents() {
-	      var _this2 = this;
+	  Select.prototype.bindEvents = function bindEvents() {
+	    var _this2 = this;
 
-	      ;['triggerClick', 'listClick', 'docClick'].forEach(function (method) {
-	        _this2[method] = _this2[method].bind(_this2);
-	      });
+	    ;['triggerClick', 'listClick', 'docClick'].forEach(function (method) {
+	      _this2[method] = _this2[method].bind(_this2);
+	    });
 
-	      this.trigger.addEventListener('click', this.triggerClick, false);
-	      this.selector.addEventListener('click', this.listClick, false);
-	      document.addEventListener('click', this.docClick, false);
+	    this.trigger.addEventListener('click', this.triggerClick, false);
+	    this.selector.addEventListener('click', this.listClick, false);
+	    document.addEventListener('click', this.docClick, false);
+	  };
+
+	  Select.prototype.unbindEvents = function unbindEvents() {
+	    this.trigger.removeEventListener('click', this.triggerClick, false);
+	    this.selector.removeEventListener('click', this.listClick, false);
+	    document.removeEventListener('click', this.docClick, false);
+	  };
+
+	  Select.prototype.triggerClick = function triggerClick(e) {
+	    e.stopPropagation();
+	    this.set('active', !this.get('active'));
+	  };
+
+	  Select.prototype.listClick = function listClick(e) {
+	    e.preventDefault();
+	    var optionItem = (0, _utils.closet)(e.target, function (el) {
+	      return el.dataset.value;
+	    });
+	    optionItem && this.select(optionItem);
+	  };
+
+	  Select.prototype.docClick = function docClick() {
+	    this.set('active', false);
+	  };
+
+	  Select.prototype.select = function select(item) {
+	    var optionItem = void 0;
+	    if (item.tagName) {
+	      optionItem = item;
+	    } else {
+	      optionItem = this.selector.querySelector('[data-value="' + item + '"]');
 	    }
-	  }, {
-	    key: 'unbindEvents',
-	    value: function unbindEvents() {
-	      this.trigger.removeEventListener('click', this.triggerClick, false);
-	      this.selector.removeEventListener('click', this.listClick, false);
-	      document.removeEventListener('click', this.docClick, false);
+
+	    if (optionItem) {
+	      var value = optionItem.dataset.value;
+	      var text = optionItem.textContent;
+	      this.set('value', value);
+	      this.set('text', text);
 	    }
-	  }, {
-	    key: 'triggerClick',
-	    value: function triggerClick(e) {
-	      e.stopPropagation();
-	      this.set('active', !this.get('active'));
-	    }
-	  }, {
-	    key: 'listClick',
-	    value: function listClick(e) {
-	      e.preventDefault();
-	      var optionItem = (0, _utils.closet)(e.target, function (el) {
-	        return el.dataset.value;
-	      });
-	      optionItem && this.select(optionItem);
-	    }
-	  }, {
-	    key: 'docClick',
-	    value: function docClick() {
-	      this.set('active', false);
-	    }
-	  }, {
-	    key: 'select',
-	    value: function select(item) {
-	      var optionItem = void 0;
-	      if (item.tagName) {
-	        optionItem = item;
+	  };
+
+	  Select.prototype.onChange = function onChange(key, value) {
+	    if (key === 'active') {
+	      if (value) {
+	        this.selector.classList.remove('tty-hide');
 	      } else {
-	        optionItem = this.selector.querySelector('[data-value="' + item + '"]');
+	        this.selector.classList.add('tty-hide');
 	      }
-
-	      if (optionItem) {
-	        var value = optionItem.dataset.value;
-	        var text = optionItem.textContent;
-	        this.set('value', value);
-	        this.set('text', text);
-	      }
+	      return;
 	    }
-	  }, {
-	    key: 'onChange',
-	    value: function onChange(key, value) {
-	      if (key === 'active') {
-	        if (value) {
-	          this.selector.classList.remove('tty-hide');
-	        } else {
-	          this.selector.classList.add('tty-hide');
-	        }
-	        return;
-	      }
 
-	      if (key === 'value') {
-	        this.emit('change', value);
-	        return;
-	      }
+	    if (key === 'value') {
+	      this.emit('change', value);
+	      return;
+	    }
 
-	      if (key === 'text') {
-	        this.trigger.textContent = value;
-	      }
+	    if (key === 'text') {
+	      this.trigger.textContent = value;
 	    }
-	  }, {
-	    key: 'destroy',
-	    value: function destroy() {
-	      this.unbindEvents();
-	      this.removeAllListeners();
-	    }
-	  }]);
+	  };
+
+	  Select.prototype.destroy = function destroy() {
+	    this.unbindEvents();
+	    this.removeAllListeners();
+	  };
 
 	  return Select;
 	}(_component2.default);
@@ -3171,41 +3154,43 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
+	exports.__esModule = true;
 
 	var _xterm = __webpack_require__(9);
 
-	var _xterm2 = __webpack_require__(8).interopRequireDefault(_xterm);
+	var _xterm2 = _interopRequireDefault(_xterm);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var EventEmitter = _xterm2.default.EventEmitter;
 
 	var Component = function (_EventEmitter) {
-	  __webpack_require__(8).inherits(Component, _EventEmitter);
+	  _inherits(Component, _EventEmitter);
 
 	  function Component() {
-	    __webpack_require__(8).classCallCheck(this, Component);
+	    _classCallCheck(this, Component);
 
-	    return __webpack_require__(8).possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this));
+	    return _possibleConstructorReturn(this, _EventEmitter.call(this));
 	  }
 
-	  __webpack_require__(8).createClass(Component, [{
-	    key: 'set',
-	    value: function set(key, value) {
-	      var data = this.data || (this.data = {});
-	      var prev = this.get(key);
-	      data[key] = value;
-	      if (prev !== value) {
-	        this.onChange && this.onChange(key, value);
-	      }
+	  Component.prototype.set = function set(key, value) {
+	    var data = this.data || (this.data = {});
+	    var prev = this.get(key);
+	    data[key] = value;
+	    if (prev !== value) {
+	      this.onChange && this.onChange(key, value);
 	    }
-	  }, {
-	    key: 'get',
-	    value: function get(key) {
-	      return this.data && this.data[key];
-	    }
-	  }]);
+	  };
+
+	  Component.prototype.get = function get(key) {
+	    return this.data && this.data[key];
+	  };
 
 	  return Component;
 	}(EventEmitter);
@@ -3218,12 +3203,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
+	exports.__esModule = true;
 	exports.default = decode;
 
-	var _utils = __webpack_require__(7);
+	var _utils = __webpack_require__(8);
 
 	/**
 	 * @param {ArrayBuffer} arrayBuffer
