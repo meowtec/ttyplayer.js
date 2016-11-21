@@ -1,4 +1,5 @@
 .ttyplayer {
+  position: relative;
   font-size: 12px;
   font-family: monospace;
 
@@ -22,6 +23,44 @@
 .ttyplayer-body {
   padding: 5px;
   background: #000;
+}
+
+.tty-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, .4);
+}
+
+.tty-big-play {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  left: 50%;
+  top: 50%;
+  margin-left: -30px;
+  margin-top: -30px;
+  border-radius: 100px;
+  border: 0;
+  background: rgba(0, 0, 0, .3);
+  color: #fff;
+  outline: none;
+  cursor: pointer;
+
+  &:after {
+    position: absolute;
+    content: '';
+    display: block;
+    border: solid transparent;
+    border-left-color: currentColor;
+    border-width: 8px 12px;
+    left: 50%;
+    top: 50%;
+    margin-top: -6px;
+    margin-left: -4px;
+  }
 }
 
 .ttyplayer-footer {
@@ -112,5 +151,11 @@
         color: #999;
       }
     }
+  }
+
+  &.tty-footer-inset {
+    position: absolute;
+    bottom: 0;
+    right: 0;
   }
 }

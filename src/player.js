@@ -4,23 +4,21 @@ import Core from './player-core'
 import Select from './select'
 import Component from './component'
 import decode from './decode'
-import { element as $, assign, fetchArrayBuffer } from './utils'
+import { element as $, assign, fetchArrayBuffer, replaceTpl } from './utils'
 import template from './player.htm'
 
 const defaultCols = 80
 const defaultRows = 20
+const hideClass = 'tty-hide'
 
 export default class TTYPlayer extends Component {
   constructor(options) {
     super()
 
     const optionsCopy = assign({}, options)
-    if (!optionsCopy.rows) {
-      optionsCopy.rows = defaultRows
-    }
-    if (!optionsCopy.cols) {
-      optionsCopy.cols = defaultCols
-    }
+    optionsCopy.rows = optionsCopy.rows || defaultRows
+    optionsCopy.cols = optionsCopy.cols || defaultCols
+    optionsCopy.footerStyle = optionsCopy.footerStyle || 'inset'
     this.options = optionsCopy
 
     this.mount(options.parent)
@@ -34,15 +32,24 @@ export default class TTYPlayer extends Component {
 
   onChange(key, value) {
     if (key === 'isPlaying') {
-      this.refs.playButton.classList[value ? 'add' : 'remove']('tty-hide')
-      this.refs.pauseButton.classList[value ? 'remove' : 'add']('tty-hide')
+      const { playButton, pauseButton, playMask } = this.refs
+      if (value) {
+        playButton.classList.add(hideClass)
+        pauseButton.classList.remove(hideClass)
+        playMask.classList.add(hideClass)
+      } else {
+        playButton.classList.remove(hideClass)
+        pauseButton.classList.add(hideClass)
+        playMask.classList.remove(hideClass)
+      }
       return
     }
   }
 
   mount(parentNode) {
-    const { element, refs } = $(template)
-
+    const { element, refs } = $(replaceTpl(template, {
+      ttyfooter: 'tty-footer-' + this.options.footerStyle
+    }))
     parentNode.appendChild(element)
     this.element = element
     this.parentNode = parentNode
@@ -60,10 +67,13 @@ export default class TTYPlayer extends Component {
     ;[ 'play', 'resume', 'pause' ].forEach(method => {
       this[method] = player[method].bind(player)
     })
+
+    this.resumePlay = this.resumePlay.bind(this)
   }
 
   bindEvent() {
-    this.refs.playButton.addEventListener('click', this.resume)
+    this.refs.bigPlayButton.addEventListener('click', this.resumePlay)
+    this.refs.playButton.addEventListener('click', this.resumePlay)
     this.refs.pauseButton.addEventListener('click', this.pause)
 
     this.player.on('play', () => {
@@ -92,6 +102,15 @@ export default class TTYPlayer extends Component {
     this.speedSelect = new Select(this.refs.speedButton, this.refs.speedSelect)
   }
 
+  resumePlay() {
+    if (this._started) {
+      this.resume()
+    } else {
+      this.play(this._frames)
+      this._started = true
+    }
+  }
+
   load(url) {
     fetchArrayBuffer(url, (err, data) => {
       if (err) {
@@ -105,7 +124,10 @@ export default class TTYPlayer extends Component {
         return this.emit('loadError', err)
       }
 
-      this.play(frames)
+      this._frames = frames
+      if (this.options.autoplay) {
+        this.play()
+      }
     })
   }
 

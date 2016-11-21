@@ -84,3 +84,17 @@ export function closet(el, cond) {
     elem = elem.parentNode
   }
 }
+
+export function replaceTpl(str, data) {
+  let html = str
+  for (let key in data) {
+    if (hasOwnProperty.call(data, key)) {
+      let value = data[key]
+      if (value == null) {
+        value = ''
+      }
+      html = html.replace(new RegExp(`\\{\\{\\s*${key}\\s*\\}\\}`, 'g'), value)
+    }
+  }
+  return html
+}

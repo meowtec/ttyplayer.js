@@ -1,7 +1,10 @@
 <div class="ttyplayer" ref="container">
   <header class="ttyplayer-header"><a href="https://meowtec.github.io/ttyplayer.js/" target="_blank">TTYPlayer</a></header>
   <div class="ttyplayer-body" ref="body"></div>
-  <footer class="ttyplayer-footer">
+  <div class="tty-mask" ref="playMask">
+    <button class="tty-big-play" ref="bigPlayButton"></button>
+  </div>
+  <footer class="ttyplayer-footer {{ ttyfooter }}">
     <button class="tty-play tty-hide" ref="playButton">
       <i></i>
       <span>play</span>
